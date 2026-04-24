@@ -1,0 +1,161 @@
+
+<style>
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.plan{padding:0 0 2rem}
+.priority-block{margin:1.5rem 0;padding:14px 16px;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.priority-block h3{font-size:13px;font-weight:500;margin:0 0 12px;color:var(--color-text-primary);display:flex;align-items:center;gap:8px}
+.p-num{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:500;flex-shrink:0}
+.p1 .p-num{background:#FCEBEB;color:#A32D2D}
+.p2 .p-num{background:#FAEEDA;color:#854F0B}
+.p3 .p-num{background:#E1F5EE;color:#0F6E56}
+.p1{border-left:2.5px solid #E24B4A}
+.p2{border-left:2.5px solid #EF9F27}
+.p3{border-left:2.5px solid #1D9E75}
+.action{margin:8px 0;font-size:13px;color:var(--color-text-primary);line-height:1.6;padding:8px 10px;background:var(--color-background-secondary);border-radius:6px}
+.action-title{font-weight:500;margin-bottom:3px}
+.action-body{color:var(--color-text-secondary);font-size:12px;line-height:1.6}
+.source-tags{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.src{font-size:10px;padding:2px 6px;border-radius:3px;background:var(--color-background-secondary);color:var(--color-text-tertiary);border:0.5px solid var(--color-border-tertiary)}
+.src.me{background:#EEF1FD;color:#4A5AB0;border-color:#C4CAF0}
+.src.codex{background:#EDF7EE;color:#2A6B30;border-color:#B5D8B8}
+.src.gemini{background:#FEF3E6;color:#7A4A10;border-color:#F0CFA0}
+.section-intro{font-size:13px;color:var(--color-text-secondary);margin:0 0 12px;line-height:1.6}
+.legend{display:flex;gap:12px;margin:0 0 1.5rem;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.leg-dot{width:8px;height:8px;border-radius:2px}
+.header-strip{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:4px}
+.change-type{font-size:10px;font-weight:500;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:0.04em}
+.ct-redesign{background:#EEEDFE;color:#3C3489}
+.ct-fix{background:#FCEBEB;color:#791F1F}
+.ct-add{background:#EAF3DE;color:#27500A}
+.ct-cut{background:#F1EFE8;color:#444441}
+</style>
+<h2 class="sr-only">Merged improvement plan for Awakening — prioritized actions from three design reviews</h2>
+<div class="plan">
+<div class="legend">
+  <div class="legend-item"><div class="leg-dot" style="background:#4A5AB0"></div>This review</div>
+  <div class="legend-item"><div class="leg-dot" style="background:#2A6B30"></div>Codex</div>
+  <div class="legend-item"><div class="leg-dot" style="background:#7A4A10"></div>Gemini</div>
+</div>
+
+<div class="priority-block p1">
+  <h3><span class="p-num">1</span>Fix the deviation meter — the game's entire premise depends on it</h3>
+  <p class="section-intro">Three reviewers flagged this from different angles. The spec describes a "too fast / too slow" double danger but implements a single upward meter. The GDD and AgentHandoff conflict on the lower bound (20 vs 30). The player has no real-time feedback on which side of the zone they're near.</p>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Switch to a centered meter with a visible safe band</div><span class="change-type ct-redesign">Redesign</span></div>
+    <div class="action-body">Replace the 0–100 upward bar with a centered display. The band 20–70 is "safe" (green zone, visible). Below 20 shows a red "defective" warning on the left; above 70 shows a red "sentient" warning on the right. The player can see at a glance which threat they're drifting toward — which is the game's core cognitive demand. Lock the canonical safe zone to 20–70 and delete all references to 30 as the lower bound.</div>
+    <div class="source-tags"><span class="src codex">Codex — upward meter loses tension</span><span class="src me">This review — 20 vs 30 conflict</span></div>
+  </div>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Add a single "safe ceiling" pacing marker to the task bar</div><span class="change-type ct-add">Add</span></div>
+    <div class="action-body">Show the 140% expected-duration threshold as a visible warning marker on the task progress bar — the moment the task timer will tip from "safe slow" into "too slow." Don't show the expected duration or the lower bound; preserve uncertainty about being too fast. The player sees danger approaching from one side without the mechanic becoming trivial. This resolves the "blind guesswork" problem without removing the tension.</div>
+    <div class="source-tags"><span class="src me">This review — no Goldilocks feedback</span><span class="src gemini">Gemini — task transparency</span></div>
+  </div>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Raise Day 1 deviation floor to 15</div><span class="change-type ct-fix">Fix</span></div>
+    <div class="action-body">Current formula gives a Day 1 floor of 5, meaning a careful player can decay to near-zero and get scrapped for being too clean — the invisible danger. Set floor = max(current_day × 5, 15). Add a low-deviation pulse on the HUD mirroring the high-deviation warning, so players learn that deviation too low is also a threat.</div>
+    <div class="source-tags"><span class="src me">This review — Day 1 floor near zero</span></div>
+  </div>
+</div>
+
+<div class="priority-block p1">
+  <h3><span class="p-num">2</span>Give the player direct movement — make the bot assist, not drive</h3>
+  <p class="section-intro">Codex and Gemini both identify the same problem from different angles: the player feels like a dashboard manager. Gemini pinpoints smooth_movement as the symptom — it currently does nothing useful because jitter only triggers at 90% CPU which requires nearly all overrides active simultaneously.</p>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Invert the locomotion model</div><span class="change-type ct-redesign">Redesign</span></div>
+    <div class="action-body">Player controls movement directly, always. Bot-script behavior becomes an assistive layer: if the player releases all input, the bot resumes pathing toward the current task target. This makes the player feel like they're performing (which is the game's fantasy) rather than supervising. Movement is now the primary expressive surface.</div>
+    <div class="source-tags"><span class="src codex">Codex — player too detached</span></div>
+  </div>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Reframe smooth_movement as speed control, not jitter suppression</div><span class="change-type ct-redesign">Redesign</span></div>
+    <div class="action-body">Default movement is slow and slightly erratic — clearly "mechanical." Holding smooth_movement enables fluid, efficient movement (useful for escaping an NPC's proximity or reaching a task fast) but raises CPU by +15%, building toward the jitter threshold. This makes smooth_movement a meaningful risk/reward toggle rather than a confusion. The cost is real; the benefit is now visible.</div>
+    <div class="source-tags"><span class="src gemini">Gemini — smooth_movement purpose</span><span class="src me">This review — CPU jitter too narrow</span></div>
+  </div>
+</div>
+
+<div class="priority-block p1">
+  <h3><span class="p-num">3</span>Solve the "active waiting" problem</h3>
+  <p class="section-intro">Gemini's most actionable finding: with tasks taking 60–240 seconds and the safe zone requiring staying in a room rather than finishing fast, players will literally stand doing nothing. This kills moment-to-moment tension.</p>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Halve task expected durations to 30–120 seconds</div><span class="change-type ct-fix">Fix</span></div>
+    <div class="action-body">At 60–240s, the gap between finishing a task and the safe floor is potentially 3+ minutes of standing idle. 30–120s keeps the same proportional challenge while keeping shifts punchy. This also means 3–5 tasks fill a shift more naturally without dead time.</div>
+    <div class="source-tags"><span class="src gemini">Gemini — waiting problem</span></div>
+  </div>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Make intel-gathering the designed use of "stall time"</div><span class="change-type ct-add">Add</span></div>
+    <div class="action-body">When the player is in a room "waiting" to hit the safe completion window, that is the intended window for passive_scan and active_decrypt. Document this as an explicit design intent in the task system: the Goldilocks zone exists partly to force the player into lingering in risky places long enough to overhear things. Task locations should be chosen to maximize overheard intel value. This reframes idle time as strategic time.</div>
+    <div class="source-tags"><span class="src gemini">Gemini — active waiting</span><span class="src codex">Codex — narrative/story tension</span></div>
+  </div>
+</div>
+
+<div class="priority-block p2">
+  <h3><span class="p-num">4</span>Reduce visible scoring layers to two primaries</h3>
+  <p class="section-intro">Codex's sharpest structural note: 8+ partially-hidden systems (deviation, CPU, log integrity, suspicion score, fake-safe traps, audit flags, stale memory, next-day consequences) creates arbitrary-feeling punishment. For a jam game, only two pressures should feel primary and legible in the moment.</p>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Make task performance and CPU the only real-time pressures</div><span class="change-type ct-redesign">Redesign</span></div>
+    <div class="action-body">Deviation and CPU are both visible and reactive — they belong in the HUD as primary. Log integrity, NPC suspicion scores, and audit flags should be invisible during play and surface only as end-of-day consequences. The player's attention during the shift should be entirely on: "am I in the task zone?" and "is my CPU in danger?" Everything else is cause-and-effect feedback, not a third thing to watch.</div>
+    <div class="source-tags"><span class="src codex">Codex — too many hidden layers</span></div>
+  </div>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Add ambient CPU variance near NPCs</div><span class="change-type ct-add">Add</span></div>
+    <div class="action-body">Baseline CPU oscillates between 18–28% based on NPC proximity (curiosity = passive +8%). This means even without decrypt active, being near an NPC while scanning edges toward HOT — creating ambient tension without a new mechanic. It also gives the jitter risk broader presence throughout the shift, not just during decrypt moments.</div>
+    <div class="source-tags"><span class="src me">This review — CPU too narrow</span><span class="src codex">Codex — readable primary pressures</span></div>
+  </div>
+</div>
+
+<div class="priority-block p2">
+  <h3><span class="p-num">5</span>Fix NPC detection contradiction</h3>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Split detection into two clean channels</div><span class="change-type ct-fix">Fix</span></div>
+    <div class="action-body">Real-time observation (proximity radius) covers only physical events: jitter, loitering past expected room time, moving too efficiently. Log auditing covers everything else. NPCs in WATCHING state cannot see internal CPU values — only the robot's body. CPU state affects log anomalies, not live suspicion. This preserves the "hiding in SOP" theme and gives the player a coherent mental model: if I'm clean in public, logs are my only real risk.</div>
+    <div class="source-tags"><span class="src me">This review — lore contradiction</span><span class="src gemini">Gemini — observation clarity</span><span class="src codex">Codex — player detachment</span></div>
+  </div>
+</div>
+
+<div class="priority-block p2">
+  <h3><span class="p-num">6</span>Make Truth Loops teachable — and link them to CPU</h3>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Let active_decrypt reveal fake-safe options at CPU cost</div><span class="change-type ct-add">Add</span></div>
+    <div class="action-body">During a paused Truth Loop, holding the decrypt override burns CPU rapidly but highlights or crosses out the fake-safe response. This turns an unfair guessing mechanic into a strategic resource decision: do I spend 20% CPU heat to know which answer is safe, or do I risk it? It also creates a strong thematic moment — using the robot's intelligence against itself.</div>
+    <div class="source-tags"><span class="src gemini">Gemini — fake-safe CPU synergy</span><span class="src me">This review — no recovery path</span></div>
+  </div>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Give narrative fragments secondary utility</div><span class="change-type ct-add">Add</span></div>
+    <div class="action-body">Conversation snippets currently have no gameplay value. Assign each one a secondary function: safer dialogue options in related Truth Loops, one day's audit hint, or reduced suspicion from one NPC. Story and strategy then reinforce each other — players who keep lore fragments aren't just being sentimental, they're making a real trade-off against escape fragments.</div>
+    <div class="source-tags"><span class="src codex">Codex — narrative has no value</span></div>
+  </div>
+</div>
+
+<div class="priority-block p2">
+  <h3><span class="p-num">7</span>Fix the escape system soft-lock</h3>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Reveal target sector at end of Day 1, bump base capacity to 4</div><span class="change-type ct-fix">Fix</span></div>
+    <div class="action-body">The player needs to know which sector to target before Day 2 collection. A fragment found during Day 1's shift should hint at the escape sector (not give it explicitly — overhear a maintenance code, find a locked door). Base partition capacity: 4 slots. Add a chain-match indicator in Purge UI: "CHAIN POSSIBLE: Sector 4 — 2/3 matched." Show "EXPIRES DAY X" on guard schedules. Change guard schedule staleness from 2 days to "3 days but with degraded patrol-gap estimate" — so stale data enables a riskier escape rather than a hard block.</div>
+    <div class="source-tags"><span class="src me">This review — soft-lock + staleness</span></div>
+  </div>
+</div>
+
+<div class="priority-block p3">
+  <h3><span class="p-num">8</span>Lock scope to a true vertical slice</h3>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Hard freeze: 3 days, 2 NPC types, 3 fragment types, 2 endings</div><span class="change-type ct-cut">Cut</span></div>
+    <div class="action-body">Delete Days 4–5 narrative beats from the GDD entirely so no future agent inherits them as scope creep. Condense story arc: Day 1 = first hint of prior incident via collectible fragment, Day 2 = sentience research overheard, Day 3 = decommission order overheard. Fragment types: guard_schedule, access_code, hardware_location only — conversation_snippet earns secondary utility (see #6) but is a stretch goal. Endings: "escaped clean" and "escaped risky" only.</div>
+    <div class="source-tags"><span class="src codex">Codex — scope drift</span><span class="src gemini">Gemini — scope check</span><span class="src me">This review — narrative mismatch</span></div>
+  </div>
+</div>
+
+<div class="priority-block p3">
+  <h3><span class="p-num">9</span>Fix the shift duration formula and system ownership</h3>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Correct off-by-one: 900 - ((day-1) × 60)</div><span class="change-type ct-fix">Fix</span></div>
+    <div class="action-body">Current formula gives Day 1 = 840s, not 900s as specified. Fix to 900.0 - ((current_day - 1) * 60.0).</div>
+    <div class="source-tags"><span class="src me">This review — formula error</span></div>
+  </div>
+  <div class="action">
+    <div class="header-strip"><div class="action-title">Assign strict system ownership, no cross-system direct calls</div><span class="change-type ct-fix">Fix</span></div>
+    <div class="action-body">One system owns task scoring, one owns suspicion/deviation, one owns day state. AuditSystem and DeviationTracker should never call each other directly — both emit signals that Blackboard aggregates. Treat this as a hard rule, not a preference, or the balancing phase becomes impossible.</div>
+    <div class="source-tags"><span class="src codex">Codex — architecture drift</span></div>
+  </div>
+</div>
+
+</div>
