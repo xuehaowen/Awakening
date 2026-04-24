@@ -38,7 +38,7 @@ func _ready():
 	Blackboard.day_started.connect(_on_day_started)
 	Blackboard.game_over.connect(_on_game_over)
 	Blackboard.escape_triggered.connect(_on_escape_triggered)
-	DayManager.phase_changed.connect(_on_phase_changed)
+	Blackboard.phase_changed.connect(_on_phase_changed)
 	
 	# Start Day 1
 	DayManager.advance_phase()
