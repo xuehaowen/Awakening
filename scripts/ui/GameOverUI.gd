@@ -28,4 +28,10 @@ func _show_game_over(reason: String, message: String) -> void:
 
 func _restart_game() -> void:
 	get_tree().paused = false
+	# Reset all autoload state so a new run starts clean
+	Blackboard.reset()
+	MemoryPartition.reset()
+	AuditSystem.reset()
+	DayManager.reset()
+	TruthLoopGenerator.clear_query()
 	get_tree().reload_current_scene()

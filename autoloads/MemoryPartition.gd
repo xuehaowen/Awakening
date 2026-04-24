@@ -132,3 +132,8 @@ func generate_random_fragment(preferred_type: String = "", preferred_sector: int
 	template["day_acquired"] = Blackboard.current_day
 	
 	return template
+
+func reset() -> void:
+	short_term.clear()
+	hidden.clear()
+	capacity = 4

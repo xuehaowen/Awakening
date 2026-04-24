@@ -15,8 +15,9 @@ func _ready():
 	# Connect to Blackboard
 	Blackboard.truth_loop_requested.connect(_show_query)
 	
-	# Connect to TruthLoopGenerator for context mismatch feedback
+	# Connect to TruthLoopGenerator signals
 	TruthLoopGenerator.context_mismatch_triggered.connect(_on_context_mismatch)
+	TruthLoopGenerator.followup_triggered.connect(_on_followup_triggered)
 	
 	# Hide initially
 	panel.hide()
@@ -112,15 +113,18 @@ func _select_response(index: int) -> void:
 	selected_index = index
 	var response = TruthLoopGenerator.select_response(index, decrypt_active)
 	
-	# Unpause
-	get_tree().paused = false
-	
-	# Hide panel
-	panel.hide()
-	
-	# Signal completion
-	var risk = response.get("risk", 0) if response else 0
-	Blackboard.truth_loop_completed.emit(risk)
+	# If a follow-up is being triggered, don't complete yet — wait for followup_triggered
+	# The followup_triggered signal handler will show the next query or close
+	if not TruthLoopGenerator.followup_mode:
+		# No follow-up: close panel and complete
+		get_tree().paused = false
+		panel.hide()
+		var risk = response.get("risk", 0) if response else 0
+		Blackboard.truth_loop_completed.emit(risk)
+	else:
+		# Follow-up pending: keep paused, context_mismatch will display, then followup_triggered fires
+		var risk = response.get("risk", 0) if response else 0
+		Blackboard.truth_loop_completed.emit(risk)
 
 func _timeout_silence() -> void:
 	TruthLoopGenerator.timeout_silence()
@@ -131,11 +135,25 @@ func _timeout_silence() -> void:
 	
 	Blackboard.truth_loop_completed.emit(30)
 
-func _on_context_mismatch(npc_type: String, reason: String) -> void:
+func _on_context_mismatch(_npc_type: String, _reason: String) -> void:
 	# Show feedback label with CONTEXT_MISMATCH warning
 	prompt_label.text += "\n\n[CONTEXT_MISMATCH] Response incongruent with unit operational parameters."
 	prompt_label.modulate = Color(0.9, 0.3, 0.3)
 	
+	# Disable all response buttons to prevent double-submit
+	for btn in responses_container.get_children():
+		btn.disabled = true
+	
 	# Keep panel visible briefly to show the feedback
 	await get_tree().create_timer(1.5).timeout
+	
+	# Hide panel and cleanup — followup_triggered will re-open if needed
+	panel.hide()
 	prompt_label.modulate = Color.WHITE
+
+func _on_followup_triggered(npc: Node) -> void:
+	# Supervisor fires a follow-up query after catching a fake-safe response
+	# Give a brief pause before re-interrogating
+	await get_tree().create_timer(0.5).timeout
+	var followup_query = TruthLoopGenerator.generate(npc, "status_check")
+	_show_query(followup_query)

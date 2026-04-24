@@ -25,6 +25,10 @@ var is_at_task: bool = false
 var jitter_active: bool = false
 var jitter_intensity: float = 0.0
 
+# Passive scan timer
+var scan_tick_timer: float = 0.0
+const SCAN_TICK_INTERVAL: float = 5.0  # Roll for intel every 5s while scan is on
+
 func _ready():
 	add_to_group("player")
 	
@@ -46,6 +50,7 @@ func _physics_process(delta: float) -> void:
 	_update_movement(delta)
 	_update_jitter(delta)
 	_update_animation()
+	_update_scan_tick(delta)
 
 func _handle_input() -> void:
 	if not DayManager.is_playing():
@@ -150,6 +155,10 @@ func _complete_current_task() -> void:
 	var result = TaskManager.complete_current_task()
 	print("Task completed: ", result)
 	
+	# Apply deviation delta from task completion (Goldilocks scoring)
+	if result.has("deviation_delta") and result["deviation_delta"] != 0:
+		Blackboard.add_deviation(result["deviation_delta"], result.get("reason", "task_completion"))
+	
 	# Show floating text
 	_show_floating_text(result["reason"], result["deviation_delta"])
 	
@@ -169,7 +178,7 @@ func _on_interaction_area_exited(body: Node) -> void:
 		deviation_tracker._on_npc_exited_range(body)
 
 func _on_scan_area_entered(body: Node) -> void:
-	# Check if we can gather intel from this
+	# Initial roll when entering range
 	if body.is_in_group("intel_source"):
 		if cpu_manager.overrides_active["passive_scan"]:
 			_attempt_gather_intel(body)
@@ -177,10 +186,23 @@ func _on_scan_area_entered(body: Node) -> void:
 func _on_scan_area_exited(_body: Node) -> void:
 	pass
 
+func _update_scan_tick(delta: float) -> void:
+	if not cpu_manager.overrides_active["passive_scan"]:
+		scan_tick_timer = 0.0
+		return
+	scan_tick_timer += delta
+	if scan_tick_timer >= SCAN_TICK_INTERVAL:
+		scan_tick_timer = 0.0
+		for body in scan_area.get_overlapping_bodies():
+			if body.is_in_group("intel_source"):
+				_attempt_gather_intel(body)
+				break  # One roll per tick
+
 func _attempt_gather_intel(source: Node) -> void:
-	# Roll for intel fragment
+	# Use the source's sector if available, otherwise random
+	var preferred_sector = source.get("sector_id") if source.get("sector_id") != null else -1
 	if randf() < 0.3:  # 30% chance per scan tick
-		var fragment = MemoryPartition.generate_random_fragment()
+		var fragment = MemoryPartition.generate_random_fragment("", preferred_sector)
 		if MemoryPartition.add_to_short_term(fragment):
 			print("Intel acquired: ", fragment["type"], " for Sector ", fragment.get("sector", "?"))
 

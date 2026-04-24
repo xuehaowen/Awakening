@@ -14,11 +14,8 @@ var shift_active: bool = false
 var time_remaining: float = 0.0
 var current_phase: int = 0  # 0=CALIBRATION, 1=SHIFT, 2=PURGE, 3=UPGRADE
 
-# Memory
-var short_term_memory: Array[Dictionary] = []
-var hidden_partition: Array[Dictionary] = []
-var partition_capacity: int = 4  # Base 4 slots per feedback
-const MAX_SHORT_TERM: int = 8
+# Memory - delegated to MemoryPartition autoload for single source of truth
+# Use MemoryPartition.short_term and MemoryPartition.hidden instead
 
 # Audit
 var log_integrity: float = 100.0
@@ -70,38 +67,43 @@ func get_deviation_zone() -> String:
 	else:
 		return "SENTIENT"
 
+# Memory functions - delegate to MemoryPartition for single source of truth
 func add_memory_fragment(fragment: Dictionary) -> bool:
-	if short_term_memory.size() >= MAX_SHORT_TERM:
-		return false
-	fragment["day_acquired"] = current_day
-	short_term_memory.append(fragment)
-	return true
+	return MemoryPartition.add_to_short_term(fragment)
 
 func commit_to_hidden(index: int) -> bool:
-	if index >= short_term_memory.size():
-		return false
-	if hidden_partition.size() >= partition_capacity:
-		return false
-	
-	var fragment = short_term_memory[index]
-	hidden_partition.append(fragment)
-	short_term_memory.remove_at(index)
-	return true
+	return MemoryPartition.commit_to_hidden(index)
 
 func discard_from_hidden(index: int) -> void:
-	if index < hidden_partition.size():
-		hidden_partition.remove_at(index)
+	MemoryPartition.discard_from_hidden(index)
 
 func get_fragments_by_type(type: String) -> Array:
-	return hidden_partition.filter(func(f): return f.get("type", "") == type)
+	return MemoryPartition.get_fragments_by_type(type)
 
 func is_fragment_stale(fragment: Dictionary) -> bool:
-	if fragment.get("type", "") != "guard_schedule":
-		return false
-	return (current_day - fragment.get("day_acquired", 1)) > 2
+	return MemoryPartition.is_stale(fragment)
 
 func purge_short_term() -> void:
-	short_term_memory.clear()
+	MemoryPartition.purge_short_term()
+
+# Backwards compatibility properties
+var short_term_memory: Array[Dictionary]:
+	get:
+		return MemoryPartition.short_term
+	set(value):
+		MemoryPartition.short_term = value
+
+var hidden_partition: Array[Dictionary]:
+	get:
+		return MemoryPartition.hidden
+	set(value):
+		MemoryPartition.hidden = value
+
+var partition_capacity: int:
+	get:
+		return MemoryPartition.capacity
+	set(value):
+		MemoryPartition.capacity = value
 
 func start_day(day: int) -> void:
 	current_day = day
@@ -110,3 +112,14 @@ func start_day(day: int) -> void:
 func get_shift_duration() -> float:
 	# 900 - ((day-1) * 60): Day 1 = 900s, Day 2 = 840s, Day 3 = 780s
 	return 900.0 - float(current_day - 1) * 60.0
+
+func reset() -> void:
+	cpu_current = 20.0
+	deviation = 45.0
+	current_day = 1
+	shift_active = false
+	time_remaining = 0.0
+	current_phase = 0
+	log_integrity = 100.0
+	audit_flags = 0
+	escape_sector = -1

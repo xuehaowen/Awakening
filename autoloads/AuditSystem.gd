@@ -94,3 +94,8 @@ func get_log_summary() -> String:
 		total_discrepancy += entry["discrepancy"]
 	
 	return "Tasks: %d | Total Discrepancy: %.1fs" % [day_entries.size(), total_discrepancy]
+
+func reset() -> void:
+	task_log.clear()
+	audit_flags = 0
+	daily_flags = 0

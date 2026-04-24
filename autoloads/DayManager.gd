@@ -59,6 +59,9 @@ func _start_shift() -> void:
 	Blackboard.time_remaining = shift_timer
 	Blackboard.current_phase = 1
 	
+	# Start the day (emits day_started signal)
+	Blackboard.start_day(Blackboard.current_day)
+	
 	# Generate tasks for the day
 	TaskManager.generate_day_tasks(Blackboard.current_day)
 	
@@ -131,3 +134,10 @@ func get_phase_name() -> String:
 
 func is_playing() -> bool:
 	return current_phase == DayPhase.SHIFT
+
+func reset() -> void:
+	current_phase = DayPhase.CALIBRATION
+	shift_timer = 0.0
+	purge_timer = 0.0
+	if is_instance_valid(phase_timer):
+		phase_timer.stop()

@@ -9,7 +9,7 @@ enum NPCType { SUPERVISOR, GUARD, TECHNICIAN }
 @export var audit_frequency: float = 0.5
 @export var move_speed: float = 40.0
 
-@onready var sprite: Sprite2D = $Sprite2D
+@onready var sprite: Polygon2D = $Sprite2D
 @onready var observation_area: Area2D = $ObservationArea
 @onready var query_timer: Timer = $QueryTimer
 
@@ -47,7 +47,9 @@ func _physics_process(delta: float) -> void:
 			_do_query()
 
 func _setup_patrol():
-	# Generate simple patrol path around spawn area
+	# Only generate a default path if one wasn't pre-assigned (e.g. from Facility.gd)
+	if not patrol_points.is_empty():
+		return
 	var start_pos = global_position
 	patrol_points = [
 		start_pos + Vector2(100, 0),
@@ -126,7 +128,7 @@ func _assess_player_behavior(delta: float) -> void:
 	var task = TaskManager.get_current_task()
 	if task.is_empty():
 		gain += 2.0 * delta
-	elif task.get("sector", 0) != _get_current_sector():
+	elif task.get("sector", 0) != _get_current_sector(player_ref.global_position):
 		gain += 1.0 * delta
 	
 	# Check for loitering
@@ -136,10 +138,10 @@ func _assess_player_behavior(delta: float) -> void:
 	if gain > 0:
 		_add_suspicion(gain)
 
-func _get_current_sector() -> int:
+func _get_current_sector(pos: Vector2 = global_position) -> int:
 	# Simple sector calculation based on position
-	var x = floor(global_position.x / 300)
-	var y = floor(global_position.y / 300)
+	var x = floor(pos.x / 300)
+	var y = floor(pos.y / 300)
 	return (abs(x + y) % 4) + 1
 
 func _trigger_query() -> void:
@@ -151,9 +153,12 @@ func _trigger_query() -> void:
 	Blackboard.truth_loop_requested.emit(query)
 	query_triggered.emit(self, query)
 	
-	# Pause NPC while query is active
+	# Pause NPC while query is active - with timeout to prevent soft-lock
+	var timeout_timer = get_tree().create_timer(15.0)
 	await Blackboard.truth_loop_completed
-	state = NPCState.WATCHING
+	
+	if state == NPCState.QUERY:  # Only change if still in QUERY (not already changed by timeout)
+		state = NPCState.WATCHING
 
 func _check_suspicion_thresholds() -> void:
 	if suspicion_score >= 86.0:
@@ -172,9 +177,9 @@ func _add_suspicion(amount: float) -> void:
 		suspicion_changed.emit(suspicion_score)
 
 func _update_facing(dir: Vector2) -> void:
-	# Simple facing update
+	# Simple facing update - Polygon2D uses scale.x instead of flip_h
 	if abs(dir.x) > abs(dir.y):
-		sprite.flip_h = dir.x < 0
+		sprite.scale.x = -1.0 if dir.x < 0 else 1.0
 
 func _on_observation_area_entered(body: Node) -> void:
 	if body.is_in_group("player"):
