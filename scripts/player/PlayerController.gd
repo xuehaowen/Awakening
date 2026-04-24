@@ -1,0 +1,189 @@
+extends CharacterBody2D
+
+@onready var cpu_manager: Node = $CPUManager
+@onready var deviation_tracker: Node = $DeviationTracker
+@onready var nav_agent: NavigationAgent2D = $NavigationAgent2D
+@onready var sprite: Sprite2D = $Sprite2D
+@onready var jitter_shader: ShaderMaterial = $Sprite2D.material
+@onready var interaction_area: Area2D = $InteractionArea
+@onready var scan_area: Area2D = $ScanArea
+
+# Movement
+const BASE_SPEED: float = 60.0
+const SMOOTH_SPEED: float = 100.0
+const JITTER_NOISE: float = 15.0
+
+var current_speed: float = BASE_SPEED
+var is_moving: bool = false
+var facing_direction: Vector2 = Vector2.DOWN
+
+# Task handling
+var current_task_target: Vector2 = Vector2.ZERO
+var is_at_task: bool = false
+
+# Jitter effect
+var jitter_active: bool = false
+var jitter_intensity: float = 0.0
+
+func _ready():
+	add_to_group("player")
+	
+	# Connect to Blackboard signals
+	Blackboard.jitter_triggered.connect(_on_jitter_triggered)
+	Blackboard.game_over.connect(_on_game_over)
+	
+	# Setup navigation
+	nav_agent.path_desired_distance = 4.0
+	nav_agent.target_desired_distance = 4.0
+	
+	# Setup areas
+	interaction_area.body_entered.connect(_on_interaction_area_entered)
+	scan_area.body_entered.connect(_on_scan_area_entered)
+	scan_area.body_exited.connect(_on_scan_area_exited)
+
+func _physics_process(delta: float) -> void:
+	_handle_input()
+	_update_movement(delta)
+	_update_jitter(delta)
+	_update_animation()
+
+func _handle_input() -> void:
+	if not DayManager.is_playing():
+		return
+	
+	# Toggle passive scan
+	if Input.is_action_just_pressed("override_scan"):
+		var new_state = not cpu_manager.overrides_active["passive_scan"]
+		cpu_manager.set_override("passive_scan", new_state)
+		print("Passive scan: ", "ON" if new_state else "OFF")
+	
+	# Active decrypt is handled in Truth Loop UI
+	
+	# Smooth movement override
+	var smooth_active = Input.is_action_pressed("override_smooth")
+	cpu_manager.set_override("smooth_movement", smooth_active)
+	
+	# Interaction
+	if Input.is_action_just_pressed("interact"):
+		_try_interact()
+	
+	if Input.is_action_just_pressed("open_memory"):
+		# Signal to UI to open memory view
+		print("Open memory UI requested")
+
+func _update_movement(delta: float) -> void:
+	var input_dir = Vector2.ZERO
+	
+	# Get input
+	input_dir.x = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	input_dir.y = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
+	
+	is_moving = input_dir.length() > 0.1
+	
+	if is_moving:
+		facing_direction = input_dir.normalized()
+		
+		# Determine speed based on smooth movement override
+		var target_speed = SMOOTH_SPEED if cpu_manager.overrides_active["smooth_movement"] else BASE_SPEED
+		
+		# Apply jitter noise if CPU is high and not using smooth movement
+		if Blackboard.cpu_current > 85.0 and not cpu_manager.overrides_active["smooth_movement"]:
+			input_dir += Vector2(randf_range(-0.3, 0.3), randf_range(-0.3, 0.3))
+			target_speed *= 0.8  # Jitter slows you down
+		
+		current_speed = lerp(current_speed, target_speed, delta * 10.0)
+		velocity = input_dir.normalized() * current_speed
+	else:
+		velocity = Vector2.ZERO
+		current_speed = lerp(current_speed, 0.0, delta * 10.0)
+	
+	move_and_slide()
+
+func _update_jitter(delta: float) -> void:
+	if jitter_active:
+		jitter_intensity = lerp(jitter_intensity, 1.0, delta * 5.0)
+	else:
+		jitter_intensity = lerp(jitter_intensity, 0.0, delta * 3.0)
+	
+	# Update shader
+	if jitter_shader:
+		jitter_shader.set_shader_parameter("intensity", jitter_intensity)
+		jitter_shader.set_shader_parameter("time", Time.get_time_dict_from_system()["second"])
+
+func _update_animation() -> void:
+	if is_moving:
+		# Simple bobbing animation
+		sprite.position.y = sin(Time.get_ticks_msec() * 0.01) * 1.5
+	else:
+		sprite.position.y = 0.0
+
+func _on_jitter_triggered() -> void:
+	jitter_active = true
+	
+	# Create visual glitch effect
+	if sprite:
+		sprite.modulate = Color(1.2, 0.8, 0.8)
+		await get_tree().create_timer(0.2).timeout
+		sprite.modulate = Color.WHITE
+	
+	# Reset after duration
+	await get_tree().create_timer(2.0).timeout
+	jitter_active = false
+
+func _on_game_over(reason: String) -> void:
+	set_physics_process(false)
+
+func _try_interact() -> void:
+	# Check for nearby interactables
+	var bodies = interaction_area.get_overlapping_bodies()
+	for body in bodies:
+		if body.is_in_group("interactable"):
+			if body.has_method("interact"):
+				body.interact(self)
+				return
+	
+	# If at a task location, try to complete it
+	if is_at_task:
+		_complete_current_task()
+
+func _complete_current_task() -> void:
+	var result = TaskManager.complete_current_task()
+	print("Task completed: ", result)
+	
+	# Show floating text
+	_show_floating_text(result["reason"], result["deviation_delta"])
+	
+	is_at_task = false
+
+func _show_floating_text(reason: String, delta: float) -> void:
+	# This would spawn a floating label
+	var sign = "+" if delta > 0 else ""
+	print("Floating text: ", reason, " ", sign, delta)
+
+func _on_interaction_area_entered(body: Node) -> void:
+	if body.is_in_group("npc"):
+		deviation_tracker._on_npc_entered_range(body)
+
+func _on_interaction_area_exited(body: Node) -> void:
+	if body.is_in_group("npc"):
+		deviation_tracker._on_npc_exited_range(body)
+
+func _on_scan_area_entered(body: Node) -> void:
+	# Check if we can gather intel from this
+	if body.is_in_group("intel_source"):
+		if cpu_manager.overrides_active["passive_scan"]:
+			_attempt_gather_intel(body)
+
+func _on_scan_area_exited(body: Node) -> void:
+	pass
+
+func _attempt_gather_intel(source: Node) -> void:
+	# Roll for intel fragment
+	if randf() < 0.3:  # 30% chance per scan tick
+		var fragment = MemoryPartition.generate_random_fragment()
+		if MemoryPartition.add_to_short_term(fragment):
+			print("Intel acquired: ", fragment["type"], " for Sector ", fragment.get("sector", "?"))
+
+func teleport_to(position: Vector2) -> void:
+	global_position = position
+	velocity = Vector2.ZERO
