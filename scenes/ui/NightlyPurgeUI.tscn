@@ -29,7 +29,7 @@ offset_bottom = 96.0
 theme_override_font_sizes/font_size = 20
 text = "SYSTEM RESET IN: 60s"
 horizontal_alignment = 1
-modulate = Color(0.9, 0.2, 0.2)
+modulate = Color(0.9, 0.2, 0.2, 1)
 
 [node name="ShortTermLabel" type="Label" parent="Panel"]
 layout_mode = 0
@@ -96,5 +96,5 @@ offset_right = 880.0
 offset_bottom = 560.0
 theme_override_font_sizes/font_size = 16
 text = "EXECUTE PURGE"
-modulate = Color(0.9, 0.2, 0.2)
+modulate = Color(0.9, 0.2, 0.2, 1)
 
