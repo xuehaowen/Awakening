@@ -31,6 +31,8 @@ MemoryPartition="*res://autoloads/MemoryPartition.gd"
 TruthLoopGenerator="*res://autoloads/TruthLoopGenerator.gd"
 EscapeSystem="*res://autoloads/EscapeSystem.gd"
 GameOver="*res://autoloads/GameOver.gd"
+TaskScorer="*res://autoloads/TaskScorer.gd"
+SuspicionManager="*res://autoloads/SuspicionManager.gd"
 
 [display]
 
