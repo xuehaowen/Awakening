@@ -1,0 +1,135 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/HUD.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="TerminalPanel" type="Panel" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 180.0
+
+[node name="HeaderLabel" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 8.0
+offset_right = 600.0
+offset_bottom = 32.0
+theme_override_font_sizes/font_size = 16
+text = "UNIT-07 // SHIFT 1 // 00:00:00"
+
+[node name="TimeLabel" type="Label" parent="TerminalPanel"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 8.0
+offset_right = -16.0
+offset_bottom = 32.0
+theme_override_font_sizes/font_size = 16
+text = "15:00 REMAINING"
+horizontal_alignment = 2
+
+[node name="TaskLabel" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 40.0
+offset_right = 500.0
+offset_bottom = 64.0
+theme_override_font_sizes/font_size = 14
+text = "TASK: NONE"
+
+[node name="TaskProgress" type="ProgressBar" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 520.0
+offset_top = 42.0
+offset_right = 800.0
+offset_bottom = 62.0
+max_value = 200.0
+value = 0.0
+
+[node name="CPUBar" type="ProgressBar" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 72.0
+offset_right = 280.0
+offset_bottom = 92.0
+max_value = 100.0
+value = 20.0
+
+[node name="CPULabel" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 70.0
+offset_right = 80.0
+offset_bottom = 94.0
+text = "CPU:"
+
+[node name="CPUStatus" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 70.0
+offset_right = 380.0
+offset_bottom = 94.0
+text = "[COOL]"
+
+[node name="DevBar" type="ProgressBar" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 80.0
+offset_top = 102.0
+offset_right = 280.0
+offset_bottom = 122.0
+max_value = 100.0
+value = 45.0
+
+[node name="DevLabel" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 100.0
+offset_right = 80.0
+offset_bottom = 124.0
+text = "DEV:"
+
+[node name="DevStatus" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 290.0
+offset_top = 100.0
+offset_right = 380.0
+offset_bottom = 124.0
+text = "[SAFE]"
+
+[node name="LogLabel" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 70.0
+offset_right = 600.0
+offset_bottom = 94.0
+text = "LOG: INTEGRITY 100%"
+
+[node name="MemoryLabel" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 420.0
+offset_top = 100.0
+offset_right = 800.0
+offset_bottom = 124.0
+text = "MEM: [0/4]"
+
+[node name="ScanIndicator" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 620.0
+offset_top = 40.0
+offset_right = 750.0
+offset_bottom = 64.0
+text = ""
+modulate = Color(0.2, 0.9, 0.4)
+
+[node name="FeedbackLabel" type="Label" parent="TerminalPanel"]
+layout_mode = 0
+offset_left = 820.0
+offset_top = 72.0
+offset_right = 1000.0
+offset_bottom = 96.0
+text = ""
+horizontal_alignment = 1

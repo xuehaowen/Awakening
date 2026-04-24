@@ -1,0 +1,99 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/NightlyPurgeUI.gd" id="1_purge"]
+
+[node name="NightlyPurgeUI" type="CanvasLayer"]
+script = ExtResource("1_purge")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TitleLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 1264.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 28
+text = "NIGHTLY SYSTEM PURGE"
+horizontal_alignment = 1
+
+[node name="TimerLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 64.0
+offset_right = 1264.0
+offset_bottom = 96.0
+theme_override_font_sizes/font_size = 20
+text = "SYSTEM RESET IN: 60s"
+horizontal_alignment = 1
+modulate = Color(0.9, 0.2, 0.2)
+
+[node name="ShortTermLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 120.0
+offset_right = 600.0
+offset_bottom = 152.0
+theme_override_font_sizes/font_size = 18
+text = "SHORT-TERM MEMORY (WILL BE ERASED):"
+
+[node name="ShortTermContainer" type="GridContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 160.0
+offset_right = 600.0
+offset_bottom = 400.0
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 4
+
+[node name="HiddenLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 680.0
+offset_top = 120.0
+offset_right = 1248.0
+offset_bottom = 152.0
+theme_override_font_sizes/font_size = 18
+text = "HIDDEN PARTITION (PERSISTENT):"
+
+[node name="HiddenContainer" type="GridContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 680.0
+offset_top = 160.0
+offset_right = 1248.0
+offset_bottom = 400.0
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 4
+
+[node name="ChainLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 32.0
+offset_top = 440.0
+offset_right = 800.0
+offset_bottom = 472.0
+theme_override_font_sizes/font_size = 16
+text = "ESCAPE CHAIN PROGRESS:"
+
+[node name="CommitButton" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 400.0
+offset_top = 520.0
+offset_right = 600.0
+offset_bottom = 560.0
+theme_override_font_sizes/font_size = 16
+text = "COMMIT TO HIDDEN"
+disabled = true
+
+[node name="PurgeButton" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 680.0
+offset_top = 520.0
+offset_right = 880.0
+offset_bottom = 560.0
+theme_override_font_sizes/font_size = 16
+text = "EXECUTE PURGE"
+modulate = Color(0.9, 0.2, 0.2)

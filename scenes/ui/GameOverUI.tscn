@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/GameOverUI.gd" id="1_gameover"]
+
+[node name="GameOverUI" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_gameover")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TitleLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 100.0
+offset_right = 1264.0
+offset_bottom = 180.0
+theme_override_font_sizes/font_size = 48
+text = "TERMINATED"
+horizontal_alignment = 1
+
+[node name="MessageLabel" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 200.0
+offset_top = 250.0
+offset_right = 1080.0
+offset_bottom = 450.0
+theme_override_font_sizes/font_size = 16
+text = "Game Over Message"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="RestartButton" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 540.0
+offset_top = 520.0
+offset_right = 740.0
+offset_bottom = 570.0
+theme_override_font_sizes/font_size = 20
+text = "RESTART"
