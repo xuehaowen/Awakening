@@ -78,12 +78,24 @@ func _spawn_guard(pos: Vector2, patrol: Array[Vector2] = []) -> void:
 	guard.global_position = pos
 	if not patrol.is_empty():
 		guard.patrol_points = patrol
+	# Connect NPC signals to AuditSystem (architecture fix - no direct calls)
+	guard.decommission_threshold_reached.connect(_on_npc_decommission)
+	guard.report_threshold_reached.connect(_on_npc_report)
 	npc_container.add_child(guard)
 
 func _spawn_supervisor(pos: Vector2) -> void:
 	var supervisor = NPC_SUPERVISOR.instantiate()
 	supervisor.global_position = pos
+	# Connect NPC signals to AuditSystem (architecture fix - no direct calls)
+	supervisor.decommission_threshold_reached.connect(_on_npc_decommission)
+	supervisor.report_threshold_reached.connect(_on_npc_report)
 	npc_container.add_child(supervisor)
+
+func _on_npc_decommission(npc: Node) -> void:
+	AuditSystem.flag_decommission(npc)
+
+func _on_npc_report(npc: Node, reason: String) -> void:
+	AuditSystem.add_flag(1, reason)
 
 func _reveal_escape_sector() -> void:
 	# Randomly select escape sector (1-4)

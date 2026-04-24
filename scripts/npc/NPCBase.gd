@@ -23,6 +23,8 @@ var player_ref: Node = null
 
 signal query_triggered(npc: NPCBase, query: Dictionary)
 signal suspicion_changed(new_score: float)
+signal decommission_threshold_reached(npc: NPCBase)
+signal report_threshold_reached(npc: NPCBase, reason: String)
 
 func _ready():
 	add_to_group("npc")
@@ -156,11 +158,13 @@ func _trigger_query() -> void:
 
 func _check_suspicion_thresholds() -> void:
 	if suspicion_score >= 86.0:
-		AuditSystem.flag_decommission(self)
+		# Emit signal instead of direct AuditSystem call (architecture fix)
+		decommission_threshold_reached.emit(self)
 	elif suspicion_score >= 61.0:
 		if state != NPCState.REPORTING:
 			state = NPCState.REPORTING
-			AuditSystem.add_flag(1, "npc_suspicion_high")
+			# Emit signal instead of direct AuditSystem call
+			report_threshold_reached.emit(self, "npc_suspicion_high")
 
 func _add_suspicion(amount: float) -> void:
 	var old_score = suspicion_score

@@ -10,7 +10,7 @@ extends CharacterBody2D
 
 # Movement
 const BASE_SPEED: float = 60.0
-const SMOOTH_SPEED: float = 100.0
+const SMOOTH_SPEED: float = 69.0  # +15% speed boost (was 100.0 = +67%)
 const JITTER_NOISE: float = 15.0
 
 var current_speed: float = BASE_SPEED
