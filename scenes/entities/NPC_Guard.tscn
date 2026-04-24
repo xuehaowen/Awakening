@@ -1,0 +1,35 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/npc/NPCBase.gd" id="1_npc"]
+
+[sub_resource type="CircleShape2D" id="npc_shape"]
+radius = 12.0
+
+[sub_resource type="CircleShape2D" id="observation_shape"]
+radius = 100.0
+
+[node name="NPC_Guard" type="CharacterBody2D" groups=["npc"]]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_npc")
+npc_type = 1
+audit_frequency = 0.3
+
+[node name="Sprite2D" type="Polygon2D" parent="."]
+position = Vector2(0, -8)
+polygon = PackedVector2Array(-10, -14, 10, -14, 8, 0, 10, 14, -10, 14, -8, 0)
+color = Color(0.5, 0.5, 0.6, 1.0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("npc_shape")
+
+[node name="ObservationArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ObservationArea"]
+shape = SubResource("observation_shape")
+
+[node name="QueryTimer" type="Timer" parent="."]
+wait_time = 5.0
+one_shot = true

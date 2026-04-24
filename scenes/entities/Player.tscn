@@ -1,0 +1,94 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/PlayerController.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/player/CPUManager.gd" id="2_cpu"]
+[ext_resource type="Script" path="res://scripts/player/DeviationTracker.gd" id="3_dev"]
+
+[sub_resource type="Shader" id="jitter_shader"]
+code = "
+shader_type canvas_item;
+
+uniform float intensity : hint_range(0.0, 1.0) = 0.0;
+uniform float time : hint_range(0.0, 100.0) = 0.0;
+
+void fragment() {
+    vec2 uv = UV;
+    
+    if (intensity > 0.0) {
+        // Random jitter offset
+        float jitter_x = sin(time * 50.0 + UV.y * 20.0) * 0.02 * intensity;
+        float jitter_y = cos(time * 40.0 + UV.x * 15.0) * 0.02 * intensity;
+        
+        // RGB split
+        float r = texture(TEXTURE, uv + vec2(jitter_x, 0.0)).r;
+        float g = texture(TEXTURE, uv).g;
+        float b = texture(TEXTURE, uv - vec2(jitter_x, 0.0)).b;
+        
+        COLOR = vec4(r, g, b, texture(TEXTURE, uv).a);
+        
+        // Add some scanlines
+        if (sin(uv.y * 200.0 + time * 10.0) > 0.8) {
+            COLOR.rgb *= 0.8;
+        }
+    } else {
+        COLOR = texture(TEXTURE, uv);
+    }
+}
+"
+
+[sub_resource type="ShaderMaterial" id="jitter_material"]
+shader = SubResource("jitter_shader")
+shader_parameter/intensity = 0.0
+shader_parameter/time = 0.0
+
+[sub_resource type="CircleShape2D" id="player_shape"]
+radius = 12.0
+
+[sub_resource type="CircleShape2D" id="interaction_shape"]
+radius = 24.0
+
+[sub_resource type="CircleShape2D" id="scan_shape"]
+radius = 80.0
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 2
+collision_mask = 7
+script = ExtResource("1_player")
+
+[node name="Sprite2D" type="Polygon2D" parent="."]
+material = SubResource("jitter_material")
+position = Vector2(0, -8)
+polygon = PackedVector2Array(-10, -10, 10, -10, 12, 0, 10, 14, -10, 14, -12, 0)
+uv = PackedVector2Array(0, 0, 1, 0, 1, 1, 0, 1)
+color = Color(0.3, 0.5, 0.7, 1.0)
+
+[node name="Glow" type="Polygon2D" parent="Sprite2D"]
+polygon = PackedVector2Array(-6, -6, 6, -6, 6, 6, -6, 6)
+color = Color(1.0, 0.7, 0.3, 0.3)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("player_shape")
+
+[node name="CPUManager" type="Node" parent="."]
+script = ExtResource("2_cpu")
+
+[node name="DeviationTracker" type="Node" parent="."]
+script = ExtResource("3_dev")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+path_desired_distance = 4.0
+target_desired_distance = 4.0
+
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("interaction_shape")
+
+[node name="ScanArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 24
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ScanArea"]
+shape = SubResource("scan_shape")
