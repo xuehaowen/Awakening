@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <rect width="128" height="128" fill="#1a1f2e"/>
+  <circle cx="64" cy="64" r="40" fill="#2d4a6f" stroke="#5a8fc7" stroke-width="3"/>
+  <circle cx="64" cy="64" r="20" fill="#f4a460"/>
+  <text x="64" y="115" text-anchor="middle" fill="#5a8fc7" font-family="monospace" font-size="14">UNIT-07</text>
+</svg>
