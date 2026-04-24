@@ -13,8 +13,6 @@ extends CanvasLayer
 @onready var time_label: Label = $TerminalPanel/TimeLabel
 @onready var feedback_label: Label = $TerminalPanel/FeedbackLabel
 @onready var scan_indicator: Label = $TerminalPanel/ScanIndicator
-@onready var pacing_marker: ColorRect = $TerminalPanel/TaskProgress/PacingMarker
-@onready var pacing_label: Label = $TerminalPanel/TaskProgress/PacingMarker/PacingLabel
 
 # Colors for deviation bar (centered meter style)
 var color_defective: Color = Color(0.9, 0.2, 0.2)  # Red (left)
@@ -30,7 +28,7 @@ func _ready():
 	Blackboard.day_started.connect(_on_day_started)
 	TaskManager.task_assigned.connect(_on_task_assigned)
 	TaskManager.task_completed.connect(_on_task_completed)
-	DayManager.phase_changed.connect(_on_phase_changed)
+	Blackboard.phase_changed.connect(_on_phase_changed)
 	
 	# Get CPU Manager reference
 	await get_tree().process_frame
@@ -73,12 +71,12 @@ func _on_cpu_state_changed(state) -> void:
 		return
 	
 	var cpu_mgr = player.get_node("CPUManager")
-	var color = cpu_mgr.get_state_color()
-	var name = cpu_mgr.get_state_name()
+	var state_color = cpu_mgr.get_state_color()
+	var state_name = cpu_mgr.get_state_name()
 	
-	cpu_bar.modulate = color
-	cpu_status_label.text = "[" + name + "]"
-	cpu_status_label.modulate = color
+	cpu_bar.modulate = state_color
+	cpu_status_label.text = "[" + state_name + "]"
+	cpu_status_label.modulate = state_color
 
 func _on_deviation_changed(value: float, source: String = "") -> void:
 	# Update the centered deviation bar

@@ -22,7 +22,6 @@ const SAFE_ZONE_MIN: float = 0.7
 const SAFE_ZONE_MAX: float = 1.4
 
 signal task_scored(task_id: String, score_result: Dictionary)
-signal pace_state_changed(new_state: String)
 
 enum PaceState { TOO_FAST, FAST, SAFE, SLOW, TOO_SLOW }
 

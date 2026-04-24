@@ -157,8 +157,8 @@ func _complete_current_task() -> void:
 
 func _show_floating_text(reason: String, delta: float) -> void:
 	# This would spawn a floating label
-	var sign = "+" if delta > 0 else ""
-	print("Floating text: ", reason, " ", sign, delta)
+	var sign_str = "+" if delta > 0 else ""
+	print("Floating text: ", reason, " ", sign_str, delta)
 
 func _on_interaction_area_entered(body: Node) -> void:
 	if body.is_in_group("npc"):
@@ -184,6 +184,6 @@ func _attempt_gather_intel(source: Node) -> void:
 		if MemoryPartition.add_to_short_term(fragment):
 			print("Intel acquired: ", fragment["type"], " for Sector ", fragment.get("sector", "?"))
 
-func teleport_to(position: Vector2) -> void:
-	global_position = position
+func teleport_to(target_position: Vector2) -> void:
+	global_position = target_position
 	velocity = Vector2.ZERO

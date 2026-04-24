@@ -174,7 +174,6 @@ func _check_threshold_crossed(old_score: float, new_score: float) -> void:
 func get_formatted_display() -> String:
 	"""Returns a formatted string for UI display."""
 	var level = get_suspicion_level_name()
-	var color = _get_level_color()
 	return level + " [" + str(int(global_suspicion)) + "/100]"
 
 func _get_level_color() -> Color:
