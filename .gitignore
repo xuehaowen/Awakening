@@ -1,0 +1,29 @@
+# Godot 4 specific ignores
+.godot/
+*.tmp
+*.import
+checksum.cfg
+
+# Godot build artifacts
+bin/
+*.x86_64
+*.exe
+*.dll
+*.so
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Build exports
+exports/
+build/
+dist/
