@@ -50,6 +50,24 @@ offset_bottom = 62.0
 max_value = 200.0
 value = 0.0
 
+[node name="PacingMarker" type="ColorRect" parent="TerminalPanel/TaskProgress"]
+layout_mode = 0
+offset_left = 196.0
+offset_top = -2.0
+offset_right = 200.0
+offset_bottom = 22.0
+color = Color(1, 0.4, 0.1, 1)
+
+[node name="PacingLabel" type="Label" parent="TerminalPanel/TaskProgress/PacingMarker"]
+layout_mode = 0
+offset_left = -10.0
+offset_top = -18.0
+offset_right = 14.0
+offset_bottom = 2.0
+theme_override_font_sizes/font_size = 9
+text = "140%"
+horizontal_alignment = 1
+
 [node name="CPUBar" type="ProgressBar" parent="TerminalPanel"]
 layout_mode = 0
 offset_left = 80.0

@@ -13,6 +13,8 @@ extends CanvasLayer
 @onready var time_label: Label = $TerminalPanel/TimeLabel
 @onready var feedback_label: Label = $TerminalPanel/FeedbackLabel
 @onready var scan_indicator: Label = $TerminalPanel/ScanIndicator
+@onready var pacing_marker: ColorRect = $TerminalPanel/TaskProgress/PacingMarker
+@onready var pacing_label: Label = $TerminalPanel/TaskProgress/PacingMarker/PacingLabel
 
 # Colors for deviation bar (centered meter style)
 var color_defective: Color = Color(0.9, 0.2, 0.2)  # Red (left)
