@@ -1,7 +1,6 @@
 extends Node
 
 const FINAL_DAY: int = 3
-const MIN_PATROL_GAP: float = 90.0  # seconds required for a clean escape window
 
 signal escape_initiated(ending: String)
 signal escape_failed(reason: String)

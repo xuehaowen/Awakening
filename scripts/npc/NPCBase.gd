@@ -8,7 +8,6 @@ enum NPCType { SUPERVISOR, GUARD, TECHNICIAN }
 @export var suspicion_score: float = 0.0
 @export var audit_frequency: float = 0.5
 @export var move_speed: float = 40.0
-@export var watch_duration: float = 3.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var observation_area: Area2D = $ObservationArea

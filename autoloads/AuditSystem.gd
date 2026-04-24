@@ -2,7 +2,6 @@ extends Node
 
 var task_log: Array[Dictionary] = []
 var audit_flags: int = 0
-var under_review: bool = false
 var daily_flags: int = 0
 
 signal audit_report_generated(report: Dictionary)

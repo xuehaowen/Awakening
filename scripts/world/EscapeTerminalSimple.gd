@@ -15,7 +15,7 @@ func activate() -> void:
 	label.text = "ESCAPE TERMINAL [ACTIVE]"
 	color_rect.color = Color(0.2, 0.6, 0.3, 1.0)  # Green when active
 
-func interact(player: Node) -> void:
+func interact(_player: Node) -> void:
 	if not is_active:
 		return
 	

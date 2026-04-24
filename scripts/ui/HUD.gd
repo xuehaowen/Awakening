@@ -78,7 +78,7 @@ func _on_cpu_state_changed(state) -> void:
 	cpu_status_label.text = "[" + state_name + "]"
 	cpu_status_label.modulate = state_color
 
-func _on_deviation_changed(value: float, source: String = "") -> void:
+func _on_deviation_changed(value: float, _source: String = "") -> void:
 	# Update the centered deviation bar
 	dev_bar.value = value
 	

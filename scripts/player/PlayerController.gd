@@ -174,7 +174,7 @@ func _on_scan_area_entered(body: Node) -> void:
 		if cpu_manager.overrides_active["passive_scan"]:
 			_attempt_gather_intel(body)
 
-func _on_scan_area_exited(body: Node) -> void:
+func _on_scan_area_exited(_body: Node) -> void:
 	pass
 
 func _attempt_gather_intel(source: Node) -> void:

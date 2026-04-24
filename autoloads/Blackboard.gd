@@ -29,7 +29,7 @@ var escape_sector: int = -1
 
 # Signals
 signal cpu_changed(new_value: float)
-signal deviation_changed(new_value: float)
+signal deviation_changed(new_value: float, source: String)
 signal jitter_triggered()
 signal audit_flagged(severity: int)
 signal truth_loop_requested(query: Dictionary)
