@@ -1,0 +1,129 @@
+extends CanvasLayer
+
+@onready var panel: Panel = $Panel
+@onready var prompt_label: Label = $Panel/PromptLabel
+@onready var responses_container: VBoxContainer = $Panel/ResponsesContainer
+@onready var timer_bar: ProgressBar = $Panel/TimerBar
+@onready var decrypt_hint: Label = $Panel/DecryptHint
+
+var current_query: Dictionary = {}
+var response_timer: float = 0.0
+var decrypt_active: bool = false
+var selected_index: int = -1
+
+func _ready():
+	# Connect to Blackboard
+	Blackboard.truth_loop_requested.connect(_show_query)
+	
+	# Hide initially
+	panel.hide()
+	set_process_input(false)
+
+func _process(delta: float) -> void:
+	if not panel.visible:
+		return
+	
+	# Update timer
+	if response_timer > 0:
+		response_timer -= delta
+		timer_bar.value = (response_timer / current_query.get("timer", 8.0)) * 100
+		
+		if response_timer <= 0:
+			_timeout_silence()
+	
+	# Check for decrypt input
+	if Input.is_action_pressed("override_decrypt"):
+		if not decrypt_active:
+			decrypt_active = true
+			_decrypt_scan()
+	else:
+		decrypt_active = false
+
+func _input(event: InputEvent) -> void:
+	if not panel.visible:
+		return
+	
+	# Number keys for response selection
+	for i in range(4):
+		if event.is_action_pressed("ui_" + str(i + 1)) or \
+		   (event is InputEventKey and event.pressed and event.keycode == KEY_1 + i):
+			_select_response(i)
+			return
+
+func _show_query(query: Dictionary) -> void:
+	current_query = query
+	response_timer = query.get("timer", 8.0)
+	selected_index = -1
+	decrypt_active = false
+	
+	# Show panel
+	panel.show()
+	
+	# Pause the game (but keep UI processing)
+	get_tree().paused = true
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	
+	# Set prompt
+	prompt_label.text = "> " + query.get("prompt_text", "QUERY?")
+	
+	# Clear and rebuild responses
+	for child in responses_container.get_children():
+		child.queue_free()
+	
+	var responses = query.get("responses", [])
+	for i in range(responses.size()):
+		var btn = Button.new()
+		var text = responses[i].get("text", "Option " + str(i + 1))
+		btn.text = "[%d] %s" % [i + 1, text]
+		btn.pressed.connect(_select_response.bind(i))
+		
+		# Style as terminal button
+		btn.theme_type_variation = "TerminalButton"
+		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		
+		responses_container.add_child(btn)
+	
+	# Show decrypt hint
+	decrypt_hint.text = "[Hold SHIFT to analyze responses]"
+	decrypt_hint.modulate = Color(0.5, 0.5, 0.5)
+	
+	# Reset timer bar
+	timer_bar.value = 100
+
+func _decrypt_scan() -> void:
+	# Highlight fake-safe responses when decrypt is active
+	var fake_index = TruthLoopGenerator.get_fake_safe_index()
+	var buttons = responses_container.get_children()
+	
+	for i in range(buttons.size()):
+		if i == fake_index and decrypt_active:
+			buttons[i].modulate = Color(0.8, 0.2, 0.2)
+			buttons[i].text += " [ANOMALY DETECTED]"
+		else:
+			buttons[i].modulate = Color.WHITE
+
+func _select_response(index: int) -> void:
+	if index < 0 or index >= current_query.get("responses", []).size():
+		return
+	
+	selected_index = index
+	var response = TruthLoopGenerator.select_response(index, decrypt_active)
+	
+	# Unpause
+	get_tree().paused = false
+	
+	# Hide panel
+	panel.hide()
+	
+	# Signal completion
+	var risk = response.get("risk", 0) if response else 0
+	Blackboard.truth_loop_completed.emit(risk)
+
+func _timeout_silence() -> void:
+	TruthLoopGenerator.timeout_silence()
+	
+	# Unpause
+	get_tree().paused = false
+	panel.hide()
+	
+	Blackboard.truth_loop_completed.emit(30)
