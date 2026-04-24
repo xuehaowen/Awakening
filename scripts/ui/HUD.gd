@@ -29,6 +29,8 @@ func _ready():
 	TaskManager.task_assigned.connect(_on_task_assigned)
 	TaskManager.task_completed.connect(_on_task_completed)
 	Blackboard.phase_changed.connect(_on_phase_changed)
+	MemoryPartition.fragment_acquired.connect(_on_memory_changed)
+	MemoryPartition.fragment_committed.connect(_on_memory_changed)
 	
 	# Get CPU Manager reference
 	await get_tree().process_frame
@@ -200,17 +202,20 @@ func _update_task_progress() -> void:
 			task_progress.modulate = Color(0.2, 0.8, 0.3)
 
 func _update_memory() -> void:
-	var count = Blackboard.hidden_partition.size()
-	var capacity = Blackboard.partition_capacity
+	var count = MemoryPartition.hidden.size()
+	var capacity = MemoryPartition.capacity
 	memory_label.text = "MEM: [" + str(count) + "/" + str(capacity) + "]"
 	
 	# Show types if any
 	if count > 0:
 		var types = []
-		for f in Blackboard.hidden_partition:
+		for f in MemoryPartition.hidden:
 			var t = f.get("type", "?")
 			types.append(t.substr(0, 4).to_upper())
 		memory_label.text += " " + ", ".join(types)
+
+func _on_memory_changed(_fragment: Dictionary) -> void:
+	_update_memory()
 
 func _on_phase_changed(new_phase: int) -> void:
 	if new_phase == DayManager.DayPhase.PURGE:
