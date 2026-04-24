@@ -15,6 +15,9 @@ func _ready():
 	# Connect to Blackboard
 	Blackboard.truth_loop_requested.connect(_show_query)
 	
+	# Connect to TruthLoopGenerator for context mismatch feedback
+	TruthLoopGenerator.context_mismatch_triggered.connect(_on_context_mismatch)
+	
 	# Hide initially
 	panel.hide()
 	set_process_input(false)
@@ -127,3 +130,12 @@ func _timeout_silence() -> void:
 	panel.hide()
 	
 	Blackboard.truth_loop_completed.emit(30)
+
+func _on_context_mismatch(npc_type: String, reason: String) -> void:
+	# Show feedback label with CONTEXT_MISMATCH warning
+	prompt_label.text += "\n\n[CONTEXT_MISMATCH] Response incongruent with unit operational parameters."
+	prompt_label.modulate = Color(0.9, 0.3, 0.3)
+	
+	# Keep panel visible briefly to show the feedback
+	await get_tree().create_timer(1.5).timeout
+	prompt_label.modulate = Color.WHITE

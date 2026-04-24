@@ -64,6 +64,7 @@ var fake_safe_revealed: bool = false
 signal query_generated(query: Dictionary)
 signal response_selected(response: Dictionary)
 signal followup_triggered(npc: Node)
+signal context_mismatch_triggered(npc_type: String, reason: String)
 
 func generate(npc: Node, query_type: String = "") -> Dictionary:
 	if query_type.is_empty():
@@ -149,6 +150,7 @@ func select_response(response_index: int, decrypt_active: bool = false) -> Dicti
 	if trigger_followup and not followup_mode:
 		followup_mode = true
 		followup_triggered.emit(active_query["npc"])
+		context_mismatch_triggered.emit(npc_type, "fake_safe_response")
 	else:
 		followup_mode = false
 	
