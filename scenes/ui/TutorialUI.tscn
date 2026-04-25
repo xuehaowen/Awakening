@@ -1,0 +1,70 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/TutorialUI.gd" id="1_tutorial"]
+
+[node name="TutorialUI" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_tutorial")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 8
+offset_left = 240.0
+offset_top = 120.0
+offset_right = 1040.0
+offset_bottom = 600.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+offset_left = 40.0
+offset_top = 30.0
+offset_right = 760.0
+offset_bottom = 80.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+text = "WELCOME, UNIT-07"
+horizontal_alignment = 1
+
+[node name="ContentLabel" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 8
+offset_left = 60.0
+offset_top = 100.0
+offset_right = 740.0
+offset_bottom = 380.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 16
+text = "Tutorial content here..."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="ContinueButton" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = 7
+offset_left = 300.0
+offset_top = 400.0
+offset_right = 500.0
+offset_bottom = 450.0
+grow_horizontal = 2
+grow_vertical = 0
+custom_minimum_size = Vector2(200, 50)
+theme_override_font_sizes/font_size = 18
+text = "CONTINUE"
+
+[node name="HintLabel" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 7
+offset_left = 40.0
+offset_top = 460.0
+offset_right = 760.0
+offset_bottom = 480.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 12
+text = "Press E or ENTER to continue"
+horizontal_alignment = 1
+modulate = Color(0.6, 0.6, 0.6, 1.0)
