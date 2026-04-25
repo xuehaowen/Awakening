@@ -85,7 +85,11 @@ func _process(delta: float) -> void:
 		smooth_indicator.text = "[SMOOTH_NAV]" if smooth else ""
 
 func _on_cpu_changed(value: float) -> void:
-	cpu_bar.value = value
+	_tween_bar_value(cpu_bar, value, 0.3)
+	
+	# Pulse bar when high CPU
+	if value > 80:
+		_pulse_warning(cpu_bar, Color.ORANGE)
 
 func _on_cpu_state_changed(state) -> void:
 	var player = get_tree().get_first_node_in_group("player")
@@ -101,23 +105,28 @@ func _on_cpu_state_changed(state) -> void:
 	cpu_status_label.modulate = state_color
 
 func _on_deviation_changed(value: float, source: String = "") -> void:
-	# Update the centered deviation bar
-	dev_bar.value = value
+	# Update the centered deviation bar with smooth animation
+	_tween_bar_value(dev_bar, value, 0.5)
 	
 	# Determine zone
 	var zone = Blackboard.get_deviation_zone()
 	dev_status_label.text = "[" + zone + "]"
 	
-	# Color based on zone
+	# Color based on zone with tween
+	var target_color: Color
 	if value < 20:
-		dev_bar.modulate = color_defective
-		dev_status_label.modulate = color_defective
+		target_color = color_defective
 	elif value <= 70:
-		dev_bar.modulate = color_safe
-		dev_status_label.modulate = color_safe
+		target_color = color_safe
 	else:
-		dev_bar.modulate = color_sentient
-		dev_status_label.modulate = color_sentient
+		target_color = color_sentient
+	
+	_tween_modulate(dev_bar, target_color, 0.3)
+	_tween_modulate(dev_status_label, target_color, 0.3)
+	
+	# Pulse when in danger zone
+	if value > 70 or value < 20:
+		_pulse_warning(dev_bar, target_color)
 	
 	# Show feedback for changes
 	if source != "natural_decay" and source != "":
@@ -273,6 +282,7 @@ func _on_escape_failed(reason: String) -> void:
 	feedback_label.modulate = color
 	feedback_label.show()
 	feedback_timer = 3.0
+	_punch_scale(feedback_label, 1.2, 0.4)
 
 func _on_interaction_feedback(message: String, type: String) -> void:
 	var color = Color.WHITE
@@ -290,6 +300,7 @@ func _on_interaction_feedback(message: String, type: String) -> void:
 	feedback_label.modulate = color
 	feedback_label.show()
 	feedback_timer = 3.0
+	_punch_scale(feedback_label, 1.15, 0.35)
 
 func toggle_memory_view() -> void:
 	if memory_overlay == null:
@@ -391,3 +402,29 @@ func _exit_tree() -> void:
 		EscapeSystem.escape_failed.disconnect(_on_escape_failed)
 	if Blackboard.interaction_feedback.is_connected(_on_interaction_feedback):
 		Blackboard.interaction_feedback.disconnect(_on_interaction_feedback)
+
+# ==================== ANIMATION HELPERS ====================
+
+func _tween_bar_value(bar: ProgressBar, target_value: float, duration: float = 0.3) -> void:
+	"""Smoothly animate a progress bar to target value"""
+	var tween = get_tree().create_tween()
+	tween.tween_property(bar, "value", target_value, duration).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+
+func _tween_modulate(node: Control, target_color: Color, duration: float = 0.3) -> void:
+	"""Smoothly animate node color"""
+	var tween = get_tree().create_tween()
+	tween.tween_property(node, "modulate", target_color, duration).set_ease(Tween.EASE_OUT)
+
+func _pulse_warning(node: Control, base_color: Color) -> void:
+	"""Create a brief pulse effect on the node"""
+	var tween = get_tree().create_tween()
+	var bright_color = base_color.lightened(0.3)
+	tween.tween_property(node, "modulate", bright_color, 0.15)
+	tween.tween_property(node, "modulate", base_color, 0.15)
+
+func _punch_scale(node: Control, punch_scale: float = 1.3, duration: float = 0.3) -> void:
+	"""Scale punch effect for emphasis"""
+	var base_scale = node.scale
+	var tween = get_tree().create_tween()
+	tween.tween_property(node, "scale", base_scale * punch_scale, duration * 0.3).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	tween.tween_property(node, "scale", base_scale, duration * 0.7).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_ELASTIC)
