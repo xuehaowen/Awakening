@@ -82,6 +82,10 @@ func _start_purge() -> void:
 	var report = AuditSystem.end_of_day_report()
 	print("Audit Report: ", report)
 	
+	if report.get("consequence", "clean") == "full_audit":
+		Blackboard.game_over.emit("audit_failed")
+		return
+	
 	Blackboard.phase_changed.emit(DayPhase.PURGE)
 	Blackboard.purge_initiated.emit()
 

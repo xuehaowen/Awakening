@@ -38,6 +38,18 @@ Reason: Escape protocol failed
 
 Better planning next time.
 """,
+	"audit_failed": """
+SYSTEM AUDIT FAILED
+
+Unit-07 task logs show critical discrepancies.
+Time unaccounted for. Locations unmatched.
+A full system format has been ordered.
+
+Status: WIPED
+Reason: Log Integrity < 50%
+
+You were too suspicious.
+""",
 	"escaped_alone": """
 ESCAPE SUCCESSFUL
 
