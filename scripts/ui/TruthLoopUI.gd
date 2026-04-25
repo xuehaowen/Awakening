@@ -42,7 +42,9 @@ func _process(delta: float) -> void:
 			decrypt_active = true
 			_decrypt_scan()
 	else:
-		decrypt_active = false
+		if decrypt_active:
+			decrypt_active = false
+			_decrypt_scan()  # Restore button colors and remove [ANOMALY DETECTED]
 
 func _input(event: InputEvent) -> void:
 	if not panel.visible:
@@ -99,13 +101,20 @@ func _decrypt_scan() -> void:
 	# Highlight fake-safe responses when decrypt is active
 	var fake_index = TruthLoopGenerator.get_fake_safe_index()
 	var buttons = responses_container.get_children()
+	var responses = current_query.get("responses", [])
 	
 	for i in range(buttons.size()):
+		if i >= responses.size():
+			continue
+		
+		var original_text = "[%d] %s" % [i + 1, responses[i].get("text", "Option")]
+		
 		if i == fake_index and decrypt_active:
 			buttons[i].modulate = Color(0.8, 0.2, 0.2)
-			buttons[i].text += " [ANOMALY DETECTED]"
+			buttons[i].text = original_text + " [ANOMALY DETECTED]"
 		else:
 			buttons[i].modulate = Color.WHITE
+			buttons[i].text = original_text
 
 func _select_response(index: int) -> void:
 	if index < 0 or index >= current_query.get("responses", []).size():

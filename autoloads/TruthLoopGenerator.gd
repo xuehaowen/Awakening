@@ -93,6 +93,15 @@ func generate(npc: Node, query_type: String = "") -> Dictionary:
 	elif "%.0f" in prompt_text:
 		var variance = randf_range(20, 80)
 		prompt_text = prompt_text % variance
+	elif "%d" in prompt_text:
+		# Handle %d-only prompts (e.g., "Sector %d for %d extra minutes")
+		var count = prompt_text.count("%d")
+		if count == 1:
+			prompt_text = prompt_text % ((randi() % 4) + 1)
+		elif count == 2:
+			var sector = (randi() % 4) + 1
+			var minutes = randi() % 15 + 5
+			prompt_text = prompt_text % [sector, minutes]
 	
 	active_query = {
 		"npc": npc,
