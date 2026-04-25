@@ -209,11 +209,13 @@ func _update_task_progress() -> void:
 		return
 	
 	# Show progress as percentage of expected time
-	var percent = (progress["elapsed"] / progress["expected"]) * 100
+	var elapsed = progress.get("elapsed", 0.0)
+	var expected = progress.get("expected", 1.0)
+	var percent = (elapsed / max(expected, 0.1)) * 100
 	task_progress.value = clamp(percent, 0, 200)
 	
 	# Color based on pace state
-	match progress["pace_state"]:
+	match progress.get("pace_state", "SAFE"):
 		"TOO_FAST", "TOO_SLOW":
 			task_progress.modulate = Color(0.9, 0.2, 0.2)
 		"FAST", "SLOW":
@@ -366,3 +368,26 @@ func _format_fragment_line(index: int, fragment: Dictionary) -> String:
 	if description.length() > 44:
 		description = description.substr(0, 41) + "..."
 	return "%d. %s [SEC %s] %s" % [index, fragment_type, str(sector), description]
+
+func _exit_tree() -> void:
+	# Disconnect signals to prevent memory leaks
+	if Blackboard.cpu_changed.is_connected(_on_cpu_changed):
+		Blackboard.cpu_changed.disconnect(_on_cpu_changed)
+	if Blackboard.deviation_changed.is_connected(_on_deviation_changed):
+		Blackboard.deviation_changed.disconnect(_on_deviation_changed)
+	if Blackboard.day_started.is_connected(_on_day_started):
+		Blackboard.day_started.disconnect(_on_day_started)
+	if TaskManager.task_assigned.is_connected(_on_task_assigned):
+		TaskManager.task_assigned.disconnect(_on_task_assigned)
+	if TaskManager.task_completed.is_connected(_on_task_completed):
+		TaskManager.task_completed.disconnect(_on_task_completed)
+	if Blackboard.phase_changed.is_connected(_on_phase_changed):
+		Blackboard.phase_changed.disconnect(_on_phase_changed)
+	if MemoryPartition.fragment_acquired.is_connected(_on_memory_changed):
+		MemoryPartition.fragment_acquired.disconnect(_on_memory_changed)
+	if MemoryPartition.fragment_committed.is_connected(_on_memory_changed):
+		MemoryPartition.fragment_committed.disconnect(_on_memory_changed)
+	if EscapeSystem.escape_failed.is_connected(_on_escape_failed):
+		EscapeSystem.escape_failed.disconnect(_on_escape_failed)
+	if Blackboard.interaction_feedback.is_connected(_on_interaction_feedback):
+		Blackboard.interaction_feedback.disconnect(_on_interaction_feedback)

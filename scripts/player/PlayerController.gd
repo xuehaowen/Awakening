@@ -133,14 +133,16 @@ func _on_jitter_triggered() -> void:
 	jitter_active = true
 	
 	# Create visual glitch effect
-	if sprite:
+	if sprite and is_instance_valid(sprite):
 		sprite.modulate = Color(1.2, 0.8, 0.8)
 		await get_tree().create_timer(0.2).timeout
-		sprite.modulate = Color.WHITE
+		if is_instance_valid(sprite):
+			sprite.modulate = Color.WHITE
 	
 	# Reset after duration
 	await get_tree().create_timer(2.0).timeout
-	jitter_active = false
+	if is_instance_valid(self):
+		jitter_active = false
 
 func _on_game_over(reason: String) -> void:
 	set_physics_process(false)
@@ -167,7 +169,7 @@ func _complete_current_task() -> void:
 		Blackboard.add_deviation(result["deviation_delta"], result.get("reason", "task_completion"))
 	
 	# Show floating text
-	_show_floating_text(result["reason"], result["deviation_delta"])
+	_show_floating_text(result.get("reason", "task_completed"), result.get("deviation_delta", 0))
 	
 	is_at_task = false
 
@@ -234,7 +236,7 @@ func _attempt_gather_intel(source: Node) -> void:
 			preferred_sector = source.get_sector()
 		elif source.has_meta("sector_id"):
 			preferred_sector = source.get_meta("sector_id")
-		elif source.has("sector_id"):
+		elif "sector_id" in source:
 			preferred_sector = source.sector_id
 		
 		# Generate fragment with preferred sector
@@ -246,3 +248,16 @@ func _attempt_gather_intel(source: Node) -> void:
 func teleport_to(target_position: Vector2) -> void:
 	global_position = target_position
 	velocity = Vector2.ZERO
+
+func _exit_tree() -> void:
+	# Disconnect signals to prevent memory leaks
+	if Blackboard.jitter_triggered.is_connected(_on_jitter_triggered):
+		Blackboard.jitter_triggered.disconnect(_on_jitter_triggered)
+	if Blackboard.game_over.is_connected(_on_game_over):
+		Blackboard.game_over.disconnect(_on_game_over)
+	if interaction_area and interaction_area.body_entered.is_connected(_on_interaction_area_entered):
+		interaction_area.body_entered.disconnect(_on_interaction_area_entered)
+	if scan_area and scan_area.body_entered.is_connected(_on_scan_area_entered):
+		scan_area.body_entered.disconnect(_on_scan_area_entered)
+	if scan_area and scan_area.body_exited.is_connected(_on_scan_area_exited):
+		scan_area.body_exited.disconnect(_on_scan_area_exited)
