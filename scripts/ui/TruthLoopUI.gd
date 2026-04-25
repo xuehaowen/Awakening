@@ -71,8 +71,12 @@ func _show_query(query: Dictionary) -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	set_process_input(true)
 	
-	# Set prompt
-	prompt_label.text = "> " + query.get("prompt_text", "QUERY?")
+	# Set prompt with typewriter effect
+	var prompt_text = "> " + query.get("prompt_text", "QUERY?")
+	if prompt_label.has_method("type_text"):
+		prompt_label.type_text(prompt_text)
+	else:
+		prompt_label.text = prompt_text
 	
 	# Clear and rebuild responses
 	for child in responses_container.get_children():
