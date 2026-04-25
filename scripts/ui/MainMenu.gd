@@ -59,7 +59,8 @@ func _on_start_pressed() -> void:
 
 func _load_game() -> void:
 	AudioManager.stop_ambient()
-	get_tree().change_scene_to_file("res://scenes/world/Facility.tscn")
+	# Use loading screen for transition
+	get_tree().change_scene_to_file("res://scenes/ui/LoadingScreen.tscn")
 
 func _on_quit_pressed() -> void:
 	AudioManager.play_ui_sound("quit")

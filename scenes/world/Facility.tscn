@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" path="res://scenes/effects/ScreenFlash.tscn" id="6_sf"]
 [ext_resource type="PackedScene" path="res://scenes/ui/PhaseAnnounce.tscn" id="7_pa"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ScreenTransition.tscn" id="8_st"]
+[ext_resource type="PackedScene" path="res://scenes/ui/PauseMenu.tscn" id="9_pm"]
+[ext_resource type="PackedScene" path="res://scenes/effects/CRT_Effect.tscn" id="10_ce"]
 
 [sub_resource type="NavigationPolygon" id="nav_poly"]
 vertices = PackedVector2Array(50, 50, 1230, 50, 1230, 670, 50, 670)
@@ -240,3 +242,7 @@ script = ExtResource("5_fb")
 [node name="PhaseAnnounce" parent="." instance=ExtResource("7_pa")]
 
 [node name="ScreenTransition" parent="." instance=ExtResource("8_st")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("9_pm")]
+
+[node name="CRT_Effect" parent="." instance=ExtResource("10_ce")]
