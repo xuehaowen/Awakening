@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/PlayerController.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/player/CPUManager.gd" id="2_cpu"]
 [ext_resource type="Script" path="res://scripts/player/DeviationTracker.gd" id="3_dev"]
+[ext_resource type="Script" path="res://scripts/player/CameraShake.gd" id="4_cam"]
 
 [sub_resource type="Shader" id="jitter_shader"]
 code = "
@@ -92,3 +93,8 @@ collision_mask = 24
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ScanArea"]
 shape = SubResource("scan_shape")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+script = ExtResource("4_cam")
