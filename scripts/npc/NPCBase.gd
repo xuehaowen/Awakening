@@ -169,7 +169,7 @@ func _assess_player_behavior(delta: float) -> void:
 		gain += 10.0 * delta
 	
 	# Check for smooth movement (too fluid for a robot)
-	if player_ref.velocity.length() > 90.0:
+	if player_ref.velocity.length() > 65.0:
 		gain += 3.0 * delta
 	
 	# Check for being off-task

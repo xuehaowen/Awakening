@@ -65,17 +65,7 @@ func get_task_progress() -> Dictionary:
 	var expected = max(task["expected_duration"], 0.1)  # Guard against division by zero
 	var ratio = elapsed / expected
 	
-	var pace_state: String
-	if ratio < 0.5:
-		pace_state = "TOO_FAST"
-	elif ratio < 0.7:
-		pace_state = "FAST"
-	elif ratio <= 1.4:
-		pace_state = "SAFE"
-	elif ratio <= 2.0:
-		pace_state = "SLOW"
-	else:
-		pace_state = "TOO_SLOW"
+	var pace_state = TaskScorer.calculate_pace_state(elapsed, expected)
 	
 	return {
 		"elapsed": elapsed,
@@ -96,25 +86,9 @@ func complete_current_task() -> Dictionary:
 	var expected = max(task["expected_duration"], 0.1)  # Guard against division by zero
 	var ratio = elapsed / expected
 	
-	var deviation_delta: float = 0.0
-	var reason: String = ""
-	
-	# Goldilocks scoring (from AgentHandoff)
-	if ratio < 0.5:
-		deviation_delta = 25.0
-		reason = "TOO_FAST"
-	elif ratio < 0.7:
-		deviation_delta = 10.0
-		reason = "FAST"
-	elif ratio <= 1.4:
-		deviation_delta = -5.0  # reward
-		reason = "SAFE_PACE"
-	elif ratio <= 2.0:
-		deviation_delta = 5.0
-		reason = "SLOW"
-	else:
-		deviation_delta = 20.0
-		reason = "TOO_SLOW"
+	var scoring = TaskScorer.evaluate_task_performance(expected, elapsed)
+	var deviation_delta = scoring.get("deviation_delta", 0.0)
+	var reason = scoring.get("reason", "UNKNOWN")
 	
 	task["actual_end_time"] = Time.get_ticks_msec() / 1000.0
 	task["actual_duration"] = elapsed

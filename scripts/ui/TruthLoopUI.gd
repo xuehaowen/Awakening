@@ -138,15 +138,15 @@ func _decrypt_scan() -> void:
 		if i >= responses.size():
 			continue
 		
-		var original_text = "[%d] %s" % [i + 1, responses[i].get("text", "Option")]
-		
+		var is_leverage = responses[i].get("requires_personal_data", false)
+		var text = responses[i].get("text", "Option")
+		var original_text = "[D] %s" % text if is_leverage else "[%d] %s" % [i + 1, text]
 		if i == fake_index and decrypt_active:
 			buttons[i].modulate = Color(0.8, 0.2, 0.2)
 			buttons[i].text = original_text + " [ANOMALY DETECTED]"
 		else:
-			buttons[i].modulate = Color.WHITE
+			buttons[i].modulate = Color(0.9, 0.7, 1.0) if is_leverage else Color.WHITE
 			buttons[i].text = original_text
-
 func _select_response(index: int) -> void:
 	if is_transitioning:
 		return
