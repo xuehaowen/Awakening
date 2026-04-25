@@ -119,10 +119,10 @@ func _show_query(query: Dictionary) -> void:
 			break
 	
 	if has_leverage:
-		decrypt_hint.text = "[Hold SHIFT to analyze] | [Press D to use personal data]"
+		decrypt_hint.text = "[Hold CTRL to analyze] | [Press D to use personal data]"
 		decrypt_hint.modulate = Color(0.8, 0.6, 1.0)  # Purple hint for leverage
 	else:
-		decrypt_hint.text = "[Hold SHIFT to analyze responses]"
+		decrypt_hint.text = "[Hold CTRL to analyze responses]"
 		decrypt_hint.modulate = Color(0.5, 0.5, 0.5)
 	
 	# Reset timer bar

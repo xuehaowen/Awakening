@@ -106,7 +106,6 @@ func _on_quit_pressed() -> void:
 	TruthLoopGenerator.clear_query()
 	TaskManager.reset()
 	SuspicionManager.reset()
-	CPUManager.reset()
 	
 	# Return to main menu
 	get_tree().change_scene_to_file("res://scenes/ui/MainMenu.tscn")

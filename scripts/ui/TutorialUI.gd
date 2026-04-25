@@ -1,4 +1,4 @@
-extends CanvasLayer
+﻿extends CanvasLayer
 
 @onready var panel: Panel = $Panel
 @onready var title_label: Label = $Panel/TitleLabel
@@ -22,34 +22,34 @@ Your goal: Survive 3 days and escape without being discovered."""
 		"title": "THE GOLDILOCKS ZONE",
 		"content": """Complete tasks in the SAFE ZONE:
 
-• TOO FAST → Flagged as anomalous (+25 deviation)
-• TOO SLOW → Flagged as defective (+20 deviation)  
-• JUST RIGHT → Invisible (-5 deviation reward)
+* TOO FAST -> Flagged as anomalous (+25 deviation)
+* TOO SLOW -> Flagged as defective (+20 deviation)  
+* JUST RIGHT -> Invisible (-5 deviation reward)
 
 Watch the TASK PROGRESS bar color:
-• GREEN = Safe zone
-• YELLOW = Warning
-• RED = DANGER"""
+* GREEN = Safe zone
+* YELLOW = Warning
+* RED = DANGER"""
 	},
 	{
 		"title": "DEVIATION & CPU",
 		"content": """DEVIATION (0-100): How suspicious you appear
-• 0-20: Too broken (SCRAPPED)
-• 20-70: SAFE ZONE - Stay here!
-• 70-100: Too sentient (DECOMMISSIONED)
+* 0-20: Too broken (SCRAPPED)
+* 20-70: SAFE ZONE - Stay here!
+* 70-100: Too sentient (DECOMMISSIONED)
 
 CPU CONTROLS:
-• SHIFT: Smooth movement (faster, uses CPU)
-• CTRL: Passive scan (detects intel, uses CPU)
+* SHIFT: Smooth movement (faster, uses CPU)
+* CTRL: Passive scan (detects intel, uses CPU)
 
 High CPU causes JITTER when near NPCs!"""
 	},
 	{
 		"title": "INTEL & ESCAPE",
 		"content": """Use PASSIVE SCAN near INTEL SOURCES (gray boxes) to collect:
-• Access Codes
-• Guard Schedules
-• Hardware Locations
+* Access Codes
+* Guard Schedules
+* Hardware Locations
 
 Collect all 3 for your escape sector (revealed Day 2).
 
@@ -59,10 +59,10 @@ Each night, choose which memories to keep. Hidden partition memories persist. Sh
 	{
 		"title": "READY?",
 		"content": """Controls:
-• WASD / Arrows - Move
-• E - Interact / Complete Task
-• Shift - Smooth Movement
-• Ctrl - Passive Scan
+* WASD / Arrows - Move
+* E - Interact / Complete Task
+* Shift - Smooth Movement
+* Ctrl - Passive Scan
 
 Remember: Perform a C-grade. Every single day.
 
