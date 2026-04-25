@@ -3,7 +3,7 @@ extends Node2D
 # FeedbackSystem - Centralized visual feedback (particles, flashes, floating text)
 # Spawn at player position or screen center for HUD feedback
 
-@onready var floating_text_scene = preload("res://scenes/ui/FloatingText.tscn")
+# FloatingText is created programmatically — no external scene required
 
 var active_particles: Array[GPUParticles2D] = []
 
@@ -274,12 +274,27 @@ func _create_glitch_texture() -> Texture2D:
 	return ImageTexture.create_from_image(image)
 
 func show_floating_text(text: String, position: Vector2, color: Color = Color.WHITE) -> void:
-	"""Show floating text at position"""
-	var floating = floating_text_scene.instantiate()
-	floating.text = text
-	floating.modulate = color
-	floating.position = position
-	add_child(floating)
+	"""Show floating text at position (programmatic, no external scene)"""
+	var label = Label.new()
+	label.text = text
+	label.modulate = color
+	label.position = position
+	label.z_index = 10
+	# Style
+	var settings = LabelSettings.new()
+	settings.font_size = 14
+	settings.outline_size = 2
+	settings.outline_color = Color(0, 0, 0, 0.8)
+	label.label_settings = settings
+	add_child(label)
+	# Animate: float up and fade out
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "position", position + Vector2(0, -40), 0.9)
+	tween.tween_property(label, "modulate:a", 0.0, 0.9)
+	await tween.finished
+	if is_instance_valid(label):
+		label.queue_free()
 
 func _on_task_completed(task: Dictionary, result: Dictionary) -> void:
 	var reason = result.get("reason", "")

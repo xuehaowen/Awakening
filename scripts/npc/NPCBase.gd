@@ -61,7 +61,7 @@ func _setup_patrol():
 		start_pos
 	]
 
-func _do_patrol() -> void:
+func _do_patrol(delta: float) -> void:
 	if patrol_points.is_empty():
 		return
 	
@@ -82,7 +82,7 @@ func _do_patrol() -> void:
 	if dir.length() > 0.1:
 		_update_facing(dir)
 
-func _do_idle() -> void:
+func _do_idle(delta: float) -> void:
 	velocity = Vector2.ZERO
 	
 	if player_in_range and player_ref:
