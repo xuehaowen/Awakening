@@ -74,6 +74,8 @@ func _generate_sound_library():
 	sound_cache["suspicion_rise"] = _generate_tone(300, 0.2, "saw", 0.3)
 	sound_cache["truth_loop_start"] = _generate_tone(550, 0.1, "sine", 0.3)
 	sound_cache["ambient_facility"] = _generate_drone(60, 0.15)
+	sound_cache["pause"] = _generate_tone(330, 0.15, "sine", 0.25)
+	sound_cache["resume"] = _generate_tone(440, 0.15, "sine", 0.25)
 
 # ==================== GENERATOR FUNCTIONS ====================
 
