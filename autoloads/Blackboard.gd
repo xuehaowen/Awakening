@@ -37,6 +37,7 @@ signal phase_changed(new_phase: int)
 signal day_started(day: int)
 signal game_over(reason: String)
 signal escape_triggered(ending: String)
+signal interaction_feedback(message: String, type: String)
 
 func _ready():
 	cpu_current = 20.0  # Start at baseline

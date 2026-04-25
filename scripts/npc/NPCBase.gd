@@ -37,18 +37,17 @@ func _ready():
 	_setup_patrol()
 
 func _physics_process(delta: float) -> void:
-	_update_alert_indicator()
 	match state:
 		NPCState.PATROL:
-			_do_patrol()
+			_do_patrol(delta)
 		NPCState.IDLE:
-			_do_idle()
+			_do_idle(delta)
 		NPCState.WATCHING:
 			_do_watching(delta)
 		NPCState.QUERY:
 			_do_query()
 		NPCState.REPORTING:
-			_do_reporting()
+			_do_reporting(delta)
 
 func _setup_patrol():
 	# Only generate a default path if one wasn't pre-assigned (e.g. from Facility.gd)
@@ -117,12 +116,16 @@ func _do_query() -> void:
 	velocity = Vector2.ZERO
 	# Query state is handled by TruthLoopGenerator
 
-func _do_reporting() -> void:
+func _do_reporting(delta: float) -> void:
 	# Move toward nearest supervisor (or a fixed reporting point)
 	var supervisors = get_tree().get_nodes_in_group("supervisor")
 	if supervisors.is_empty():
 		state = NPCState.PATROL # Nowhere to report
 		return
+	
+	# Visual indicator - red tint while reporting
+	if sprite:
+		sprite.modulate = Color(0.9, 0.3, 0.3)
 		
 	var nearest = supervisors[0]
 	var min_dist = global_position.distance_to(nearest.global_position)
@@ -139,6 +142,8 @@ func _do_reporting() -> void:
 		AuditSystem.add_flag(2, "npc_reported_behavior")
 		state = NPCState.PATROL
 		suspicion_score = 40.0 # Reset suspicion partially
+		if sprite:
+			sprite.modulate = Color.WHITE
 		return
 		
 	var next_path_pos = nav_agent.get_next_path_position()
@@ -147,16 +152,6 @@ func _do_reporting() -> void:
 	velocity = dir * move_speed
 	move_and_slide()
 	_update_facing(dir)
-
-func _update_alert_indicator():
-	# Simple visual feedback for NPC state
-	match state:
-		NPCState.WATCHING:
-			sprite.modulate = Color(1.2, 1.2, 0.8) # Slight yellow glow
-		NPCState.QUERY, NPCState.REPORTING:
-			sprite.modulate = Color(1.5, 0.8, 0.8) # Red alert
-		_:
-			sprite.modulate = Color.WHITE
 
 func _assess_player_behavior(delta: float) -> void:
 	if not player_ref:

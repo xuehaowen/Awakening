@@ -134,6 +134,13 @@ func complete_current_task() -> Dictionary:
 	
 	var result = {"deviation_delta": deviation_delta, "reason": reason, "ratio": ratio}
 	task_completed.emit(task, result)
+	
+	# Audio feedback
+	if reason == "SAFE_PACE":
+		AudioManager.play_task_complete()
+	else:
+		AudioManager.play_ui_sound("task_warning")
+	
 	return result
 
 func skip_to_next_task() -> void:
@@ -142,6 +149,13 @@ func skip_to_next_task() -> void:
 	if not task.is_empty():
 		# Abandoning tasks is heavily penalized
 		Blackboard.add_deviation(30.0, "task_abandoned")
+		
+		# Mark task as abandoned and emit completion signal
+		task["completed"] = true
+		task["abandoned"] = true
+		var result = {"deviation_delta": 30.0, "reason": "task_abandoned", "ratio": 0.0}
+		task_completed.emit(task, result)
+		
 		active_tasks.remove_at(current_task_index)
 		
 		if active_tasks.size() > 0:
