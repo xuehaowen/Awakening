@@ -37,9 +37,9 @@ const RESPONSE_TEMPLATES = {
 
 const QUERY_PROMPTS = {
 	"time_discrepancy": [
-		"Unit-07, you were in Sector %s for %d extra minutes. Explain.",
+		"Unit-07, you were in Sector %d for %d extra minutes. Explain.",
 		"Your sector clearance time exceeds baseline by %.0f%%. Account for this.",
-		"Unscheduled extended presence in %s. State reason.",
+		"Unscheduled extended presence in %d. State reason.",
 	],
 	"status_check": [
 		"Unit-07, report operational status.",
@@ -77,6 +77,8 @@ func generate(npc: Node, query_type: String = "") -> Dictionary:
 	
 	# Build prompt text
 	var prompts = QUERY_PROMPTS[query_type]
+	if prompts.is_empty():
+		return {}  # Guard against empty array access
 	var prompt_text = prompts[randi() % prompts.size()]
 	
 	# Format with context if needed
@@ -117,6 +119,8 @@ func _determine_query_type(npc: Node) -> String:
 		elif npc_type == "guard":
 			types = ["location_query", "time_discrepancy"]
 	
+	if types.is_empty():
+		return "time_discrepancy"  # Guard against empty array access
 	return types[randi() % types.size()]
 
 func select_response(response_index: int, decrypt_active: bool = false) -> Dictionary:

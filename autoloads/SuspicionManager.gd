@@ -198,3 +198,17 @@ func report_observation(npc_id: String, observation_type: String, severity: floa
 			add_suspicion(severity * GAIN_OFF_TASK, npc_id + "_offtask")
 		"wrong_sector":
 			add_suspicion(severity * GAIN_WRONG_SECTOR, npc_id + "_sector")
+
+func reset() -> void:
+	# Reset all suspicion state for new game
+	global_suspicion = 0.0
+	npc_suspicion_scores.clear()
+	observing_npcs.clear()
+	is_player_visible = false
+	last_known_state = {
+		"cpu_high": false,
+		"moving_fast": false,
+		"on_task": true,
+		"moving": false,
+		"wrong_sector": false
+	}

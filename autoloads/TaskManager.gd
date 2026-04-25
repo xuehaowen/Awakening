@@ -58,7 +58,7 @@ func get_task_progress() -> Dictionary:
 		return {}
 	
 	var elapsed = (Time.get_ticks_msec() / 1000.0) - task["actual_start_time"]
-	var expected = task["expected_duration"]
+	var expected = max(task["expected_duration"], 0.1)  # Guard against division by zero
 	var ratio = elapsed / expected
 	
 	var pace_state: String
@@ -89,7 +89,7 @@ func complete_current_task() -> Dictionary:
 		return {"deviation_delta": 0, "reason": "no_task"}
 	
 	var elapsed = (Time.get_ticks_msec() / 1000.0) - task["actual_start_time"]
-	var expected = task["expected_duration"]
+	var expected = max(task["expected_duration"], 0.1)  # Guard against division by zero
 	var ratio = elapsed / expected
 	
 	var deviation_delta: float = 0.0
@@ -164,3 +164,9 @@ func skip_to_next_task() -> void:
 			task_assigned.emit(active_tasks[0])
 		else:
 			current_task_index = -1
+
+func reset() -> void:
+	# Clear all task state for new game
+	active_tasks.clear()
+	completed_tasks.clear()
+	current_task_index = -1
