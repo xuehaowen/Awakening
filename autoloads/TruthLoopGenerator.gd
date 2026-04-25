@@ -85,6 +85,7 @@ func generate(npc: Node, query_type: String = "") -> Dictionary:
 			"text": "[Use personal data] I noticed you're having trouble with %s..." % personal_data[0].get("secret", "something"),
 			"category": "LEVERAGE",
 			"deviation_delta": -20.0,
+			"risk": 0,
 			"fake_safe": false,
 			"requires_personal_data": true
 		}
@@ -167,6 +168,10 @@ func select_response(response_index: int, decrypt_active: bool = false) -> Dicti
 	# Apply deviation
 	if risk > 0:
 		Blackboard.add_deviation(risk, "truth_loop_response")
+	
+	var dev_delta = response.get("deviation_delta", 0)
+	if dev_delta != 0:
+		Blackboard.add_deviation(dev_delta, "truth_loop_leverage")
 	
 	# Check for follow-up triggers
 	var trigger_followup = false

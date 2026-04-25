@@ -90,7 +90,7 @@ func is_stale(fragment: Dictionary) -> bool:
 	# Guard schedules become stale after 2 days per original design
 	if fragment.get("type", "") != "guard_schedule":
 		return false
-	return (Blackboard.current_day - fragment.get("day_acquired", 1)) > 2
+	return (Blackboard.current_day - fragment.get("day_acquired", 1)) >= 2
 
 func get_chain_progress(target_sector: int) -> Dictionary:
 	var has_code = false
