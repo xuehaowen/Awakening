@@ -130,7 +130,7 @@ func upgrade_capacity() -> void:
 	capacity_upgraded.emit(capacity)
 
 func generate_random_fragment(preferred_type: String = "", preferred_sector: int = -1) -> Dictionary:
-	var types = ["guard_schedule", "access_code", "hardware_location"]
+	var types = ["guard_schedule", "access_code", "hardware_location", "personal_data"]
 	if types.is_empty():
 		return {}  # Guard against empty array
 	var type = preferred_type if preferred_type in types else types[randi() % types.size()]
