@@ -22,7 +22,7 @@ func _ready():
 	
 	# Hide initially
 	panel.hide()
-	set_process_input(false)
+	set_process_input(true)
 
 func _process(delta: float) -> void:
 	if not panel.visible:
@@ -69,6 +69,7 @@ func _show_query(query: Dictionary) -> void:
 	# Pause the game (but keep UI processing)
 	get_tree().paused = true
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	set_process_input(true)
 	
 	# Set prompt
 	prompt_label.text = "> " + query.get("prompt_text", "QUERY?")

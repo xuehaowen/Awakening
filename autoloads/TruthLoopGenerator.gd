@@ -146,6 +146,7 @@ func select_response(response_index: int, decrypt_active: bool = false) -> Dicti
 	
 	var risk = response.get("risk", 0)
 	var is_fake_safe = response.get("fake_safe", false)
+	var followup_risk = response.get("followup_risk", 0)
 	var npc_type = active_query.get("npc_type", "unknown")
 	
 	# Apply deviation
@@ -158,6 +159,8 @@ func select_response(response_index: int, decrypt_active: bool = false) -> Dicti
 	if is_fake_safe and not decrypt_active:
 		# Fake-safe responses trigger follow-up from Supervisors
 		if npc_type == "supervisor":
+			if followup_risk > 0:
+				Blackboard.add_deviation(followup_risk, "truth_loop_followup")
 			trigger_followup = true
 		else:
 			# Guards might not catch it, but add some suspicion
