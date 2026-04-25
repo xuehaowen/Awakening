@@ -47,6 +47,10 @@ func generate_day_tasks(day: int) -> void:
 	
 	print("Generated ", count, " tasks for Day ", day)
 
+func get_current_tasks() -> Array:
+	"""Return all active tasks for the current day"""
+	return active_tasks
+
 func get_current_task() -> Dictionary:
 	if current_task_index >= 0 and current_task_index < active_tasks.size():
 		return active_tasks[current_task_index]

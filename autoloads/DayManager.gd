@@ -15,6 +15,7 @@ const PURGE_DURATION: float = 60.0
 
 @onready var phase_timer: Timer = Timer.new()
 var _upgrade_timer: SceneTreeTimer = null
+var _calibration_ui: CanvasLayer = null
 
 func _ready():
 	# Seed random number generator for unique gameplay each session
@@ -46,7 +47,7 @@ func _process(delta: float) -> void:
 func advance_phase() -> void:
 	match current_phase:
 		DayPhase.CALIBRATION:
-			_start_shift()
+			_show_morning_calibration()
 		DayPhase.SHIFT:
 			_start_purge()
 		DayPhase.PURGE:
@@ -62,12 +63,6 @@ func _start_shift() -> void:
 	shift_timer = Blackboard.get_shift_duration()
 	Blackboard.time_remaining = shift_timer
 	Blackboard.current_phase = 1
-	
-	# Start the day (emits day_started signal)
-	Blackboard.start_day(Blackboard.current_day)
-	
-	# Generate tasks for the day
-	TaskManager.generate_day_tasks(Blackboard.current_day)
 	
 	Blackboard.phase_changed.emit(DayPhase.SHIFT)
 	print("Day ", Blackboard.current_day, " - SHIFT started. Duration: ", shift_timer)
@@ -136,6 +131,35 @@ func _on_phase_changed(new_phase: int) -> void:
 
 func _on_phase_timer_timeout() -> void:
 	advance_phase()
+
+func _show_morning_calibration() -> void:
+	"""Show morning calibration UI before starting shift"""
+	# Generate tasks first (needed for calibration display)
+	TaskManager.generate_day_tasks(Blackboard.current_day)
+	
+	# Start the day (emits day_started signal)
+	Blackboard.start_day(Blackboard.current_day)
+	
+	# Load and show calibration UI if not already loaded
+	if _calibration_ui == null:
+		var calibration_scene = load("res://scenes/ui/MorningCalibrationUI.tscn")
+		if calibration_scene:
+			_calibration_ui = calibration_scene.instantiate()
+			get_tree().root.add_child(_calibration_ui)
+			_calibration_ui.calibration_complete.connect(_on_calibration_complete)
+	
+	if _calibration_ui:
+		# Get sector from first task or use default
+		var tasks = TaskManager.get_current_tasks()
+		var sector = "ALL"
+		if tasks.size() > 0:
+			sector = "SECTOR_" + str(tasks[0].get("sector", "??"))
+		
+		_calibration_ui.show_calibration(Blackboard.current_day, sector, tasks)
+
+func _on_calibration_complete() -> void:
+	"""Called when user clicks Continue in calibration UI"""
+	_start_shift()
 
 func get_phase_name() -> String:
 	return DayPhase.keys()[current_phase]
