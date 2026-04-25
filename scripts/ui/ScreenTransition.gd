@@ -13,6 +13,7 @@ func _ready():
 	# Ensure we start fully transparent
 	fade_rect.modulate.a = 0.0
 	layer = 100  # Always on top
+	add_to_group("screen_transition")
 
 func fade_in(duration: float = 0.5) -> void:
 	"""Fade from black to transparent (scene becomes visible)"""
