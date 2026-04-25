@@ -42,6 +42,7 @@ func _ready():
 	
 	# Setup areas
 	interaction_area.body_entered.connect(_on_interaction_area_entered)
+	interaction_area.body_exited.connect(_on_interaction_area_exited)
 	scan_area.body_entered.connect(_on_scan_area_entered)
 	scan_area.body_exited.connect(_on_scan_area_exited)
 
@@ -269,6 +270,8 @@ func _exit_tree() -> void:
 		Blackboard.game_over.disconnect(_on_game_over)
 	if interaction_area and interaction_area.body_entered.is_connected(_on_interaction_area_entered):
 		interaction_area.body_entered.disconnect(_on_interaction_area_entered)
+	if interaction_area and interaction_area.body_exited.is_connected(_on_interaction_area_exited):
+		interaction_area.body_exited.disconnect(_on_interaction_area_exited)
 	if scan_area and scan_area.body_entered.is_connected(_on_scan_area_entered):
 		scan_area.body_entered.disconnect(_on_scan_area_entered)
 	if scan_area and scan_area.body_exited.is_connected(_on_scan_area_exited):
