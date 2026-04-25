@@ -25,6 +25,12 @@ const FRAGMENT_TEMPLATES = {
 		{"sector": 2, "item": "Waste Chute", "description": "Sector 2 disposal unit - large enough for a body."},
 		{"sector": 3, "item": "Server Rack", "description": "Sector 3 storage - houses dormant unit."},
 		{"sector": 4, "item": "Emergency Exit", "description": "Sector 4 east - leads to surface."},
+	],
+	"personal_data": [
+		{"npc_type": "supervisor", "secret": "worried_about_promotion", "description": "Supervisor's quarterly review is next week. They're anxious."},
+		{"npc_type": "guard", "secret": "takes_naps", "description": "Guard caught sleeping on duty once. Manager doesn't know."},
+		{"npc_type": "supervisor", "secret": "gambling_debt", "description": "Supervisor owes money to someone outside the facility."},
+		{"npc_type": "guard", "secret": "dislikes_job", "description": "Guard complains about the job in private messages."},
 	]
 }
 
@@ -70,6 +76,15 @@ func purge_short_term() -> void:
 
 func get_fragments_by_type(type: String) -> Array:
 	return hidden.filter(func(f): return f.get("type", "") == type)
+
+func consume_fragment_by_type(type: String) -> bool:
+	"""Consume (remove) one fragment of the given type from hidden partition.
+	Returns true if a fragment was consumed, false otherwise."""
+	for i in range(hidden.size()):
+		if hidden[i].get("type", "") == type:
+			hidden.remove_at(i)
+			return true
+	return false
 
 func is_stale(fragment: Dictionary) -> bool:
 	# Guard schedules become stale after 2 days per original design

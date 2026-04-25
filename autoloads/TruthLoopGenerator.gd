@@ -72,8 +72,23 @@ func generate(npc: Node, query_type: String = "") -> Dictionary:
 	
 	var responses = RESPONSE_TEMPLATES[query_type].duplicate(true)
 	
+	# Check if player has personal_data fragments for leverage option
+	var personal_data = MemoryPartition.get_fragments_by_type("personal_data")
+	var has_leverage = personal_data.size() > 0
+	
 	# Shuffle to prevent memorization
 	responses.shuffle()
+	
+	# Add personal data leverage option if available
+	if has_leverage and personal_data[0].get("npc_type") == npc.get_npc_type():
+		var leverage_response = {
+			"text": "[Use personal data] I noticed you're having trouble with %s..." % personal_data[0].get("secret", "something"),
+			"category": "LEVERAGE",
+			"deviation_delta": -20.0,
+			"fake_safe": false,
+			"requires_personal_data": true
+		}
+		responses.append(leverage_response)
 	
 	# Build prompt text
 	var prompts = QUERY_PROMPTS[query_type]

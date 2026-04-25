@@ -51,11 +51,20 @@ func _input(event: InputEvent) -> void:
 		return
 	
 	# Number keys for response selection
-	for i in range(4):
+	var responses = current_query.get("responses", [])
+	for i in range(min(responses.size(), 4)):
 		if event.is_action_pressed("ui_" + str(i + 1)) or \
 		   (event is InputEventKey and event.pressed and event.keycode == KEY_1 + i):
 			_select_response(i)
 			return
+	
+	# D key for personal data leverage option (if available)
+	if event is InputEventKey and event.pressed and event.keycode == KEY_D:
+		# Find the leverage response if it exists
+		for i in range(responses.size()):
+			if responses[i].get("requires_personal_data", false):
+				_select_response(i)
+				return
 
 func _show_query(query: Dictionary) -> void:
 	current_query = query
@@ -86,7 +95,14 @@ func _show_query(query: Dictionary) -> void:
 	for i in range(responses.size()):
 		var btn = Button.new()
 		var text = responses[i].get("text", "Option " + str(i + 1))
-		btn.text = "[%d] %s" % [i + 1, text]
+		
+		# Use [D] for personal data leverage option, [1-4] for normal options
+		if responses[i].get("requires_personal_data", false):
+			btn.text = "[D] %s" % text
+			btn.modulate = Color(0.9, 0.7, 1.0)  # Purple tint for leverage option
+		else:
+			btn.text = "[%d] %s" % [i + 1, text]
+		
 		btn.pressed.connect(_select_response.bind(i))
 		
 		# Style as terminal button
@@ -95,9 +111,19 @@ func _show_query(query: Dictionary) -> void:
 		
 		responses_container.add_child(btn)
 	
-	# Show decrypt hint
-	decrypt_hint.text = "[Hold SHIFT to analyze responses]"
-	decrypt_hint.modulate = Color(0.5, 0.5, 0.5)
+	# Show decrypt hint and personal data hint if available
+	var has_leverage = false
+	for resp in responses:
+		if resp.get("requires_personal_data", false):
+			has_leverage = true
+			break
+	
+	if has_leverage:
+		decrypt_hint.text = "[Hold SHIFT to analyze] | [Press D to use personal data]"
+		decrypt_hint.modulate = Color(0.8, 0.6, 1.0)  # Purple hint for leverage
+	else:
+		decrypt_hint.text = "[Hold SHIFT to analyze responses]"
+		decrypt_hint.modulate = Color(0.5, 0.5, 0.5)
 	
 	# Reset timer bar
 	timer_bar.value = 100
@@ -122,14 +148,26 @@ func _decrypt_scan() -> void:
 			buttons[i].text = original_text
 
 func _select_response(index: int) -> void:
-	if index < 0 or index >= current_query.get("responses", []).size():
-		return
 	if is_transitioning:
-		return  # Prevent double-clicks during transition
+		return
+	
+	var responses = current_query.get("responses", [])
+	if index < 0 or index >= responses.size():
+		return
+	
+	# Check if this is a personal data leverage response
+	var response = responses[index]
+	if response.get("requires_personal_data", false):
+		# Consume one personal_data fragment
+		if not MemoryPartition.consume_fragment_by_type("personal_data"):
+			# No fragment available - shouldn't happen but handle gracefully
+			prompt_label.text += "\n\n[ERROR] Personal data fragment not found."
+			return
+		AudioManager.play_ui_sound("intel_acquired")  # Re-use intel sound for leverage
 	
 	is_transitioning = true
 	selected_index = index
-	var response = TruthLoopGenerator.select_response(index, decrypt_active)
+	response = TruthLoopGenerator.select_response(index, decrypt_active)
 	
 	# If a follow-up is being triggered, don't complete yet — wait for followup_triggered
 	# The followup_triggered signal handler will show the next query or close
