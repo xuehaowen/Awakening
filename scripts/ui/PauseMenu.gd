@@ -8,6 +8,7 @@ extends CanvasLayer
 @onready var quit_button: Button = $Panel/VBoxContainer/QuitButton
 
 var is_paused: bool = false
+var settings_menu: CanvasLayer = null
 
 func _ready():
 	# Initially hidden
@@ -18,6 +19,21 @@ func _ready():
 	resume_button.pressed.connect(_on_resume_pressed)
 	settings_button.pressed.connect(_on_settings_pressed)
 	quit_button.pressed.connect(_on_quit_pressed)
+	
+	# Load settings menu
+	var settings_scene = load("res://scenes/ui/SettingsMenu.tscn")
+	if settings_scene:
+		settings_menu = settings_scene.instantiate()
+		settings_menu.settings_closed.connect(_on_settings_closed)
+		add_child(settings_menu)
+
+func _on_settings_closed() -> void:
+	# Show pause panel again when settings closes
+	if is_paused:
+		panel.show()
+		panel.modulate.a = 0.0
+		var tween = get_tree().create_tween()
+		tween.tween_property(panel, "modulate:a", 1.0, 0.2)
 
 func _input(event: InputEvent) -> void:
 	# Toggle pause on Escape key
@@ -65,9 +81,10 @@ func _on_resume_pressed() -> void:
 	resume()
 
 func _on_settings_pressed() -> void:
-	# TODO: Open settings menu overlay
 	AudioManager.play_ui_sound("click")
-	print("Settings not yet implemented")  # Placeholder
+	if settings_menu:
+		settings_menu.show_settings()
+		panel.hide()  # Hide pause panel while settings is open
 
 func _on_quit_pressed() -> void:
 	AudioManager.play_ui_sound("quit")
