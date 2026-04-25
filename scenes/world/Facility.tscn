@@ -1,9 +1,13 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/world/Facility.gd" id="1_facility"]
 [ext_resource type="Script" path="res://scripts/world/EscapeTerminalSimple.gd" id="1_escape_terminal"]
 [ext_resource type="Script" path="res://scripts/world/TaskArea.gd" id="3_task_area"]
 [ext_resource type="Script" path="res://scripts/world/IntelSource.gd" id="4_intel_source"]
+[ext_resource type="Script" path="res://scripts/effects/FeedbackSystem.gd" id="5_fb"]
+[ext_resource type="PackedScene" path="res://scenes/effects/ScreenFlash.tscn" id="6_sf"]
+[ext_resource type="PackedScene" path="res://scenes/ui/PhaseAnnounce.tscn" id="7_pa"]
+[ext_resource type="PackedScene" path="res://scenes/ui/ScreenTransition.tscn" id="8_st"]
 
 [sub_resource type="NavigationPolygon" id="nav_poly"]
 vertices = PackedVector2Array(50, 50, 1230, 50, 1230, 670, 50, 670)
@@ -227,3 +231,12 @@ offset_right = 680.0
 offset_bottom = 490.0
 text = "SECTOR 4"
 horizontal_alignment = 1
+
+[node name="FeedbackSystem" type="Node2D" parent="."]
+script = ExtResource("5_fb")
+
+[node name="ScreenFlash" parent="." instance=ExtResource("6_sf")]
+
+[node name="PhaseAnnounce" parent="." instance=ExtResource("7_pa")]
+
+[node name="ScreenTransition" parent="." instance=ExtResource("8_st")]
