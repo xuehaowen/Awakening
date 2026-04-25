@@ -51,6 +51,7 @@ func _physics_process(delta: float) -> void:
 	_update_jitter(delta)
 	_update_animation()
 	_update_scan_tick(delta)
+	_report_state_to_suspicion_manager()
 
 func _handle_input() -> void:
 	if not DayManager.is_playing():
@@ -110,6 +111,17 @@ func _update_movement(delta: float) -> void:
 		current_speed = lerp(current_speed, 0.0, delta * 10.0)
 	
 	move_and_slide()
+
+func _report_state_to_suspicion_manager() -> void:
+	var state = {
+		"cpu_high": jitter_active,
+		"moving_fast": cpu_manager.overrides_active.get("smooth_movement", false),
+		"on_task": is_at_task or is_moving,
+		"moving": is_moving,
+		"wrong_sector": false # Sector tracking to be implemented by zone triggers if needed
+	}
+	if SuspicionManager.has_method("update_player_state"):
+		SuspicionManager.update_player_state(state)
 
 func _update_jitter(delta: float) -> void:
 	if jitter_active:

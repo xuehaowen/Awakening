@@ -54,8 +54,8 @@ func add_deviation(amount: float, source: String = "") -> void:
 		game_over.emit("decommission")
 
 func get_daily_floor() -> float:
-	# Day 1 floor = 15, then day * 5
-	return max(float(current_day) * 5.0, 15.0)
+	# Day 1 floor = 15, Day 2 = 20, Day 3 = 25
+	return 10.0 + float(current_day) * 5.0
 
 func is_deviation_safe() -> bool:
 	return deviation >= 20.0 and deviation <= 70.0
