@@ -60,7 +60,10 @@ func _update_display() -> void:
 			var frag = MemoryPartition.short_term[i]
 			var type = frag.get("type", "?")
 			var sector = frag.get("sector", "?")
-			btn.text = "[%d] %s\nSEC %s" % [i + 1, type.substr(0, 8).to_upper(), str(sector)]
+			var exp_text = ""
+			if type == "guard_schedule":
+				exp_text = " | EXP: DAY %d" % (frag.get("day_acquired", 1) + 2)
+			btn.text = "[%d] %s\nSEC %s%s" % [i + 1, type.substr(0, 8).to_upper(), str(sector), exp_text]
 			btn.modulate = Color(0.8, 0.8, 1.0)
 			btn.pressed.connect(_select_short_term.bind(i))
 		else:
@@ -79,7 +82,10 @@ func _update_display() -> void:
 			var frag = MemoryPartition.hidden[i]
 			var type = frag.get("type", "?")
 			var sector = frag.get("sector", "?")
-			btn.text = "[%d] %s\nSEC %s" % [i + 1, type.substr(0, 8).to_upper(), str(sector)]
+			var exp_text = ""
+			if type == "guard_schedule":
+				exp_text = " | EXP: DAY %d" % (frag.get("day_acquired", 1) + 2)
+			btn.text = "[%d] %s\nSEC %s%s" % [i + 1, type.substr(0, 8).to_upper(), str(sector), exp_text]
 			btn.modulate = Color(0.8, 1.0, 0.8)
 			btn.pressed.connect(_select_hidden.bind(i))
 		else:

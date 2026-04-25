@@ -102,6 +102,22 @@ offset_bottom = 122.0
 max_value = 100.0
 value = 45.0
 
+[node name="SafeZoneMarkerLeft" type="ColorRect" parent="TerminalPanel/DevBar"]
+layout_mode = 0
+offset_left = 38.0
+offset_top = -2.0
+offset_right = 42.0
+offset_bottom = 22.0
+color = Color(0.2, 0.8, 0.3, 1)
+
+[node name="SafeZoneMarkerRight" type="ColorRect" parent="TerminalPanel/DevBar"]
+layout_mode = 0
+offset_left = 138.0
+offset_top = -2.0
+offset_right = 142.0
+offset_bottom = 22.0
+color = Color(0.2, 0.8, 0.3, 1)
+
 [node name="DevLabel" type="Label" parent="TerminalPanel"]
 layout_mode = 0
 offset_left = 16.0
