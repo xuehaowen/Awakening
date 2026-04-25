@@ -84,7 +84,8 @@ func trigger(reason: String) -> void:
 		message = message % days
 	
 	game_over_triggered.emit(reason, message)
-	Blackboard.game_over.emit(reason)
+	# NOTE: Don't emit Blackboard.game_over here - it causes recursive loop
+	# The signal should only be emitted from Blackboard.add_deviation() or AuditSystem
 	
 	print("GAME OVER: ", reason)
 	print(message)

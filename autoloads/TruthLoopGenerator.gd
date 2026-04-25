@@ -80,7 +80,12 @@ func generate(npc: Node, query_type: String = "") -> Dictionary:
 	var prompt_text = prompts[randi() % prompts.size()]
 	
 	# Format with context if needed
-	if "%s" in prompt_text:
+	# Handle both %s (sector) and %d (minutes) in the same prompt
+	if "%s" in prompt_text and "%d" in prompt_text:
+		var sector = (randi() % 4) + 1
+		var minutes = randi() % 15 + 5  # 5-20 extra minutes
+		prompt_text = prompt_text % [sector, minutes]
+	elif "%s" in prompt_text:
 		var sector = (randi() % 4) + 1
 		prompt_text = prompt_text % sector
 	elif "%.0f" in prompt_text:
@@ -89,7 +94,7 @@ func generate(npc: Node, query_type: String = "") -> Dictionary:
 	
 	active_query = {
 		"npc": npc,
-		"npc_type": npc.get("npc_type") if npc.has_method("get_npc_type") else "unknown",
+		"npc_type": npc.get_npc_type() if npc.has_method("get_npc_type") else "unknown",
 		"query_type": query_type,
 		"prompt_text": prompt_text,
 		"responses": responses,
