@@ -36,4 +36,8 @@ func _restart_game() -> void:
 	AuditSystem.reset()
 	DayManager.reset()
 	TruthLoopGenerator.clear_query()
+	TaskManager.reset()
+	SuspicionManager.reset()
+	# Reset CPUManager state (player node will be recreated, but reset for safety)
+	CPUManager.reset()
 	get_tree().reload_current_scene()

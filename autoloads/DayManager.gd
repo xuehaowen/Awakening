@@ -14,8 +14,12 @@ var purge_timer: float = 0.0
 const PURGE_DURATION: float = 60.0
 
 @onready var phase_timer: Timer = Timer.new()
+var _upgrade_timer: SceneTreeTimer = null
 
 func _ready():
+	# Seed random number generator for unique gameplay each session
+	randomize()
+	
 	add_child(phase_timer)
 	phase_timer.one_shot = true
 	phase_timer.timeout.connect(_on_phase_timer_timeout)
@@ -109,7 +113,8 @@ func _start_upgrade() -> void:
 	Blackboard.phase_changed.emit(DayPhase.UPGRADE)
 	
 	# Auto-advance to next day after a short delay
-	get_tree().create_timer(3.0).timeout.connect(_start_next_day)
+	_upgrade_timer = get_tree().create_timer(3.0)
+	_upgrade_timer.timeout.connect(_start_next_day)
 
 func _start_next_day() -> void:
 	if Blackboard.current_day >= Blackboard.FINAL_DAY:
@@ -142,5 +147,17 @@ func reset() -> void:
 	current_phase = DayPhase.CALIBRATION
 	shift_timer = 0.0
 	purge_timer = 0.0
+	
+	# Cancel any pending upgrade timer
+	if _upgrade_timer != null:
+		_upgrade_timer = null
+	
+	# Recreate phase_timer instead of leaving it null
 	if is_instance_valid(phase_timer):
 		phase_timer.stop()
+		phase_timer.queue_free()
+	phase_timer = Timer.new()
+	add_child(phase_timer)
+	phase_timer.one_shot = true
+	if not phase_timer.timeout.is_connected(_on_phase_timer_timeout):
+		phase_timer.timeout.connect(_on_phase_timer_timeout)
