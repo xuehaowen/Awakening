@@ -123,7 +123,8 @@ func _start_next_day() -> void:
 		Blackboard.current_day += 1
 		current_phase = DayPhase.CALIBRATION
 		Blackboard.current_phase = 0
-		_start_shift()
+		# Route through calibration UI, which handles task generation and day_started
+		_show_morning_calibration()
 
 func _start_escape() -> void:
 	current_phase = DayPhase.ESCAPE

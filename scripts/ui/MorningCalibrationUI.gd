@@ -76,7 +76,7 @@ func _show_tasks_sequentially(tasks: Array) -> void:
 		task_list.add_child(task_label)
 		
 		# Type out task text
-		var task_text = "[%d] %s - SECTOR %s" % [i + 1, task.get("name", "TASK"), task.get("sector", "???")]
+		var task_text = "[%d] %s - SECTOR %s" % [i + 1, task.get("label", "TASK"), task.get("sector", "???")]
 		await _type_text(task_label, task_text, 0.02)
 		
 		AudioManager.play_ui_sound("keystroke")
