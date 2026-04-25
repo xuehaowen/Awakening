@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/world/Facility.gd" id="1_facility"]
 [ext_resource type="Script" path="res://scripts/world/EscapeTerminalSimple.gd" id="1_escape_terminal"]
 [ext_resource type="Script" path="res://scripts/world/TaskArea.gd" id="3_task_area"]
+[ext_resource type="Script" path="res://scripts/world/IntelSource.gd" id="4_intel_source"]
 
 [sub_resource type="NavigationPolygon" id="nav_poly"]
 vertices = PackedVector2Array(50, 50, 1230, 50, 1230, 670, 50, 670)
@@ -127,6 +128,8 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="IntelSource_Sector1" type="StaticBody2D" parent="Decorations" groups=["intel_source"]]
 position = Vector2(150, 150)
+script = ExtResource("4_intel_source")
+sector_id = 1
 
 [node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector1"]
 offset_left = -10.0
@@ -140,6 +143,8 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="IntelSource_Sector2" type="StaticBody2D" parent="Decorations" groups=["intel_source"]]
 position = Vector2(550, 150)
+script = ExtResource("4_intel_source")
+sector_id = 2
 
 [node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector2"]
 offset_left = -10.0
@@ -153,6 +158,8 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="IntelSource_Sector3" type="StaticBody2D" parent="Decorations" groups=["intel_source"]]
 position = Vector2(150, 450)
+script = ExtResource("4_intel_source")
+sector_id = 3
 
 [node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector3"]
 offset_left = -10.0
@@ -166,6 +173,8 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="IntelSource_Sector4" type="StaticBody2D" parent="Decorations" groups=["intel_source"]]
 position = Vector2(550, 450)
+script = ExtResource("4_intel_source")
+sector_id = 4
 
 [node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector4"]
 offset_left = -10.0

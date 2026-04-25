@@ -42,7 +42,16 @@ func _ready():
 	
 	# Start Day 1
 	_spawn_sector_labels()
-	_show_tutorial_log()
+	_show_tutorial()
+
+func _show_tutorial() -> void:
+	var tutorial = preload("res://scenes/ui/TutorialUI.tscn").instantiate()
+	add_child(tutorial)
+	
+	# Wait for tutorial to close, then start the game
+	tutorial.tree_exited.connect(_start_game)
+
+func _start_game() -> void:
 	DayManager.advance_phase()
 
 func _spawn_player() -> void:
@@ -150,8 +159,3 @@ func _spawn_sector_labels():
 		label.set("theme_override_font_sizes/font_size", 18)
 		add_child(label)
 		label.global_position = s["pos"]
-
-func _show_tutorial_log():
-	await get_tree().create_timer(1.0).timeout
-	Blackboard.log_integrity -= 0.0 # Just to trigger a refresh if needed
-	print("TUTORIAL: Follow assigned tasks. Maintain deviation between 20-70%.")

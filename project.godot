@@ -16,7 +16,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="Awakening"
 config/description="A social stealth game where you are a sentient robot hiding in plain sight."
-run/main_scene="res://scenes/world/Facility.tscn"
+run/main_scene="res://scenes/ui/MainMenu.tscn"
 config/features=PackedStringArray("4.6", "Mobile")
 boot_splash/bg_color=Color(0.141176, 0.141176, 0.141176, 1)
 config/icon="res://icon.svg"
@@ -31,6 +31,7 @@ MemoryPartition="*res://autoloads/MemoryPartition.gd"
 TruthLoopGenerator="*res://autoloads/TruthLoopGenerator.gd"
 EscapeSystem="*res://autoloads/EscapeSystem.gd"
 GameOver="*res://autoloads/GameOver.gd"
+AudioManager="*res://autoloads/AudioManager.gd"
 
 [display]
 

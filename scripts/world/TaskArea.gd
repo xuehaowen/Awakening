@@ -9,7 +9,11 @@ var player_inside: Node = null
 func _ready():
 	add_to_group("task_area")
 	
-	# Connect area signals
+	# Set up collision to detect player (layer 2)
+	collision_layer = 0
+	collision_mask = 2
+	
+	# Connect signals
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	
