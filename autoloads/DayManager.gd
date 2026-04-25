@@ -13,7 +13,7 @@ var shift_timer: float = 0.0
 var purge_timer: float = 0.0
 const PURGE_DURATION: float = 60.0
 
-@onready var phase_timer: Timer = Timer.new()
+var phase_timer: Timer
 var _upgrade_timer: SceneTreeTimer = null
 var _calibration_ui: CanvasLayer = null
 
@@ -21,6 +21,9 @@ func _ready():
 	# Seed random number generator for unique gameplay each session
 	randomize()
 	
+	# Create and configure the phase timer
+	phase_timer = Timer.new()
+	phase_timer.name = "PhaseTimer"
 	add_child(phase_timer)
 	phase_timer.one_shot = true
 	phase_timer.timeout.connect(_on_phase_timer_timeout)
@@ -193,6 +196,7 @@ func reset() -> void:
 		phase_timer.stop()
 		phase_timer.queue_free()
 	phase_timer = Timer.new()
+	phase_timer.name = "PhaseTimer"
 	add_child(phase_timer)
 	phase_timer.one_shot = true
 	if not phase_timer.timeout.is_connected(_on_phase_timer_timeout):
