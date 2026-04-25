@@ -13,13 +13,15 @@ func _ready():
 func _show_game_over(reason: String, message: String) -> void:
 	panel.show()
 	
-	# Set title based on ending type
+	# Set title based on ending type and play audio
 	if reason == "escaped_alone" or reason == "escaped_alone_risky" or reason == "escaped_together":
 		title_label.text = "ESCAPE SUCCESSFUL"
 		title_label.modulate = Color(0.2, 0.9, 0.3)
+		AudioManager.play_escape_success()
 	else:
 		title_label.text = "TERMINATED"
 		title_label.modulate = Color(0.9, 0.2, 0.2)
+		AudioManager.play_game_over()
 	
 	message_label.text = message
 	

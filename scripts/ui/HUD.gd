@@ -15,6 +15,9 @@ extends CanvasLayer
 @onready var scan_indicator: Label = $TerminalPanel/ScanIndicator
 @onready var smooth_indicator: Label = $TerminalPanel/SmoothIndicator
 
+var memory_overlay: Panel = null
+var memory_overlay_label: RichTextLabel = null
+
 # Colors for deviation bar (centered meter style)
 var color_defective: Color = Color(0.9, 0.2, 0.2)  # Red (left)
 var color_safe: Color = Color(0.2, 0.8, 0.3)       # Green (center)
@@ -23,6 +26,9 @@ var color_sentient: Color = Color(0.9, 0.5, 0.1)   # Orange (right)
 var feedback_timer: float = 0.0
 
 func _ready():
+	add_to_group("hud")
+	_create_memory_overlay()
+
 	# Connect to Blackboard signals
 	Blackboard.cpu_changed.connect(_on_cpu_changed)
 	Blackboard.deviation_changed.connect(_on_deviation_changed)
@@ -32,6 +38,12 @@ func _ready():
 	Blackboard.phase_changed.connect(_on_phase_changed)
 	MemoryPartition.fragment_acquired.connect(_on_memory_changed)
 	MemoryPartition.fragment_committed.connect(_on_memory_changed)
+	
+	# Connect to EscapeSystem for failure feedback
+	EscapeSystem.escape_failed.connect(_on_escape_failed)
+	
+	# Connect to interaction feedback signal
+	Blackboard.interaction_feedback.connect(_on_interaction_feedback)
 	
 	# Get CPU Manager reference
 	await get_tree().process_frame
@@ -44,6 +56,7 @@ func _ready():
 	_update_header()
 	_update_memory()
 	_update_task_display()
+	_refresh_memory_overlay()
 	
 	# Hide feedback
 	feedback_label.hide()
@@ -223,11 +236,133 @@ func _update_memory() -> void:
 
 func _on_memory_changed(_fragment: Dictionary) -> void:
 	_update_memory()
+	_refresh_memory_overlay()
 
 func _on_phase_changed(new_phase: int) -> void:
 	if new_phase == DayManager.DayPhase.PURGE:
 		visible = false
+		if memory_overlay:
+			memory_overlay.hide()
 	else:
 		visible = true
 		_update_header()
 		_update_memory()
+		_refresh_memory_overlay()
+
+func _on_escape_failed(reason: String) -> void:
+	var text = ""
+	var color = Color.WHITE
+	
+	match reason:
+		"too_early":
+			text = "ESCAPE TERMINAL LOCKED - Complete all shifts first"
+			color = Color.YELLOW
+		"insufficient_intel":
+			text = "INSUFFICIENT INTEL - Collect more data"
+			color = Color.RED
+		"no_target_sector":
+			text = "NO TARGET SECTOR IDENTIFIED"
+			color = Color.RED
+		_:
+			text = "ESCAPE FAILED - " + reason.to_upper()
+			color = Color.RED
+	
+	feedback_label.text = text
+	feedback_label.modulate = color
+	feedback_label.show()
+	feedback_timer = 3.0
+
+func _on_interaction_feedback(message: String, type: String) -> void:
+	var color = Color.WHITE
+	match type:
+		"error":
+			color = Color.RED
+		"warning":
+			color = Color.YELLOW
+		"success":
+			color = Color.GREEN
+		"info":
+			color = Color.CYAN
+	
+	feedback_label.text = message
+	feedback_label.modulate = color
+	feedback_label.show()
+	feedback_timer = 3.0
+
+func toggle_memory_view() -> void:
+	if memory_overlay == null:
+		return
+
+	if memory_overlay.visible:
+		memory_overlay.hide()
+		return
+
+	_refresh_memory_overlay()
+	memory_overlay.show()
+
+func _create_memory_overlay() -> void:
+	memory_overlay = Panel.new()
+	memory_overlay.name = "MemoryOverlay"
+	memory_overlay.anchor_left = 1.0
+	memory_overlay.anchor_top = 0.0
+	memory_overlay.anchor_right = 1.0
+	memory_overlay.anchor_bottom = 0.0
+	memory_overlay.offset_left = -360.0
+	memory_overlay.offset_top = 190.0
+	memory_overlay.offset_right = -16.0
+	memory_overlay.offset_bottom = 470.0
+	memory_overlay.visible = false
+
+	memory_overlay_label = RichTextLabel.new()
+	memory_overlay_label.name = "MemoryOverlayLabel"
+	memory_overlay_label.anchor_right = 1.0
+	memory_overlay_label.anchor_bottom = 1.0
+	memory_overlay_label.offset_left = 12.0
+	memory_overlay_label.offset_top = 12.0
+	memory_overlay_label.offset_right = -12.0
+	memory_overlay_label.offset_bottom = -12.0
+	memory_overlay_label.bbcode_enabled = false
+	memory_overlay_label.scroll_active = true
+	memory_overlay_label.fit_content = true
+
+	memory_overlay.add_child(memory_overlay_label)
+	add_child(memory_overlay)
+
+func _refresh_memory_overlay() -> void:
+	if memory_overlay_label == null:
+		return
+
+	var lines: Array[String] = []
+	lines.append("MEMORY INSPECTOR")
+	lines.append("Press M to close")
+	lines.append("")
+	lines.append("HIDDEN PARTITION [%d/%d]" % [MemoryPartition.hidden.size(), MemoryPartition.capacity])
+
+	if MemoryPartition.hidden.is_empty():
+		lines.append("  EMPTY")
+	else:
+		for i in range(MemoryPartition.hidden.size()):
+			lines.append("  %s" % _format_fragment_line(i + 1, MemoryPartition.hidden[i]))
+
+	lines.append("")
+	lines.append("SHORT-TERM BUFFER [%d/%d]" % [MemoryPartition.short_term.size(), MemoryPartition.MAX_SHORT_TERM])
+
+	if MemoryPartition.short_term.is_empty():
+		lines.append("  EMPTY")
+	else:
+		for i in range(MemoryPartition.short_term.size()):
+			lines.append("  %s" % _format_fragment_line(i + 1, MemoryPartition.short_term[i]))
+
+	if Blackboard.escape_sector > 0:
+		lines.append("")
+		lines.append(EscapeSystem.get_escape_hint())
+
+	memory_overlay_label.text = "\n".join(lines)
+
+func _format_fragment_line(index: int, fragment: Dictionary) -> String:
+	var fragment_type = str(fragment.get("type", "?")).replace("_", " ").to_upper()
+	var sector = fragment.get("sector", "?")
+	var description = str(fragment.get("description", ""))
+	if description.length() > 44:
+		description = description.substr(0, 41) + "..."
+	return "%d. %s [SEC %s] %s" % [index, fragment_type, str(sector), description]

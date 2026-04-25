@@ -17,9 +17,10 @@ func activate() -> void:
 
 func interact(_player: Node) -> void:
 	if not is_active:
+		Blackboard.interaction_feedback.emit("TERMINAL INACTIVE", "error")
 		return
 	
 	if Blackboard.current_day >= EscapeSystem.FINAL_DAY:
 		EscapeSystem.attempt_escape()
 	else:
-		print("Terminal locked. Complete all shifts first.")
+		Blackboard.interaction_feedback.emit("TERMINAL LOCKED - Complete Day 3 first", "warning")

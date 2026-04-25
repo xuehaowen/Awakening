@@ -10,6 +10,7 @@ var current_query: Dictionary = {}
 var response_timer: float = 0.0
 var decrypt_active: bool = false
 var selected_index: int = -1
+var is_transitioning: bool = false  # Prevents race conditions between coroutines
 
 func _ready():
 	# Connect to Blackboard
@@ -109,7 +110,10 @@ func _decrypt_scan() -> void:
 func _select_response(index: int) -> void:
 	if index < 0 or index >= current_query.get("responses", []).size():
 		return
+	if is_transitioning:
+		return  # Prevent double-clicks during transition
 	
+	is_transitioning = true
 	selected_index = index
 	var response = TruthLoopGenerator.select_response(index, decrypt_active)
 	
@@ -119,19 +123,27 @@ func _select_response(index: int) -> void:
 		# No follow-up: close panel and complete
 		get_tree().paused = false
 		panel.hide()
+		is_transitioning = false
 		var risk = response.get("risk", 0) if response else 0
 		Blackboard.truth_loop_completed.emit(risk)
 	else:
-		# Follow-up pending: keep paused, context_mismatch will display, then followup_triggered fires
+		# Follow-up pending: emit completion but keep panel open for context mismatch display
+		# context_mismatch handler will hide panel, then followup_triggered will reopen
 		var risk = response.get("risk", 0) if response else 0
 		Blackboard.truth_loop_completed.emit(risk)
+		# is_transitioning remains true until followup completes or context mismatch cleanup
 
 func _timeout_silence() -> void:
+	if is_transitioning:
+		return
+	
+	is_transitioning = true
 	TruthLoopGenerator.timeout_silence()
 	
 	# Unpause
 	get_tree().paused = false
 	panel.hide()
+	is_transitioning = false
 	
 	Blackboard.truth_loop_completed.emit(30)
 
@@ -147,13 +159,18 @@ func _on_context_mismatch(_npc_type: String, _reason: String) -> void:
 	# Keep panel visible briefly to show the feedback
 	await get_tree().create_timer(1.5).timeout
 	
-	# Hide panel and cleanup — followup_triggered will re-open if needed
-	panel.hide()
+	# Only hide if we're not about to show a follow-up
+	# followup_triggered will handle showing the next query
+	if not TruthLoopGenerator.followup_mode:
+		panel.hide()
+		get_tree().paused = false
+		is_transitioning = false
 	prompt_label.modulate = Color.WHITE
 
 func _on_followup_triggered(npc: Node) -> void:
 	# Supervisor fires a follow-up query after catching a fake-safe response
 	# Give a brief pause before re-interrogating
 	await get_tree().create_timer(0.5).timeout
+	is_transitioning = false  # Reset for the new query
 	var followup_query = TruthLoopGenerator.generate(npc, "status_check")
 	_show_query(followup_query)
