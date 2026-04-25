@@ -145,6 +145,10 @@ func _show_morning_calibration() -> void:
 	# Start the day (emits day_started signal)
 	Blackboard.start_day(Blackboard.current_day)
 	
+	# Invalidate cached ref if the node was freed (e.g. after a scene reload)
+	if _calibration_ui != null and not is_instance_valid(_calibration_ui):
+		_calibration_ui = null
+	
 	# Load and show calibration UI if not already loaded
 	if _calibration_ui == null:
 		var calibration_scene = load("res://scenes/ui/MorningCalibrationUI.tscn")
@@ -176,6 +180,9 @@ func reset() -> void:
 	current_phase = DayPhase.CALIBRATION
 	shift_timer = 0.0
 	purge_timer = 0.0
+	
+	# Null the calibration UI ref so _show_morning_calibration re-instantiates cleanly
+	_calibration_ui = null
 	
 	# Cancel any pending upgrade timer
 	if _upgrade_timer != null:

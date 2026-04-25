@@ -17,6 +17,7 @@ extends CanvasLayer
 
 var memory_overlay: Panel = null
 var memory_overlay_label: RichTextLabel = null
+var _player_ref: Node = null  # Cached player reference to avoid per-frame tree search
 
 # Colors for deviation bar (centered meter style)
 var color_defective: Color = Color(0.9, 0.2, 0.2)  # Red (left)
@@ -45,11 +46,11 @@ func _ready():
 	# Connect to interaction feedback signal
 	Blackboard.interaction_feedback.connect(_on_interaction_feedback)
 	
-	# Get CPU Manager reference
+	# Cache player reference and connect CPU Manager signals
 	await get_tree().process_frame
-	var player = get_tree().get_first_node_in_group("player")
-	if player and player.has_node("CPUManager"):
-		var cpu_mgr = player.get_node("CPUManager")
+	_player_ref = get_tree().get_first_node_in_group("player")
+	if _player_ref and _player_ref.has_node("CPUManager"):
+		var cpu_mgr = _player_ref.get_node("CPUManager")
 		cpu_mgr.cpu_state_changed.connect(_on_cpu_state_changed)
 	
 	# Initial update
@@ -71,10 +72,9 @@ func _process(delta: float) -> void:
 		if feedback_timer <= 0:
 			feedback_label.hide()
 	
-	# Update indicators
-	var player = get_tree().get_first_node_in_group("player")
-	if player and player.has_node("CPUManager"):
-		var cpu_mgr = player.get_node("CPUManager")
+	# Update indicators using cached player ref
+	if _player_ref and is_instance_valid(_player_ref) and _player_ref.has_node("CPUManager"):
+		var cpu_mgr = _player_ref.get_node("CPUManager")
 		
 		var scanning = cpu_mgr.overrides_active["passive_scan"]
 		scan_indicator.visible = scanning

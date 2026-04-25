@@ -148,6 +148,5 @@ func _complete_purge() -> void:
 	DayManager.complete_purge()
 
 func _auto_purge() -> void:
-	# Time ran out - auto purge
-	MemoryPartition.purge_short_term()
+	# Time ran out - complete_purge handles the short_term wipe
 	DayManager.complete_purge()
