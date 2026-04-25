@@ -35,11 +35,11 @@ func _process(delta: float) -> void:
 	_check_overheat(delta)
 
 func _calculate_cpu() -> void:
-	var total_cost = cpu_costs["baseline"]
+	var total_cost = cpu_costs.get("baseline", 20.0)
 	
 	for key in overrides_active:
-		if overrides_active[key]:
-			total_cost += cpu_costs[key]
+		if overrides_active.get(key, false):
+			total_cost += cpu_costs.get(key, 0.0)
 	
 	# Add ambient variance from NPC proximity
 	total_cost += npc_proximity_bonus
@@ -97,3 +97,15 @@ func get_state_color() -> Color:
 		CPUState.HOT: return Color(1.0, 0.55, 0.1)     # orange
 		CPUState.CRITICAL: return Color(0.95, 0.15, 0.15) # red
 	return Color.WHITE
+
+func reset() -> void:
+	# Reset all CPU state for new game
+	overrides_active = {
+		"smooth_movement": false,
+		"passive_scan": false,
+		"active_decrypt": false,
+		"memory_write": false,
+	}
+	overheat_timer = 0.0
+	current_cpu_state = CPUState.COOL
+	npc_proximity_bonus = 0.0

@@ -12,15 +12,20 @@ func _ready():
 	audit_flags = 0
 
 func log_task_completion(task: Dictionary, actual_duration: float) -> void:
+	# Guard against missing keys
+	var task_id = task.get("id", "unknown")
+	var assigned_room = task.get("assigned_room", "unknown")
+	var expected_duration = task.get("expected_duration", 1.0)
+	
 	var entry = {
-		"task_id": task["id"],
+		"task_id": task_id,
 		"sector": task.get("sector", 0),
-		"room": task["assigned_room"],
-		"expected": task["expected_duration"],
+		"room": assigned_room,
+		"expected": expected_duration,
 		"actual": actual_duration,
-		"discrepancy": abs(actual_duration - task["expected_duration"]),
+		"discrepancy": abs(actual_duration - expected_duration),
 		"day": Blackboard.current_day,
-		"ratio": actual_duration / task["expected_duration"]
+		"ratio": actual_duration / max(expected_duration, 0.1)
 	}
 	task_log.append(entry)
 	_update_log_integrity()

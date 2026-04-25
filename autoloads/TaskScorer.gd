@@ -39,7 +39,8 @@ func evaluate_task_performance(expected_duration: float, actual_duration: float)
 	Returns:
 		Dictionary with deviation_delta, reason, pace_state, ratio, and risk_level
 	"""
-	var ratio = actual_duration / expected_duration
+	var safe_expected = max(expected_duration, 0.1)  # Guard against division by zero
+	var ratio = actual_duration / safe_expected
 	var deviation_delta: float = 0.0
 	var reason: String = ""
 	var pace_state: PaceState
@@ -87,7 +88,8 @@ func evaluate_task_performance(expected_duration: float, actual_duration: float)
 
 func calculate_pace_state(elapsed: float, expected: float) -> String:
 	"""Returns the current pace state without completing the task."""
-	var ratio = elapsed / expected
+	var safe_expected = max(expected, 0.1)  # Guard against division by zero
+	var ratio = elapsed / safe_expected
 	
 	if ratio < THRESHOLD_TOO_FAST:
 		return "TOO_FAST"
@@ -102,7 +104,8 @@ func calculate_pace_state(elapsed: float, expected: float) -> String:
 
 func is_in_safe_zone(elapsed: float, expected: float) -> bool:
 	"""Check if current elapsed time is within the safe zone."""
-	var ratio = elapsed / expected
+	var safe_expected = max(expected, 0.1)  # Guard against division by zero
+	var ratio = elapsed / safe_expected
 	return ratio >= SAFE_ZONE_MIN and ratio <= SAFE_ZONE_MAX
 
 func get_safe_zone_boundaries(expected: float) -> Dictionary:
@@ -117,7 +120,8 @@ func get_safe_zone_boundaries(expected: float) -> Dictionary:
 
 func get_progress_to_safe_zone(elapsed: float, expected: float) -> float:
 	"""Returns 0.0 to 1.0 progress toward entering safe zone."""
-	var ratio = elapsed / expected
+	var safe_expected = max(expected, 0.1)  # Guard against division by zero
+	var ratio = elapsed / safe_expected
 	if ratio >= SAFE_ZONE_MIN:
 		return 1.0
 	return ratio / SAFE_ZONE_MIN
@@ -154,8 +158,8 @@ func get_pace_state_color(pace_state: String) -> Color:
 
 func get_formatted_feedback(result: Dictionary) -> String:
 	"""Returns a user-friendly feedback string."""
-	var reason = result["reason"]
-	var delta = result["deviation_delta"]
+	var reason = result.get("reason", "SAFE_PACE")
+	var delta = result.get("deviation_delta", 0.0)
 	
 	match reason:
 		"TOO_FAST": return "TOO FAST! +" + str(int(delta))
