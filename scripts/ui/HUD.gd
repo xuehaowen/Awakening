@@ -380,29 +380,6 @@ func _format_fragment_line(index: int, fragment: Dictionary) -> String:
 		description = description.substr(0, 41) + "..."
 	return "%d. %s [SEC %s] %s" % [index, fragment_type, str(sector), description]
 
-func _exit_tree() -> void:
-	# Disconnect signals to prevent memory leaks
-	if Blackboard.cpu_changed.is_connected(_on_cpu_changed):
-		Blackboard.cpu_changed.disconnect(_on_cpu_changed)
-	if Blackboard.deviation_changed.is_connected(_on_deviation_changed):
-		Blackboard.deviation_changed.disconnect(_on_deviation_changed)
-	if Blackboard.day_started.is_connected(_on_day_started):
-		Blackboard.day_started.disconnect(_on_day_started)
-	if TaskManager.task_assigned.is_connected(_on_task_assigned):
-		TaskManager.task_assigned.disconnect(_on_task_assigned)
-	if TaskManager.task_completed.is_connected(_on_task_completed):
-		TaskManager.task_completed.disconnect(_on_task_completed)
-	if Blackboard.phase_changed.is_connected(_on_phase_changed):
-		Blackboard.phase_changed.disconnect(_on_phase_changed)
-	if MemoryPartition.fragment_acquired.is_connected(_on_memory_changed):
-		MemoryPartition.fragment_acquired.disconnect(_on_memory_changed)
-	if MemoryPartition.fragment_committed.is_connected(_on_memory_changed):
-		MemoryPartition.fragment_committed.disconnect(_on_memory_changed)
-	if EscapeSystem.escape_failed.is_connected(_on_escape_failed):
-		EscapeSystem.escape_failed.disconnect(_on_escape_failed)
-	if Blackboard.interaction_feedback.is_connected(_on_interaction_feedback):
-		Blackboard.interaction_feedback.disconnect(_on_interaction_feedback)
-
 # ==================== ANIMATION HELPERS ====================
 
 func _tween_bar_value(bar: ProgressBar, target_value: float, duration: float = 0.3) -> void:

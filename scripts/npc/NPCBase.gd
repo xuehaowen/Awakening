@@ -279,12 +279,3 @@ func on_truth_loop_completed(response_risk: float) -> void:
 		_add_suspicion(response_risk * 2.0)
 	
 	state = NPCState.WATCHING
-
-func _exit_tree() -> void:
-	# Disconnect signals to prevent memory leaks
-	if observation_area and observation_area.body_entered.is_connected(_on_observation_area_entered):
-		observation_area.body_entered.disconnect(_on_observation_area_entered)
-	if observation_area and observation_area.body_exited.is_connected(_on_observation_area_exited):
-		observation_area.body_exited.disconnect(_on_observation_area_exited)
-	if query_timer and query_timer.timeout.is_connected(_on_query_timer_timeout):
-		query_timer.timeout.disconnect(_on_query_timer_timeout)

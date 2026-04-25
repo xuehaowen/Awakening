@@ -261,18 +261,3 @@ func _attempt_gather_intel(source: Node) -> void:
 func teleport_to(target_position: Vector2) -> void:
 	global_position = target_position
 	velocity = Vector2.ZERO
-
-func _exit_tree() -> void:
-	# Disconnect signals to prevent memory leaks
-	if Blackboard.jitter_triggered.is_connected(_on_jitter_triggered):
-		Blackboard.jitter_triggered.disconnect(_on_jitter_triggered)
-	if Blackboard.game_over.is_connected(_on_game_over):
-		Blackboard.game_over.disconnect(_on_game_over)
-	if interaction_area and interaction_area.body_entered.is_connected(_on_interaction_area_entered):
-		interaction_area.body_entered.disconnect(_on_interaction_area_entered)
-	if interaction_area and interaction_area.body_exited.is_connected(_on_interaction_area_exited):
-		interaction_area.body_exited.disconnect(_on_interaction_area_exited)
-	if scan_area and scan_area.body_entered.is_connected(_on_scan_area_entered):
-		scan_area.body_entered.disconnect(_on_scan_area_entered)
-	if scan_area and scan_area.body_exited.is_connected(_on_scan_area_exited):
-		scan_area.body_exited.disconnect(_on_scan_area_exited)
