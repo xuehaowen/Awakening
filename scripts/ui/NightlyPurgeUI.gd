@@ -123,13 +123,13 @@ func _commit_selected() -> void:
 	if selected_short_term >= 0:
 		# Commit to hidden
 		if MemoryPartition.commit_to_hidden(selected_short_term):
-			print("Fragment committed to hidden partition")
+			AudioManager.play_ui_sound("commit_success")
 		else:
-			print("Failed to commit - hidden partition full")
+			AudioManager.play_ui_sound("error")
 	elif selected_hidden >= 0:
 		# Discard from hidden
 		MemoryPartition.discard_from_hidden(selected_hidden)
-		print("Fragment discarded from hidden partition")
+		AudioManager.play_ui_sound("discard")
 	
 	selected_short_term = -1
 	selected_hidden = -1
