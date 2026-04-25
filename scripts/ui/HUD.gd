@@ -13,6 +13,7 @@ extends CanvasLayer
 @onready var time_label: Label = $TerminalPanel/TimeLabel
 @onready var feedback_label: Label = $TerminalPanel/FeedbackLabel
 @onready var scan_indicator: Label = $TerminalPanel/ScanIndicator
+@onready var smooth_indicator: Label = $TerminalPanel/SmoothIndicator
 
 # Colors for deviation bar (centered meter style)
 var color_defective: Color = Color(0.9, 0.2, 0.2)  # Red (left)
@@ -57,12 +58,18 @@ func _process(delta: float) -> void:
 		if feedback_timer <= 0:
 			feedback_label.hide()
 	
-	# Update scan indicator
+	# Update indicators
 	var player = get_tree().get_first_node_in_group("player")
 	if player and player.has_node("CPUManager"):
-		var scanning = player.get_node("CPUManager").overrides_active["passive_scan"]
+		var cpu_mgr = player.get_node("CPUManager")
+		
+		var scanning = cpu_mgr.overrides_active["passive_scan"]
 		scan_indicator.visible = scanning
 		scan_indicator.text = "[SCANNING]" if scanning else ""
+		
+		var smooth = cpu_mgr.overrides_active["smooth_movement"]
+		smooth_indicator.visible = smooth
+		smooth_indicator.text = "[SMOOTH_NAV]" if smooth else ""
 
 func _on_cpu_changed(value: float) -> void:
 	cpu_bar.value = value

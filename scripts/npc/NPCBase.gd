@@ -12,6 +12,7 @@ enum NPCType { SUPERVISOR, GUARD, TECHNICIAN }
 @onready var sprite: Polygon2D = $Sprite2D
 @onready var observation_area: Area2D = $ObservationArea
 @onready var query_timer: Timer = $QueryTimer
+@onready var nav_agent: NavigationAgent2D = $NavigationAgent2D
 
 var state: NPCState = NPCState.PATROL
 var patrol_points: Array[Vector2] = []
@@ -36,15 +37,18 @@ func _ready():
 	_setup_patrol()
 
 func _physics_process(delta: float) -> void:
+	_update_alert_indicator()
 	match state:
 		NPCState.PATROL:
-			_do_patrol(delta)
+			_do_patrol()
 		NPCState.IDLE:
-			_do_idle(delta)
+			_do_idle()
 		NPCState.WATCHING:
 			_do_watching(delta)
 		NPCState.QUERY:
 			_do_query()
+		NPCState.REPORTING:
+			_do_reporting()
 
 func _setup_patrol():
 	# Only generate a default path if one wasn't pre-assigned (e.g. from Facility.gd)
@@ -58,12 +62,19 @@ func _setup_patrol():
 		start_pos
 	]
 
-func _do_patrol(delta: float) -> void:
+func _do_patrol() -> void:
 	if patrol_points.is_empty():
 		return
 	
 	var target = patrol_points[current_patrol_index]
-	var dir = (target - global_position).normalized()
+	nav_agent.target_position = target
+	
+	if nav_agent.is_navigation_finished():
+		current_patrol_index = (current_patrol_index + 1) % patrol_points.size()
+		return
+		
+	var next_path_pos = nav_agent.get_next_path_position()
+	var dir = (next_path_pos - global_position).normalized()
 	
 	velocity = dir * move_speed
 	move_and_slide()
@@ -71,12 +82,8 @@ func _do_patrol(delta: float) -> void:
 	# Update facing
 	if dir.length() > 0.1:
 		_update_facing(dir)
-	
-	# Check if reached waypoint
-	if global_position.distance_to(target) < 10.0:
-		current_patrol_index = (current_patrol_index + 1) % patrol_points.size()
 
-func _do_idle(delta: float) -> void:
+func _do_idle() -> void:
 	velocity = Vector2.ZERO
 	
 	if player_in_range and player_ref:
@@ -110,6 +117,47 @@ func _do_query() -> void:
 	velocity = Vector2.ZERO
 	# Query state is handled by TruthLoopGenerator
 
+func _do_reporting() -> void:
+	# Move toward nearest supervisor (or a fixed reporting point)
+	var supervisors = get_tree().get_nodes_in_group("supervisor")
+	if supervisors.is_empty():
+		state = NPCState.PATROL # Nowhere to report
+		return
+		
+	var nearest = supervisors[0]
+	var min_dist = global_position.distance_to(nearest.global_position)
+	for s in supervisors:
+		var d = global_position.distance_to(s.global_position)
+		if d < min_dist:
+			min_dist = d
+			nearest = s
+			
+	nav_agent.target_position = nearest.global_position
+	
+	if nav_agent.is_navigation_finished():
+		# Report completed
+		AuditSystem.add_flag(2, "npc_reported_behavior")
+		state = NPCState.PATROL
+		suspicion_score = 40.0 # Reset suspicion partially
+		return
+		
+	var next_path_pos = nav_agent.get_next_path_position()
+	var dir = (next_path_pos - global_position).normalized()
+	
+	velocity = dir * move_speed
+	move_and_slide()
+	_update_facing(dir)
+
+func _update_alert_indicator():
+	# Simple visual feedback for NPC state
+	match state:
+		NPCState.WATCHING:
+			sprite.modulate = Color(1.2, 1.2, 0.8) # Slight yellow glow
+		NPCState.QUERY, NPCState.REPORTING:
+			sprite.modulate = Color(1.5, 0.8, 0.8) # Red alert
+		_:
+			sprite.modulate = Color.WHITE
+
 func _assess_player_behavior(delta: float) -> void:
 	if not player_ref:
 		return
@@ -139,10 +187,12 @@ func _assess_player_behavior(delta: float) -> void:
 		_add_suspicion(gain)
 
 func _get_current_sector(pos: Vector2 = global_position) -> int:
-	# Simple sector calculation based on position
-	var x = floor(pos.x / 300)
-	var y = floor(pos.y / 300)
-	return (abs(x + y) % 4) + 1
+	# Corrected quadrant-based sector calculation:
+	# Col 0: X < 400, Col 1: X >= 400
+	# Row 0: Y < 350, Row 1: Y >= 350
+	var col = 0 if pos.x < 400 else 1
+	var row = 0 if pos.y < 350 else 1
+	return (row * 2) + col + 1
 
 func _trigger_query() -> void:
 	if state == NPCState.QUERY:

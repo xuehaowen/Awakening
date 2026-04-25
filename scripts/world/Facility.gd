@@ -41,6 +41,8 @@ func _ready():
 	Blackboard.phase_changed.connect(_on_phase_changed)
 	
 	# Start Day 1
+	_spawn_sector_labels()
+	_show_tutorial_log()
 	DayManager.advance_phase()
 
 func _spawn_player() -> void:
@@ -132,3 +134,24 @@ func _on_phase_changed(new_phase: int) -> void:
 		# Respawn player at start
 		if player:
 			player.global_position = player_spawn.global_position
+func _spawn_sector_labels():
+	var sectors = [
+		{"pos": Vector2(100, 20), "text": "SECTOR 01 // PRODUCTION"},
+		{"pos": Vector2(500, 20), "text": "SECTOR 02 // LOGISTICS"},
+		{"pos": Vector2(100, 360), "text": "SECTOR 03 // STORAGE"},
+		{"pos": Vector2(500, 360), "text": "SECTOR 04 // MAINTENANCE"}
+	]
+	
+	for s in sectors:
+		var label = Label.new()
+		label.text = s["text"]
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.modulate = Color(1, 1, 1, 0.2)
+		label.set("theme_override_font_sizes/font_size", 18)
+		add_child(label)
+		label.global_position = s["pos"]
+
+func _show_tutorial_log():
+	await get_tree().create_timer(1.0).timeout
+	Blackboard.log_integrity -= 0.0 # Just to trigger a refresh if needed
+	print("TUTORIAL: Follow assigned tasks. Maintain deviation between 20-70%.")

@@ -165,9 +165,29 @@ func _complete_current_task() -> void:
 	is_at_task = false
 
 func _show_floating_text(reason: String, delta: float) -> void:
-	# This would spawn a floating label
+	var label = Label.new()
 	var sign_str = "+" if delta > 0 else ""
-	print("Floating text: ", reason, " ", sign_str, delta)
+	label.text = "%s %s%d" % [reason.replace("_", " "), sign_str, int(delta)]
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	
+	# Colorize: red for positive delta (suspicion gain), green for negative (reward)
+	label.modulate = Color(0.9, 0.2, 0.2) if delta > 0 else Color(0.2, 0.9, 0.3)
+	if delta == 0: label.modulate = Color.WHITE
+	
+	label.set("theme_override_font_sizes/font_size", 14)
+	label.set("theme_override_colors/font_outline_color", Color.BLACK)
+	label.set("theme_override_constants/outline_size", 4)
+	
+	add_child(label)
+	label.top_level = true
+	label.global_position = global_position + Vector2(-50, -40)
+	
+	var tween = get_tree().create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "global_position", label.global_position + Vector2(0, -60), 1.5)
+	tween.tween_property(label, "modulate:a", 0.0, 1.5)
+	tween.finished.connect(label.queue_free)
 
 func _on_interaction_area_entered(body: Node) -> void:
 	if body.is_in_group("npc"):

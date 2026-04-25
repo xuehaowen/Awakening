@@ -28,6 +28,7 @@ func generate_day_tasks(day: int) -> void:
 		
 		template["assigned_room"] = "sector_" + str(sector)
 		template["sector"] = sector
+		template["label"] = template["label"] % str(sector)
 		template["expected_duration"] = randf_range(template["duration_range"][0], template["duration_range"][1])
 		template["safe_min"] = template["expected_duration"] * 0.7  # 70% lower bound
 		template["safe_max"] = template["expected_duration"] * 1.4  # 140% upper bound

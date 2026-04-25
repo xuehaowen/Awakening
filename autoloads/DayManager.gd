@@ -107,6 +107,9 @@ func _start_upgrade() -> void:
 		MemoryPartition.upgrade_capacity()
 	
 	Blackboard.phase_changed.emit(DayPhase.UPGRADE)
+	
+	# Auto-advance to next day after a short delay
+	get_tree().create_timer(3.0).timeout.connect(_start_next_day)
 
 func _start_next_day() -> void:
 	if Blackboard.current_day >= Blackboard.FINAL_DAY:
