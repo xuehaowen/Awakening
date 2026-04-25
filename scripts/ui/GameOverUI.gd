@@ -35,6 +35,7 @@ func _restart_game() -> void:
 	MemoryPartition.reset()
 	AuditSystem.reset()
 	DayManager.reset()
+	SuspicionManager.reset()
 	TruthLoopGenerator.clear_query()
 	TaskManager.reset()
 	get_tree().reload_current_scene()
