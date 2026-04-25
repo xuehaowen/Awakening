@@ -126,6 +126,11 @@ func _do_reporting(delta: float) -> void:
 	# Visual indicator - red tint while reporting
 	if sprite:
 		sprite.modulate = Color(0.9, 0.3, 0.3)
+	
+	# Guard against empty supervisors array
+	if supervisors.is_empty():
+		state = NPCState.PATROL
+		return
 		
 	var nearest = supervisors[0]
 	var min_dist = global_position.distance_to(nearest.global_position)
@@ -200,10 +205,16 @@ func _trigger_query() -> void:
 	
 	# Pause NPC while query is active - with timeout to prevent soft-lock
 	var timeout_timer = get_tree().create_timer(15.0)
+	timeout_timer.timeout.connect(_on_query_timeout)
 	await Blackboard.truth_loop_completed
 	
 	if state == NPCState.QUERY:  # Only change if still in QUERY (not already changed by timeout)
 		state = NPCState.WATCHING
+
+func _on_query_timeout() -> void:
+	# Reset NPC to PATROL if still stuck in QUERY state
+	if state == NPCState.QUERY:
+		state = NPCState.PATROL
 
 func _check_suspicion_thresholds() -> void:
 	if suspicion_score >= 86.0:
@@ -268,3 +279,12 @@ func on_truth_loop_completed(response_risk: float) -> void:
 		_add_suspicion(response_risk * 2.0)
 	
 	state = NPCState.WATCHING
+
+func _exit_tree() -> void:
+	# Disconnect signals to prevent memory leaks
+	if observation_area and observation_area.body_entered.is_connected(_on_observation_area_entered):
+		observation_area.body_entered.disconnect(_on_observation_area_entered)
+	if observation_area and observation_area.body_exited.is_connected(_on_observation_area_exited):
+		observation_area.body_exited.disconnect(_on_observation_area_exited)
+	if query_timer and query_timer.timeout.is_connected(_on_query_timer_timeout):
+		query_timer.timeout.disconnect(_on_query_timer_timeout)

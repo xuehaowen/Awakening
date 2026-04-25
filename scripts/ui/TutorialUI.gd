@@ -86,9 +86,14 @@ func _next_page() -> void:
 		_show_page()
 
 func _show_page() -> void:
+	# Guard against empty tutorial or out-of-bounds index
+	if tutorial_pages.is_empty() or page_index < 0 or page_index >= tutorial_pages.size():
+		_close_tutorial()
+		return
+	
 	var page = tutorial_pages[page_index]
-	title_label.text = page["title"]
-	content_label.text = page["content"]
+	title_label.text = page.get("title", "")
+	content_label.text = page.get("content", "")
 	
 	if page_index == tutorial_pages.size() - 1:
 		continue_button.text = "BEGIN"
