@@ -73,8 +73,15 @@ func _handle_input() -> void:
 		_try_interact()
 	
 	if Input.is_action_just_pressed("open_memory"):
-		# Signal to UI to open memory view
-		print("Open memory UI requested")
+		# Toggle memory view visibility via HUD
+		var hud = get_tree().get_first_node_in_group("hud")
+		if hud and hud.has_method("toggle_memory_view"):
+			hud.toggle_memory_view()
+		else:
+			# Fallback: show memory info as interaction feedback
+			var mem_count = MemoryPartition.hidden.size()
+			var mem_capacity = MemoryPartition.capacity
+			Blackboard.interaction_feedback.emit("HIDDEN MEMORY: %d/%d slots used" % [mem_count, mem_capacity], "info")
 
 func _update_movement(delta: float) -> void:
 	var input_dir = Vector2.ZERO
@@ -219,11 +226,21 @@ func _update_scan_tick(delta: float) -> void:
 				break  # One roll per tick
 
 func _attempt_gather_intel(source: Node) -> void:
-	# Use the source's sector if available, otherwise random
-	var preferred_sector = source.get("sector_id") if source.get("sector_id") != null else -1
+	# Roll for intel fragment
 	if randf() < 0.3:  # 30% chance per scan tick
+		# Get sector from source if available
+		var preferred_sector = -1
+		if source.has_method("get_sector"):
+			preferred_sector = source.get_sector()
+		elif source.has_meta("sector_id"):
+			preferred_sector = source.get_meta("sector_id")
+		elif source.has("sector_id"):
+			preferred_sector = source.sector_id
+		
+		# Generate fragment with preferred sector
 		var fragment = MemoryPartition.generate_random_fragment("", preferred_sector)
 		if MemoryPartition.add_to_short_term(fragment):
+			AudioManager.play_intel_acquired()
 			print("Intel acquired: ", fragment["type"], " for Sector ", fragment.get("sector", "?"))
 
 func teleport_to(target_position: Vector2) -> void:

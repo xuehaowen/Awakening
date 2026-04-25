@@ -22,6 +22,7 @@ func _process(delta: float) -> void:
 	if is_safe != was_safe:
 		was_safe = is_safe
 		if not is_safe:
+			AudioManager.play_danger_warning()
 			print("WARNING: Deviation entering ", Blackboard.get_deviation_zone(), " zone!")
 
 func add_deviation(amount: float, source: String = "") -> void:
