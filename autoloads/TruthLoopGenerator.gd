@@ -74,15 +74,19 @@ func generate(npc: Node, query_type: String = "") -> Dictionary:
 	
 	# Check if player has personal_data fragments for leverage option
 	var personal_data = MemoryPartition.get_fragments_by_type("personal_data")
-	var has_leverage = personal_data.size() > 0
+	var matching_fragment = null
+	for fragment in personal_data:
+		if fragment.get("npc_type") == npc.get_npc_type():
+			matching_fragment = fragment
+			break
 	
 	# Shuffle to prevent memorization
 	responses.shuffle()
 	
 	# Add personal data leverage option if available
-	if has_leverage and personal_data[0].get("npc_type") == npc.get_npc_type():
+	if matching_fragment:
 		var leverage_response = {
-			"text": "[Use personal data] I noticed you're having trouble with %s..." % personal_data[0].get("secret", "something"),
+			"text": "[Use personal data] I noticed you're having trouble with %s..." % matching_fragment.get("secret", "something"),
 			"category": "LEVERAGE",
 			"deviation_delta": -20.0,
 			"risk": 0,

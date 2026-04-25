@@ -86,6 +86,14 @@ func consume_fragment_by_type(type: String) -> bool:
 			return true
 	return false
 
+func consume_fragment_by_type_and_npc(type: String, npc_type: String) -> bool:
+	"""Consume a fragment of specific type that also matches the given npc_type."""
+	for i in range(hidden.size()):
+		if hidden[i].get("type", "") == type and hidden[i].get("npc_type", "") == npc_type:
+			hidden.remove_at(i)
+			return true
+	return false
+
 func is_stale(fragment: Dictionary) -> bool:
 	# Guard schedules become stale after 2 days per original design
 	if fragment.get("type", "") != "guard_schedule":

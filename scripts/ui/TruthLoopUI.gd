@@ -158,8 +158,9 @@ func _select_response(index: int) -> void:
 	# Check if this is a personal data leverage response
 	var response = responses[index]
 	if response.get("requires_personal_data", false):
-		# Consume one personal_data fragment
-		if not MemoryPartition.consume_fragment_by_type("personal_data"):
+		# Consume one personal_data fragment matching the interrogating NPC type
+		var npc_type = current_query.get("npc_type", "unknown")
+		if not MemoryPartition.consume_fragment_by_type_and_npc("personal_data", npc_type):
 			# No fragment available - shouldn't happen but handle gracefully
 			prompt_label.text += "\n\n[ERROR] Personal data fragment not found."
 			return
