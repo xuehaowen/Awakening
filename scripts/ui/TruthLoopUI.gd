@@ -105,6 +105,10 @@ var _cursor_visible: bool = true
 var _timer_pulse_phase: float = 0.0
 var _last_displayed_seconds: int = -1
 
+# Decrypt state
+var _is_decrypting: bool = false
+var _cpu_manager: Node = null
+
 # Active tweens (for cleanup)
 var _active_tweens: Array[Tween] = []
 
@@ -148,11 +152,13 @@ func _notification(what: int) -> void:
 			Engine.time_scale = 1.0
 
 # ---------------------------------------------------------------------------
-# _process — timer, typewriter, cursor blink, timer warning pulse
+# _process — timer, typewriter, cursor blink, timer warning pulse, decrypt
 # ---------------------------------------------------------------------------
 func _process(delta: float) -> void:
 	if not _is_active:
 		return
+
+	_handle_decrypt_input()
 
 	# Typewriter
 	if not _typewriter_done:
@@ -221,6 +227,37 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_DOWN:
 				get_viewport().set_input_as_handled()
 				_navigate_options(1)
+
+func _handle_decrypt_input() -> void:
+	if not _is_active or _is_transitioning:
+		return
+		
+	var decrypt_pressed = Input.is_action_pressed("override_decrypt") # TAB
+	if decrypt_pressed != _is_decrypting:
+		_is_decrypting = decrypt_pressed
+		_update_decrypt_state(_is_decrypting)
+
+func _update_decrypt_state(active: bool) -> void:
+	if _cpu_manager == null:
+		var player = get_tree().get_first_node_in_group("player")
+		if player and player.has_node("CPUManager"):
+			_cpu_manager = player.get_node("CPUManager")
+			
+	if _cpu_manager:
+		_cpu_manager.set_override("active_decrypt", active)
+		
+	# Visual highlight for fake-safe responses
+	var fake_safe_idx = TruthLoopGenerator.get_fake_safe_index()
+	if fake_safe_idx != -1:
+		var btn = _response_buttons[fake_safe_idx]
+		if active:
+			btn.modulate = COLOR_STATUS_WARN
+			# Show a hint that this is a fake-safe
+			if not btn.text.contains("[FAKE-SAFE]"):
+				btn.text = btn.text.replace("]  ", "]  [FAKE-SAFE] ")
+		else:
+			btn.modulate = Color.WHITE
+			btn.text = btn.text.replace(" [FAKE-SAFE]", "")
 
 # ---------------------------------------------------------------------------
 # Show query — entry point called by Blackboard.truth_loop_requested
@@ -348,8 +385,8 @@ func _on_response_pressed(index: int) -> void:
 
 	response_selected.emit(index, resp_text, cpu_cost, dev_cost)
 
-	# Delegate to TruthLoopGenerator for game logic (return value unused — side effects only)
-	TruthLoopGenerator.select_response(index, false)
+	# Delegate to TruthLoopGenerator for game logic (pass decrypt state)
+	TruthLoopGenerator.select_response(index, _is_decrypting)
 
 	if not TruthLoopGenerator.followup_mode:
 		# No follow-up — close panel after exit animation

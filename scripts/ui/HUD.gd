@@ -31,6 +31,11 @@ const C_AMBER_EMBER := Color(0.961, 0.651, 0.137, 1.0)      # --amber-ember
 const C_AMBER_DEEP  := Color(0.545, 0.369, 0.102, 0.4)      # --amber-deep (fill)
 const C_BG_ELEVATED := Color(0.082, 0.141, 0.220, 1.0)      # --bg-elevated
 
+# ── Suspicion thresholds (aligned with GDD Deviation zones)
+const THRESHOLD_SAFE: float = 30.0
+const THRESHOLD_SUSPICIOUS: float = 70.0
+const THRESHOLD_SENTIENT: float = 85.0
+
 # ── Animation durations (visual-spec.md animation tokens) ─────────────────
 const ANIM_INSTANT   := 0.1   # bar fill, state label swap
 const ANIM_STANDARD  := 0.3   # colour lerp, status change
@@ -293,21 +298,21 @@ func _on_deviation_changed(value: float, _source: String = "") -> void:
 	# Animate bar (DEV bar goes 0-100, nominal zone is 15-30 per task spec)
 	_tween_bar(dev_bar, _dev_tween, value, ANIM_INSTANT)
 
-	# Determine DEV state per ux spec thresholds
+	# Determine DEV state per GDD thresholds (30/70/85)
 	var state_name: String
 	var state_color: Color
-	if value < 40.0:
-		state_name = "NOMINAL"
-		state_color = C_STATUS_COOL
-	elif value < 60.0:
-		state_name = "ELEVATED"
-		state_color = C_STATUS_WARM
-	elif value < 86.0:
-		state_name = "WATCHING"
-		state_color = C_STATUS_HOT
-	else:
-		state_name = "CRITICAL"
+	if value < 30.0:
+		state_name = "DEFECTIVE"
 		state_color = C_STATUS_CRITICAL
+	elif value <= 70.0:
+		state_name = "SAFE"
+		state_color = C_STATUS_COOL
+	elif value < 85.0:
+		state_name = "SUSPICIOUS"
+		state_color = C_STATUS_WARM
+	else:
+		state_name = "SENTIENT"
+		state_color = C_STATUS_HOT
 
 	_tween_modulate(dev_bar, state_color, ANIM_STANDARD)
 	dev_state_label.text = "[" + state_name + "]"
@@ -590,31 +595,31 @@ func _show_feedback(source: String, _deviation: float) -> void:
 
 	match source:
 		"task_too_fast", "TOO_FAST":
-			text  = "> TOO FAST  +25 DEV"
+			text  = "> TOO FAST  +20 DEV"
 			color = C_STATUS_CRITICAL
 		"task_fast", "FAST":
-			text  = "> FAST  +10 DEV"
+			text  = "> FAST  +8 DEV"
 			color = C_STATUS_WARM
-		"task_nominal", "SAFE_PACE":
-			text  = "> SAFE PACE  -5 DEV"
+		"task_nominal", "SAFE_PACE", "SAFE":
+			text  = "> SAFE PACE  +0 DEV"
 			color = C_STATUS_COOL
 		"task_slow", "SLOW":
-			text  = "> SLOW  +5 DEV"
+			text  = "> SLOW  -8 DEV"
 			color = C_STATUS_WARM
 		"task_too_slow", "TOO_SLOW":
-			text  = "> TOO SLOW  +20 DEV"
+			text  = "> TOO SLOW  -20 DEV"
 			color = C_STATUS_CRITICAL
 		"jitter_visible":
-			text  = "> JITTER DETECTED  +20 DEV"
+			text  = "> JITTER DETECTED  +15 DEV"
 			color = C_STATUS_CRITICAL
 		"truth_loop_response":
 			text  = "> RESPONSE RISKY"
 			color = C_STATUS_WARM
 		"truth_loop_silence":
-			text  = "> SILENCE  +30 DEV"
+			text  = "> SILENCE  +25 DEV"
 			color = C_STATUS_CRITICAL
 		"task_abandoned":
-			text  = "> TASK ABANDONED  +30 DEV"
+			text  = "> TASK ABANDONED  -30 DEV"
 			color = C_STATUS_CRITICAL
 		_:
 			return  # Unknown source — no feedback shown

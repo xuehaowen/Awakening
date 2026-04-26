@@ -3,11 +3,10 @@ extends Node
 # SuspicionManager - Centralized suspicion tracking and management
 # Decouples suspicion scoring from individual NPCs for cleaner architecture
 
-# Suspicion thresholds (matching NPCBase thresholds)
-const THRESHOLD_WATCH: float = 40.0     # Start watching closely
-const THRESHOLD_QUERY: float = 60.0     # May trigger Truth Loop
-const THRESHOLD_REPORT: float = 61.0    # Start reporting to Audit
-const THRESHOLD_DECOMMISSION: float = 86.0  # Game over threshold
+# Suspicion thresholds (aligned with GDD Deviation zones)
+const THRESHOLD_WATCH: float = 70.0      # Matches SUSPICIOUS zone start
+const THRESHOLD_QUERY: float = 80.0      # Likely Truth Loop trigger
+const THRESHOLD_DECOMMISSION: float = 100.0 # SENTIENT failure point
 
 # Suspicion gain rates (per second, while player in view)
 const GAIN_JITTER_VISIBLE: float = 10.0
@@ -31,7 +30,7 @@ var observing_npcs: Array[String] = []
 var is_player_visible: bool = false
 var last_known_state: Dictionary = {}
 
-enum SuspicionLevel { UNAWARE, CURIOUS, WATCHING, SUSPICIOUS, ALARMED }
+enum SuspicionLevel { UNAWARE, WATCHING, SUSPICIOUS, ALARMED }
 
 func _ready():
 	print("SuspicionManager initialized")
@@ -97,19 +96,16 @@ func get_suspicion_level() -> SuspicionLevel:
 	"""Get the current suspicion level as enum."""
 	if global_suspicion >= THRESHOLD_DECOMMISSION:
 		return SuspicionLevel.ALARMED
-	elif global_suspicion >= THRESHOLD_REPORT:
+	elif global_suspicion >= THRESHOLD_QUERY:
 		return SuspicionLevel.SUSPICIOUS
 	elif global_suspicion >= THRESHOLD_WATCH:
 		return SuspicionLevel.WATCHING
-	elif global_suspicion >= THRESHOLD_QUERY:
-		return SuspicionLevel.CURIOUS
 	return SuspicionLevel.UNAWARE
 
 func get_suspicion_level_name() -> String:
 	"""Get human-readable suspicion level."""
 	match get_suspicion_level():
 		SuspicionLevel.UNAWARE: return "UNAWARE"
-		SuspicionLevel.CURIOUS: return "CURIOUS"
 		SuspicionLevel.WATCHING: return "WATCHING"
 		SuspicionLevel.SUSPICIOUS: return "SUSPICIOUS"
 		SuspicionLevel.ALARMED: return "ALARMED"
@@ -164,8 +160,6 @@ func _check_threshold_crossed(old_score: float, new_score: float) -> void:
 	if old_score < THRESHOLD_DECOMMISSION and new_score >= THRESHOLD_DECOMMISSION:
 		suspicion_threshold_crossed.emit("DECOMMISSION")
 		global_suspicion_peak_reached.emit()
-	elif old_score < THRESHOLD_REPORT and new_score >= THRESHOLD_REPORT:
-		suspicion_threshold_crossed.emit("REPORTING")
 	elif old_score < THRESHOLD_QUERY and new_score >= THRESHOLD_QUERY:
 		suspicion_threshold_crossed.emit("QUERY")
 	elif old_score < THRESHOLD_WATCH and new_score >= THRESHOLD_WATCH:
@@ -180,7 +174,6 @@ func _get_level_color() -> Color:
 	"""Returns color for current suspicion level."""
 	match get_suspicion_level():
 		SuspicionLevel.UNAWARE: return Color(0.2, 0.9, 0.4)
-		SuspicionLevel.CURIOUS: return Color(0.9, 0.9, 0.2)
 		SuspicionLevel.WATCHING: return Color(0.9, 0.7, 0.2)
 		SuspicionLevel.SUSPICIOUS: return Color(0.9, 0.4, 0.2)
 		SuspicionLevel.ALARMED: return Color(0.95, 0.15, 0.15)

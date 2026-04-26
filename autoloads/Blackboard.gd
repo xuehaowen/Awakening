@@ -15,6 +15,9 @@ var shift_active: bool = false
 var time_remaining: float = 0.0
 var current_phase: int = 0  # 0=CALIBRATION, 1=SHIFT, 2=PURGE, 3=UPGRADE
 
+# Decay rates
+const DEVIATION_DECAY_RATE: float = 0.2  # Slow passive decay towards floor
+
 # Memory - delegated to MemoryPartition autoload for single source of truth
 # Use MemoryPartition.short_term and MemoryPartition.hidden instead
 
@@ -44,8 +47,26 @@ func _ready():
 	cpu_current = 20.0  # Start at baseline
 	deviation = 45.0  # Start in safe middle
 
+func _process(delta: float) -> void:
+	if shift_active:
+		# Passive decay towards floor if no other changes
+		var floor_val = get_daily_floor()
+		if deviation > floor_val:
+			add_deviation(-DEVIATION_DECAY_RATE * delta, "passive_decay")
+
+func get_daily_floor() -> float:
+	# Day 1 floor = 10, Day 2 = 15, Day 3 = 20
+	# Ensures tension accumulates across the run
+	return 5.0 + float(current_day) * 5.0
+
 func add_deviation(amount: float, source: String = "") -> void:
-	deviation = clamp(deviation + amount, deviation_min, deviation_max)
+	var floor_val = get_daily_floor()
+	
+	# Clamp logic: floor only blocks DECAY (passive), not ACTIVE penalties (like bad tasks)
+	# But for now, we'll use a hard floor as per "cannot decay below" intent
+	var min_val = floor_val if amount < 0 and source == "passive_decay" else 0.0
+	
+	deviation = clamp(deviation + amount, min_val, deviation_max)
 	deviation_changed.emit(deviation, source)
 	
 	# Check for game over conditions
@@ -54,18 +75,17 @@ func add_deviation(amount: float, source: String = "") -> void:
 	elif deviation >= 100:
 		game_over.emit("decommission")
 
-func get_daily_floor() -> float:
-	# Day 1 floor = 15, Day 2 = 20, Day 3 = 25
-	return 10.0 + float(current_day) * 5.0
-
 func is_deviation_safe() -> bool:
-	return deviation >= 20.0 and deviation <= 70.0
+	# Aligned with GDD Section 4.1: [DEFECTIVE] 0-30% [SAFE] 30-70% [SENTIENT] 85-100%
+	return deviation >= 30.0 and deviation <= 70.0
 
 func get_deviation_zone() -> String:
-	if deviation < 20:
+	if deviation < 30:
 		return "DEFECTIVE"
 	elif deviation <= 70:
 		return "SAFE"
+	elif deviation < 85:
+		return "SUSPICIOUS"
 	else:
 		return "SENTIENT"
 

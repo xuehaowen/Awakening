@@ -10,12 +10,13 @@ const THRESHOLD_SAFE_MAX: float = 1.4
 const THRESHOLD_SLOW: float = 2.0
 
 # Deviation penalties/rewards
-const DEV_TOO_FAST: float = 25.0
-const DEV_FAST: float = 10.0
-const DEV_SAFE: float = -5.0  # reward
-const DEV_SLOW: float = 5.0
-const DEV_TOO_SLOW: float = 20.0
-const DEV_ABANDONED: float = 30.0
+# Positive moves toward SENTIENT (100%), negative toward DEFECTIVE (0%)
+const DEV_TOO_FAST: float = 20.0
+const DEV_FAST: float = 8.0
+const DEV_SAFE: float = 0.0     # Balanced performance
+const DEV_SLOW: float = -8.0
+const DEV_TOO_SLOW: float = -20.0
+const DEV_ABANDONED: float = -30.0
 
 # Safe zone boundaries (for UI display)
 const SAFE_ZONE_MIN: float = 0.7
