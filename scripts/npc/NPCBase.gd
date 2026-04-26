@@ -8,6 +8,7 @@ enum NPCType { SUPERVISOR, GUARD, TECHNICIAN }
 @export var suspicion_score: float = 0.0
 @export var audit_frequency: float = 0.5
 @export var move_speed: float = 40.0
+@export var sector_bounds: Vector2 = Vector2(800, 700) # Total facility size for quadrant logic
 
 @onready var sprite: Polygon2D = $Sprite2D
 @onready var observation_area: Area2D = $ObservationArea
@@ -19,7 +20,7 @@ var patrol_points: Array[Vector2] = []
 var current_patrol_index: int = 0
 var player_in_range: bool = false
 var watch_timer: float = 0.0
-var player_ref: Node = null
+var player_ref: PlayerController = null
 
 signal query_triggered(npc: NPCBase, query: Dictionary)
 signal suspicion_changed(new_score: float)
@@ -101,8 +102,9 @@ func _do_watching(delta: float) -> void:
 	var dir = (player_ref.global_position - global_position).normalized()
 	_update_facing(dir)
 	
-	# Assess player behavior
-	_assess_player_behavior(delta)
+	# Assess player behavior (every 5 frames for performance)
+	if Engine.get_physics_frames() % 5 == 0:
+		_assess_player_behavior(delta * 5.0)
 	
 	# Check for query trigger
 	if suspicion_score > 60.0 and state != NPCState.QUERY:
@@ -187,11 +189,12 @@ func _assess_player_behavior(delta: float) -> void:
 		_add_suspicion(gain)
 
 func _get_current_sector(pos: Vector2 = global_position) -> int:
-	# Corrected quadrant-based sector calculation:
-	# Col 0: X < 400, Col 1: X >= 400
-	# Row 0: Y < 350, Row 1: Y >= 350
-	var col = 0 if pos.x < 400 else 1
-	var row = 0 if pos.y < 350 else 1
+	# Quadrant-based sector calculation based on dynamic bounds
+	var half_x = sector_bounds.x / 2.0
+	var half_y = sector_bounds.y / 2.0
+	
+	var col = 0 if pos.x < half_x else 1
+	var row = 0 if pos.y < half_y else 1
 	return (row * 2) + col + 1
 
 func _trigger_query() -> void:

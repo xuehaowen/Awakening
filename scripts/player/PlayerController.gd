@@ -1,4 +1,5 @@
 extends CharacterBody2D
+class_name PlayerController
 
 @onready var cpu_manager: Node = $CPUManager
 @onready var deviation_tracker: Node = $DeviationTracker
