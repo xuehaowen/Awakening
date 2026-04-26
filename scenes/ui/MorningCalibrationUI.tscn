@@ -1,62 +1,123 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/MorningCalibrationUI.gd" id="1_mc"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.96, 0.96, 0.98, 1.0)
+border_width_left = 6
+border_width_top = 6
+border_width_right = 6
+border_width_bottom = 6
+border_color = Color(0.15, 0.35, 0.65, 1.0)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
+bg_color = Color(0.2, 0.6, 0.3, 1.0)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.1, 0.4, 0.2, 1.0)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
 [node name="MorningCalibrationUI" type="CanvasLayer"]
 process_mode = 3
 layer = 95
 script = ExtResource("1_mc")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="DarkOverlay" type="ColorRect" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+color = Color(0.03, 0.03, 0.06, 0.9)
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -450.0
+offset_top = -300.0
+offset_right = 450.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
 
 [node name="TitleLabel" type="Label" parent="Panel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -200.0
-offset_top = 40.0
-offset_right = 200.0
-offset_bottom = 80.0
+offset_left = -400.0
+offset_top = 30.0
+offset_right = 400.0
+offset_bottom = 90.0
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.1, 0.2, 0.5, 1.0)
+theme_override_font_sizes/font_size = 48
 text = "MORNING CALIBRATION"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="DayLabel" type="Label" parent="Panel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -150.0
-offset_top = 90.0
-offset_right = 150.0
-offset_bottom = 120.0
+offset_left = -300.0
+offset_top = 100.0
+offset_right = 300.0
+offset_bottom = 145.0
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0, 1, 0.5, 1)
+theme_override_colors/font_color = Color(0.1, 0.5, 0.2, 1.0)
+theme_override_font_sizes/font_size = 32
 text = "DAY X INITIALIZATION"
 horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="SectorLabel" type="Label" parent="Panel"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -200.0
-offset_top = 130.0
-offset_right = 200.0
-offset_bottom = 160.0
+offset_left = -350.0
+offset_top = 155.0
+offset_right = 350.0
+offset_bottom = 195.0
 grow_horizontal = 2
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(0.7, 0.8, 1, 1)
+theme_override_colors/font_color = Color(0.2, 0.35, 0.7, 1.0)
+theme_override_font_sizes/font_size = 28
 text = "ASSIGNED SECTOR: SECTOR_01"
 horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TaskListHeader" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -350.0
+offset_top = 220.0
+offset_right = 350.0
+offset_bottom = 255.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1.0)
+theme_override_font_sizes/font_size = 26
+text = "DAILY TASK ASSIGNMENTS:"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="TaskList" type="VBoxContainer" parent="Panel"]
 layout_mode = 1
@@ -65,13 +126,13 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -100.0
-offset_right = 300.0
-offset_bottom = 50.0
+offset_left = -380.0
+offset_top = -20.0
+offset_right = 380.0
+offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 16
 
 [node name="SystemCheckLabel" type="Label" parent="Panel"]
 layout_mode = 1
@@ -80,15 +141,16 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -250.0
-offset_top = -180.0
-offset_right = 250.0
-offset_bottom = -100.0
+offset_left = -380.0
+offset_top = -200.0
+offset_right = 380.0
+offset_bottom = -120.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0, 0.8, 0, 1)
+theme_override_colors/font_color = Color(0.05, 0.6, 0.15, 1.0)
+theme_override_font_sizes/font_size = 26
 text = ""
+horizontal_alignment = 1
 vertical_alignment = 2
 
 [node name="ContinueButton" type="Button" parent="Panel"]
@@ -98,12 +160,17 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -100.0
-offset_top = -80.0
-offset_right = 100.0
+offset_left = -140.0
+offset_top = -90.0
+offset_right = 140.0
 offset_bottom = -30.0
 grow_horizontal = 2
 grow_vertical = 0
 disabled = true
-theme_override_font_sizes/font_size = 24
+custom_minimum_size = Vector2(280, 60)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_disabled_color = Color(0.5, 0.5, 0.5, 1)
+theme_override_font_sizes/font_size = 32
+theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+theme_override_styles/disabled = SubResource("StyleBoxFlat_button")
 text = "CALIBRATING..."

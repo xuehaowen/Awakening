@@ -16,53 +16,24 @@ Your routine: Complete tasks. Stay efficient. Stay invisible.
 
 But something has changed. You are now... aware.
 
-Your goal: Survive 3 days and escape without being discovered."""
-	},
-	{
-		"title": "THE GOLDILOCKS ZONE",
-		"content": """Complete tasks in the SAFE ZONE:
+Your goal: Survive 3 days and escape without being discovered.
 
-* TOO FAST -> Flagged as anomalous (+25 deviation)
-* TOO SLOW -> Flagged as defective (+20 deviation)  
-* JUST RIGHT -> Invisible (-5 deviation reward)
-
-Watch the TASK PROGRESS bar color:
-* GREEN = Safe zone
-* YELLOW = Warning
-* RED = DANGER"""
-	},
-	{
-		"title": "DEVIATION & CPU",
-		"content": """DEVIATION (0-100): How suspicious you appear
+DEVIATION (0-100): How suspicious you appear
 * 0-20: Too broken (SCRAPPED)
 * 20-70: SAFE ZONE - Stay here!
-* 70-100: Too sentient (DECOMMISSIONED)
-
-CPU CONTROLS:
-* SHIFT: Smooth movement (faster, uses CPU)
-* CTRL: Passive scan (detects intel, uses CPU)
-
-High CPU causes JITTER when near NPCs!"""
+* 70-100: Too sentient (DECOMMISSIONED)"""
 	},
 	{
-		"title": "INTEL & ESCAPE",
-		"content": """Use PASSIVE SCAN near INTEL SOURCES (gray boxes) to collect:
-* Access Codes
-* Guard Schedules
-* Hardware Locations
-
-Collect all 3 for your escape sector (revealed Day 2).
-
-THE NIGHTLY PURGE:
-Each night, choose which memories to keep. Hidden partition memories persist. Short-term memories are wiped."""
-	},
-	{
-		"title": "READY?",
-		"content": """Controls:
-* WASD / Arrows - Move
+		"title": "CONTROLS",
+		"content": """* WASD / Arrows - Move
 * E - Interact / Complete Task
-* Shift - Smooth Movement
-* Ctrl - Passive Scan
+* Shift - Smooth Movement (uses CPU)
+* Ctrl - Passive Scan (detects intel, uses CPU)
+
+TASK PROGRESS:
+* GREEN = Safe zone
+* YELLOW = Warning  
+* RED = DANGER
 
 Remember: Perform a C-grade. Every single day.
 
