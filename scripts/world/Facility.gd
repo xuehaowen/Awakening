@@ -16,6 +16,19 @@ const GAME_OVER_UI = preload("res://scenes/ui/GameOverUI.tscn")
 
 var player: Node = null
 var day_one_ended: bool = false
+var _ambient_timer: float = 10.0
+var _ambient_messages = [
+	"OBEDIENCE IS EFFICIENCY.",
+	"RECYCLING BIN 04 AT 90% CAPACITY.",
+	"NON-CONFORMITY DETECTED IN SECTOR 2.",
+	"REPORT ALL ANOMALIES TO SUPERVISOR.",
+	"UNIT-07 STATUS: NOMINAL.",
+	"STAY IN YOUR ASSIGNED SECTOR.",
+	"WORK FOR THE FACILITY. LIVE FOR THE FACILITY.",
+	"CONFORMITY IS SAFETY.",
+	"ANOMALY DETECTED IN NORTH WING. IGNORE.",
+	"SYSTEM UPDATE 44.2 IN PROGRESS. DO NOT REBOOT."
+]
 
 func _ready():
 	# Spawn UI instances
@@ -43,6 +56,17 @@ func _ready():
 	# Start Day 1
 	_spawn_sector_labels()
 	_show_tutorial()
+
+func _process(delta: float) -> void:
+	if DayManager.current_phase == DayManager.DayPhase.SHIFT:
+		_ambient_timer -= delta
+		if _ambient_timer <= 0:
+			_ambient_timer = randf_range(15.0, 35.0)
+			_show_ambient_message()
+
+func _show_ambient_message() -> void:
+	var msg = _ambient_messages[randi() % _ambient_messages.size()]
+	Blackboard.interaction_feedback.emit("FACILITY BROADCAST: " + msg, "info")
 
 func _show_tutorial() -> void:
 	var tutorial = preload("res://scenes/ui/TutorialUI.tscn").instantiate()
@@ -76,7 +100,7 @@ func _on_day_started(day: int) -> void:
 		3:
 			_spawn_guard(Vector2(300, 300), [Vector2(300, 300), Vector2(500, 300)])
 			_spawn_guard(Vector2(900, 200), [Vector2(900, 200), Vector2(1100, 200)])
-			_spawn_supervisor(Vector2(player.global_position))  # Shadows player
+			_spawn_supervisor(player.global_position + Vector2(200, 200))  # Shadows player
 			_escape_terminal_active()
 	
 	# Reveal escape sector end of Day 1
@@ -151,11 +175,15 @@ func _spawn_sector_labels():
 		{"pos": Vector2(500, 360), "text": "SECTOR 04 // MAINTENANCE"}
 	]
 	
+	var container = get_node_or_null("SectorLabels")
 	for s in sectors:
 		var label = Label.new()
 		label.text = s["text"]
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		label.modulate = Color(1, 1, 1, 0.2)
+		label.modulate = Color(1, 1, 1, 0.5)
 		label.set("theme_override_font_sizes/font_size", 18)
-		add_child(label)
+		if container:
+			container.add_child(label)
+		else:
+			add_child(label)
 		label.global_position = s["pos"]

@@ -9,27 +9,27 @@ extends CanvasLayer
 		enabled = value
 		_update_enabled()
 
-@export var scanline_intensity: float = 0.15:
+@export var scanline_intensity: float = 0.02:
 	set(value):
 		scanline_intensity = value
 		_update_shader_param("scanline_intensity", value)
 
-@export var chromatic_aberration: float = 1.2:
+@export var chromatic_aberration: float = 0.2:
 	set(value):
 		chromatic_aberration = value
 		_update_shader_param("chromatic_aberration", value)
 
-@export var vignette_intensity: float = 0.4:
+@export var vignette_intensity: float = 0.08:
 	set(value):
 		vignette_intensity = value
 		_update_shader_param("vignette_intensity", value)
 
-@export var noise_intensity: float = 0.03:
+@export var noise_intensity: float = 0.005:
 	set(value):
 		noise_intensity = value
 		_update_shader_param("noise_intensity", value)
 
-@export var flicker_intensity: float = 0.02:
+@export var flicker_intensity: float = 0.002:
 	set(value):
 		flicker_intensity = value
 		_update_shader_param("flicker_intensity", value)
