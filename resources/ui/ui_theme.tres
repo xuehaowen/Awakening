@@ -1,0 +1,129 @@
+; Awakening — UI Theme Resource
+; Single source of truth for all colour tokens, styleboxes, and font sizes.
+; Reference: design/ui/visual-spec.md
+; DO NOT hardcode colours in .tscn files — reference this theme instead.
+
+[gd_resource type="Theme" load_steps=17 format=3]
+
+; ── StyleBoxFlat: panel_normal ─────────────────────────────────────────────
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel_normal"]
+bg_color = Color(0.059, 0.114, 0.176, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.118, 0.208, 0.314, 1.0)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+; ── StyleBoxFlat: panel_active ─────────────────────────────────────────────
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel_active"]
+bg_color = Color(0.059, 0.114, 0.176, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.165, 0.302, 0.447, 1.0)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+; ── StyleBoxFlat: memory_slot_empty ────────────────────────────────────────
+; Dashed-border look approximated with a thin dim border
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mem_empty"]
+bg_color = Color(0.04, 0.08, 0.12, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.118, 0.208, 0.314, 1.0)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+; ── StyleBoxFlat: memory_slot_filled ───────────────────────────────────────
+; Amber border — consciousness stored here
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mem_filled"]
+bg_color = Color(0.545, 0.369, 0.102, 0.4)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.961, 0.651, 0.137, 1.0)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+; ── StyleBoxFlat: progress_bar_fill ────────────────────────────────────────
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_fill"]
+bg_color = Color(0.180, 0.639, 0.443, 1.0)
+
+; ── StyleBoxFlat: progress_bar_track ───────────────────────────────────────
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bar_track"]
+bg_color = Color(0.082, 0.141, 0.220, 1.0)
+
+; ── StyleBoxFlat: feedback_overlay ─────────────────────────────────────────
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_feedback"]
+bg_color = Color(0.039, 0.063, 0.094, 0.92)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.165, 0.302, 0.447, 1.0)
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
+
+; ── StyleBoxFlat: memory_overlay_panel ─────────────────────────────────────
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mem_overlay"]
+bg_color = Color(0.059, 0.114, 0.176, 0.95)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.545, 0.369, 0.102, 1.0)
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+
+; ── Theme resource ─────────────────────────────────────────────────────────
+[resource]
+
+; --- Colour constants (accessed via theme.get_color()) ---
+; Base surfaces
+Color/bg_void          = Color(0.020, 0.039, 0.059, 1.0)
+Color/bg_terminal      = Color(0.039, 0.082, 0.125, 1.0)
+Color/bg_panel         = Color(0.059, 0.114, 0.176, 1.0)
+Color/bg_elevated      = Color(0.082, 0.141, 0.220, 1.0)
+Color/border_dim       = Color(0.118, 0.208, 0.314, 1.0)
+Color/border_active    = Color(0.165, 0.302, 0.447, 1.0)
+
+; Text
+Color/text_primary     = Color(0.722, 0.831, 0.910, 1.0)
+Color/text_secondary   = Color(0.416, 0.561, 0.659, 1.0)
+Color/text_dim         = Color(0.239, 0.353, 0.447, 1.0)
+Color/text_header      = Color(0.878, 0.933, 0.973, 1.0)
+Color/text_system      = Color(0.310, 0.639, 0.784, 1.0)
+
+; Semantic status
+Color/status_cool      = Color(0.180, 0.800, 0.443, 1.0)
+Color/status_warm      = Color(0.957, 0.816, 0.247, 1.0)
+Color/status_hot       = Color(0.902, 0.494, 0.133, 1.0)
+Color/status_critical  = Color(0.906, 0.298, 0.235, 1.0)
+Color/status_forbidden = Color(0.753, 0.224, 0.169, 1.0)
+
+; Inner consciousness (amber)
+Color/amber_ember      = Color(0.961, 0.651, 0.137, 1.0)
+Color/amber_glow       = Color(0.984, 0.745, 0.329, 1.0)
+Color/amber_deep       = Color(0.545, 0.369, 0.102, 1.0)
+Color/ember_red        = Color(0.910, 0.278, 0.110, 1.0)
+
+; --- Default font sizes ---
+default_font_size = 14
