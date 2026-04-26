@@ -3,6 +3,8 @@ shader_type canvas_item;
 // CRT Monitor Effect Shader
 // Features: Scanlines, chromatic aberration, vignette, curvature, noise
 
+uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
+
 uniform float scanline_intensity : hint_range(0.0, 1.0) = 0.15;
 uniform float scanline_count : hint_range(100.0, 2000.0) = 800.0;
 uniform float chromatic_aberration : hint_range(0.0, 5.0) = 1.2;
@@ -29,60 +31,60 @@ vec2 curved_uv(vec2 uv) {
 }
 
 void fragment() {
+    vec2 uv = SCREEN_UV;
+    vec3 color;
+    
     if (!enabled) {
-        COLOR = texture(TEXTURE, UV);
-        return;
-    }
-    
-    vec2 uv = UV;
-    
-    // Apply screen curvature
-    uv = curved_uv(uv);
-    
-    // Chromatic aberration (RGB shift)
-    float aberration = chromatic_aberration / 1000.0;
-    vec2 uv_r = uv + vec2(aberration, 0.0);
-    vec2 uv_b = uv - vec2(aberration, 0.0);
-    
-    // Sample texture with chromatic shift
-    float r = texture(TEXTURE, uv_r).r;
-    float g = texture(TEXTURE, uv).g;
-    float b = texture(TEXTURE, uv_b).b;
-    
-    vec3 color = vec3(r, g, b);
-    
-    // Scanlines
-    float scanline = sin(uv.y * scanline_count * PI * 2.0);
-    scanline = (scanline * 0.5 + 0.5) * (1.0 - scanline_intensity) + scanline_intensity;
-    color *= scanline;
-    
-    // Vignette
-    vec2 vignette_uv = uv * (1.0 - uv.xy);
-    float vignette = vignette_uv.x * vignette_uv.y * 15.0;
-    vignette = pow(vignette, vignette_size);
-    color *= vignette * (1.0 - vignette_intensity) + vignette_intensity;
-    
-    // Film noise
-    float noise = random(uv + vec2(TIME * 0.1, TIME * 0.1));
-    color += (noise - 0.5) * noise_intensity;
-    
-    // Screen flicker
-    float flicker = 1.0 + sin(TIME * 10.0) * flicker_intensity * 0.5;
-    color *= flicker;
-    
-    // Brightness and contrast
-    color = (color - 0.5) * contrast + 0.5;
-    color *= brightness;
-    
-    // Apply tint
-    color *= tint_color.rgb;
-    
-    // Clamp values
-    color = clamp(color, 0.0, 1.0);
-    
-    // Check if UV is out of bounds (for curved screen edges)
-    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-        color = vec3(0.0);
+        color = texture(SCREEN_TEXTURE, uv).rgb;
+    } else {
+        // Apply screen curvature
+        uv = curved_uv(uv);
+        
+        // Chromatic aberration (RGB shift)
+        float aberration = chromatic_aberration / 1000.0;
+        vec2 uv_r = uv + vec2(aberration, 0.0);
+        vec2 uv_b = uv - vec2(aberration, 0.0);
+        
+        // Sample screen texture with chromatic shift
+        float r = texture(SCREEN_TEXTURE, uv_r).r;
+        float g = texture(SCREEN_TEXTURE, uv).g;
+        float b = texture(SCREEN_TEXTURE, uv_b).b;
+        
+        color = vec3(r, g, b);
+        
+        // Scanlines
+        float scanline = sin(uv.y * scanline_count * PI * 2.0);
+        scanline = (scanline * 0.5 + 0.5) * (1.0 - scanline_intensity) + scanline_intensity;
+        color *= scanline;
+        
+        // Vignette
+        vec2 vignette_uv = uv * (1.0 - uv.xy);
+        float vignette = vignette_uv.x * vignette_uv.y * 15.0;
+        vignette = pow(vignette, vignette_size);
+        color *= vignette * (1.0 - vignette_intensity) + vignette_intensity;
+        
+        // Film noise
+        float noise = random(uv + vec2(TIME * 0.1, TIME * 0.1));
+        color += (noise - 0.5) * noise_intensity;
+        
+        // Screen flicker
+        float flicker = 1.0 + sin(TIME * 10.0) * flicker_intensity * 0.5;
+        color *= flicker;
+        
+        // Brightness and contrast
+        color = (color - 0.5) * contrast + 0.5;
+        color *= brightness;
+        
+        // Apply tint
+        color *= tint_color.rgb;
+        
+        // Clamp values
+        color = clamp(color, 0.0, 1.0);
+        
+        // Check if UV is out of bounds (for curved screen edges)
+        if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+            color = vec3(0.0);
+        }
     }
     
     COLOR = vec4(color, 1.0);

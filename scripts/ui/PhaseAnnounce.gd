@@ -11,8 +11,8 @@ func _ready():
 	layer = 95
 	visible = false
 	
-	# Connect to DayManager
-	DayManager.phase_changed.connect(_on_phase_changed)
+	# Connect to Blackboard signal
+	Blackboard.phase_changed.connect(_on_phase_changed)
 	timer.timeout.connect(_on_timer_timeout)
 
 func show_announcement(phase: int) -> void:

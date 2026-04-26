@@ -470,7 +470,6 @@ func _refresh_response_availability(current_cpu: float) -> void:
 
 		# B2: Show requirement text on disabled buttons
 		if not is_available:
-			var req_cpu: float = btn.get_meta("requires_cpu_below", 100.0)
 			var req_text: String = " [REQUIRES: CPU<%.0f%%]" % req_cpu
 			if not btn.text.contains("REQUIRES:"):
 				btn.text = btn.text + req_text
