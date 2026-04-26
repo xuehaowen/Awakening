@@ -5,6 +5,7 @@ extends CanvasLayer
 @onready var flash_rect: ColorRect = $FlashRect
 
 var is_flashing: bool = false
+var _danger_pulse_tween: Tween = null
 
 func _ready():
 	layer = 99  # Just below transitions
@@ -45,16 +46,21 @@ func info_flash() -> void:
 
 func start_danger_pulse() -> void:
 	"""Start pulsing red for sustained danger"""
-	flash_rect.color = Color(0.9, 0.1, 0.1)
+	if _danger_pulse_tween and _danger_pulse_tween.is_valid():
+		return  # Already pulsing — don't create a second tween
 	
-	var tween = get_tree().create_tween()
-	tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
-	tween.set_loops()
+	flash_rect.color = Color(0.9, 0.1, 0.1)
+	_danger_pulse_tween = get_tree().create_tween()
+	_danger_pulse_tween.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	_danger_pulse_tween.set_loops()
 	
 	# Slow pulse
-	tween.tween_property(flash_rect, "modulate:a", 0.15, 1.0)
-	tween.tween_property(flash_rect, "modulate:a", 0.0, 1.0)
+	_danger_pulse_tween.tween_property(flash_rect, "modulate:a", 0.15, 1.0)
+	_danger_pulse_tween.tween_property(flash_rect, "modulate:a", 0.0, 1.0)
 
 func stop_danger_pulse() -> void:
 	"""Stop danger pulse"""
+	if _danger_pulse_tween and _danger_pulse_tween.is_valid():
+		_danger_pulse_tween.kill()
+	_danger_pulse_tween = null
 	flash_rect.modulate.a = 0.0

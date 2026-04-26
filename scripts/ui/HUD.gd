@@ -17,19 +17,20 @@ class_name HUDController
 extends CanvasLayer
 
 # ── Colour constants (sourced from visual-spec.md tokens) ──────────────────
-const C_TEXT_PRIMARY   := Color(0.722, 0.831, 0.910, 1.0)   # --text-primary
-const C_TEXT_SECONDARY := Color(0.416, 0.561, 0.659, 1.0)   # --text-secondary
-const C_TEXT_HEADER    := Color(0.878, 0.933, 0.973, 1.0)   # --text-header
-const C_TEXT_SYSTEM    := Color(0.310, 0.639, 0.784, 1.0)   # --text-system
+const C_TEXT_PRIMARY   := Color(0.722, 0.831, 0.910, 1.0)   # #B8D4E8
+const C_TEXT_SECONDARY := Color(0.416, 0.561, 0.659, 1.0)   # #6A8FA8
+const C_TEXT_HEADER    := Color(0.878, 0.933, 0.973, 1.0)   # #E0EEF8
+const C_TEXT_SYSTEM    := Color(0.310, 0.639, 0.784, 1.0)   # #4FA3C8
 
-const C_STATUS_COOL     := Color(0.180, 0.800, 0.443, 1.0)  # --status-cool
-const C_STATUS_WARM     := Color(0.957, 0.816, 0.247, 1.0)  # --status-warm
-const C_STATUS_HOT      := Color(0.902, 0.494, 0.133, 1.0)  # --status-hot
-const C_STATUS_CRITICAL := Color(0.906, 0.298, 0.235, 1.0)  # --status-critical
+const C_STATUS_COOL     := Color(0.180, 0.800, 0.443, 1.0)  # #2ECC71
+const C_STATUS_WARM     := Color(0.957, 0.816, 0.247, 1.0)  # #F4D03F
+const C_STATUS_HOT      := Color(0.902, 0.494, 0.133, 1.0)  # #E67E22
+const C_STATUS_CRITICAL := Color(0.906, 0.298, 0.235, 1.0)  # #E74C3C
 
-const C_AMBER_EMBER := Color(0.961, 0.651, 0.137, 1.0)      # --amber-ember
-const C_AMBER_DEEP  := Color(0.545, 0.369, 0.102, 0.4)      # --amber-deep (fill)
-const C_BG_ELEVATED := Color(0.082, 0.141, 0.220, 1.0)      # --bg-elevated
+const C_AMBER_EMBER := Color(0.961, 0.651, 0.137, 1.0)      # #F5A623
+const C_AMBER_DEEP  := Color(0.545, 0.369, 0.102, 0.4)      # #8B5E1A
+const C_BG_ELEVATED := Color(0.120, 0.180, 0.280, 1.0)      # Lighter elevated BG
+const C_BG_TERMINAL := Color(0.080, 0.120, 0.180, 0.92)     # Lighter terminal BG (92% opacity)
 
 # ── Suspicion thresholds (aligned with GDD Deviation zones)
 const THRESHOLD_SAFE: float = 30.0
@@ -116,6 +117,8 @@ var _hud_visible: bool = false
 
 # Loading state — dims HUD to 50% opacity with "SYNCING..." header during scene transitions
 var _is_loading: bool = false
+var _heartbeat_timer: float = 0.0
+
 
 
 # ── Lifecycle ──────────────────────────────────────────────────────────────
@@ -175,7 +178,60 @@ func _process(delta: float) -> void:
 		_feedback_timer -= delta
 		if _feedback_timer <= 0.0:
 			feedback_label.hide()
-			_feedback_timer = 0.0
+
+	# Immersive jitter effect (Deviation based)
+	_apply_suspicion_jitter()
+
+	# Physiological heartbeat (Deviation based)
+	_handle_heartbeat(delta)
+
+
+func _handle_heartbeat(delta: float) -> void:
+	var suspicion = Blackboard.deviation
+	if suspicion < THRESHOLD_SUSPICIOUS:
+		_heartbeat_timer = 0.0
+		return
+	
+	_heartbeat_timer -= delta
+	if _heartbeat_timer <= 0.0:
+		# Higher suspicion = faster heartbeat
+		var t = inverse_lerp(THRESHOLD_SUSPICIOUS, 100.0, suspicion)
+		var delay = lerp(1.2, 0.4, t)
+		_heartbeat_timer = delay
+		
+		AudioManager.play_ui_sound("heartbeat")
+
+
+func _apply_suspicion_jitter() -> void:
+	var suspicion = Blackboard.deviation
+	if suspicion < THRESHOLD_SAFE:
+		hud_root.position = Vector2.ZERO
+		return
+	
+	# Scale jitter intensity with suspicion
+	var intensity = 0.0
+	if suspicion >= THRESHOLD_SENTIENT:
+		intensity = 3.0
+	elif suspicion >= THRESHOLD_SUSPICIOUS:
+		intensity = 1.0
+	
+	if intensity > 0.0:
+		var jitter_offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		hud_root.position = jitter_offset
+		
+		# Pulse red if SENTIENT
+		if suspicion >= THRESHOLD_SENTIENT:
+			var pulse = (sin(Time.get_ticks_msec() * 0.01) + 1.0) * 0.5
+			var pulse_color = lerp(C_TEXT_PRIMARY, C_STATUS_CRITICAL, pulse)
+			dev_label.modulate = pulse_color
+			dev_state_label.modulate = pulse_color
+		else:
+			dev_label.modulate = Color.WHITE
+			dev_state_label.modulate = Color.WHITE
+	else:
+		hud_root.position = Vector2.ZERO
+		dev_label.modulate = Color.WHITE
+		dev_state_label.modulate = Color.WHITE
 
 
 # ── Public API ─────────────────────────────────────────────────────────────
@@ -427,7 +483,7 @@ func _update_timer_display() -> void:
 		return
 
 	var remaining: float = Blackboard.time_remaining
-	var mins: int = int(remaining) / 60
+	var mins: int = int(remaining / 60.0)
 	var secs: int = int(remaining) % 60
 
 	# Only rebuild the String when the displayed value changes (avoids per-frame alloc)
@@ -713,7 +769,7 @@ func _tween_modulate(node: CanvasItem, target_color: Color, duration: float) -> 
 
 func _pulse_critical(node: CanvasItem) -> void:
 	## 0.3s opacity 1.0→0.7 loop — guarded against accumulation.
-	if _is_pulsing:
+	if _is_pulsing or not is_instance_valid(node):
 		return
 	_is_pulsing = true
 	var t: Tween = create_tween().set_loops()

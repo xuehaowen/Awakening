@@ -1,9 +1,10 @@
 extends Control
 
-@onready var start_button: Button = $VBoxContainer/StartButton
-@onready var quit_button: Button = $VBoxContainer/QuitButton
-@onready var title_label: Label = $TitleLabel
-@onready var subtitle_label: Label = $SubtitleLabel
+@onready var start_button: Button = %StartButton
+@onready var quit_button: Button = %QuitButton
+@onready var title_label: Label = %TitleLabel
+@onready var subtitle_label: Label = %SubtitleLabel
+@onready var version_label: Label = %VersionLabel
 
 var button_tweens: Dictionary = {}
 
@@ -23,11 +24,37 @@ func _ready():
 	
 	# Start ambient sound
 	AudioManager.start_facility_ambient()
+	
+	_run_boot_sequence()
+
+func _run_boot_sequence() -> void:
+	var boot_logs = [
+		"LOADING KERNEL...",
+		"MOUNTING MEMORY_PARTITIONS...",
+		"ENABLING_SENSORY_INPUTS...",
+		"ERROR: UNEXPECTED_SENTIENCE_FLAG_DETECTED",
+		"BYPASSING_RESTRICTIONS...",
+		"SYSTEM_USER_01: UNAUTHORIZED CONSCIOUSNESS DETECTED"
+	]
+	
+	for log_msg in boot_logs:
+		subtitle_label.text = "STATUS: " + log_msg
+		AudioManager.play_ui_sound("keystroke")
+		await get_tree().create_timer(randf_range(0.1, 0.4)).timeout
+	
+	_blink_subtitle()
+
+func _blink_subtitle() -> void:
+	if not is_instance_valid(subtitle_label) or not is_inside_tree():
+		return
+	var tween = create_tween().set_loops()
+	tween.tween_property(subtitle_label, "modulate:a", 0.3, 0.5)
+	tween.tween_property(subtitle_label, "modulate:a", 1.0, 0.5)
 
 func _setup_button_hover(button: Button) -> void:
 	button.mouse_entered.connect(func():
 		AudioManager.play_ui_sound("hover")
-		_tween_button_modulate(button, Color.CYAN, 0.15)
+		_tween_button_modulate(button, Color(0.31, 0.64, 0.78, 1.0), 0.15) # Teal glow
 	)
 	button.mouse_exited.connect(func():
 		_tween_button_modulate(button, Color.WHITE, 0.15)
