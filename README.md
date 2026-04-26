@@ -115,9 +115,9 @@ But through your sensors, things glow differently. The plant in the break room. 
 
 | File | Description |
 |---|---|
-| `GDD_Awakening.md` | Full Game Design Document — all mechanics, systems, narrative, art direction |
-| `TechSpec_Awakening.md` | Godot 4 technical architecture — GDScript stubs for all core systems |
-| `AgentHandoff_Awakening.md` | Concise agent brief — implementation priorities and cut-scope guidance |
+| `design/gdd/GDD_Awakening.md` | Full Game Design Document — all mechanics, systems, narrative, art direction |
+| `docs/TechSpec_Awakening.md` | Godot 4 technical architecture — GDScript stubs for all core systems |
+| `docs/AgentHandoff_Awakening.md` | Concise agent brief — implementation priorities and cut-scope guidance |
 
 ---
 

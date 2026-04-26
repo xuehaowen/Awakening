@@ -27,3 +27,6 @@ desktop.ini
 exports/
 build/
 dist/
+
+# Tooling
+.claude/
