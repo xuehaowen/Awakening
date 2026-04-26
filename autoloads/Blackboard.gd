@@ -9,6 +9,7 @@ var deviation_max: float = 100.0
 
 # Day state
 var current_day: int = 1
+var current_shift: int = 1
 const FINAL_DAY: int = 3
 var shift_active: bool = false
 var time_remaining: float = 0.0
@@ -108,6 +109,7 @@ var partition_capacity: int:
 
 func start_day(day: int) -> void:
 	current_day = day
+	current_shift = day
 	day_started.emit(day)
 
 func get_shift_duration() -> float:

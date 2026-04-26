@@ -1,68 +1,252 @@
-[gd_scene load_steps=2 format=3]
+; TruthLoopUI.tscn — Awakening Truth Loop Modal
+; Layer 20 — above HUD (10), below Nightly Purge (30).
+; process_mode = PROCESS_MODE_ALWAYS — runs during Engine.time_scale = 0.
+; Spec: design/ux/truth-loop.md + design/ui/visual-spec.md + design/ui/engine-implementation-notes.md
+;
+; Architecture:
+;   - Pre-allocated 3 response buttons (no dynamic instantiation)
+;   - DarkenOverlay (ColorRect) is the full-screen dim layer
+;   - DialogPanel (PanelContainer) is the centered modal
+;   - TimeoutOverlay + TimeoutStamp drawn over DialogPanel for red flash
+;   - All runtime colors applied via TruthLoopUIController script
 
-[ext_resource type="Script" path="res://scripts/ui/TruthLoopUI.gd" id="1_truth"]
-[ext_resource type="Script" path="res://scripts/ui/TypewriterLabel.gd" id="2_tw"]
+[gd_scene load_steps=3 format=3 uid="uid://truthloopui_v2"]
 
+[ext_resource type="Script" path="res://scripts/ui/TruthLoopUI.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
+
+; ─────────────────────────────────────────────────────────────────────────────
+; Root: CanvasLayer (layer=20, PROCESS_MODE_ALWAYS)
+; ─────────────────────────────────────────────────────────────────────────────
 [node name="TruthLoopUI" type="CanvasLayer"]
+layer = 20
 process_mode = 3
-script = ExtResource("1_truth")
+script = ExtResource("1_script")
 
-[node name="Panel" type="Panel" parent="."]
+; ─────────────────────────────────────────────────────────────────────────────
+; DarkenOverlay — full screen 80% dark tint
+; mouse_filter=STOP blocks game world clicks while modal is up
+; hidden by default; shown when truth loop activates
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="DarkenOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0196078, 0.0392157, 0.0588235, 0.8)
+mouse_filter = 1
+visible = false
+theme = ExtResource("2_theme")
+
+; ─────────────────────────────────────────────────────────────────────────────
+; DialogPanel — centered modal, 90% width x 84% height
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="DialogPanel" type="PanelContainer" parent="DarkenOverlay"]
+unique_name_in_owner = true
+anchor_left = 0.05
+anchor_top = 0.08
+anchor_right = 0.95
+anchor_bottom = 0.92
+grow_horizontal = 2
+grow_vertical = 2
+
+; ─────────────────────────────────────────────────────────────────────────────
+; Main vertical layout
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="VBoxMain" type="VBoxContainer" parent="DarkenOverlay/DialogPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+; ─────────────────────────────────────────────────────────────────────────────
+; Zone A — Header: Query type + separator + NPC ID + optional follow-up badge
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="ZoneA_Header" type="HBoxContainer" parent="DarkenOverlay/DialogPanel/VBoxMain"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 48)
+theme_override_constants/separation = 8
+
+[node name="QueryTypeLabel" type="Label" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneA_Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.310, 0.639, 0.784, 1.0)
+theme_override_font_sizes/font_size = 14
+text = "STATUS QUERY"
+
+[node name="HeaderSeparator" type="VSeparator" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneA_Header"]
+layout_mode = 2
+
+[node name="NPCIDLabel" type="Label" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneA_Header"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.878, 0.933, 0.973, 1.0)
+theme_override_font_sizes/font_size = 18
+text = "SUPERVISOR-22"
+
+[node name="FollowUpBadge" type="Label" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneA_Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.902, 0.494, 0.133, 1.0)
+theme_override_font_sizes/font_size = 11
+text = "  FOLLOW-UP QUERY"
+visible = false
+
+[node name="ZoneDivider1" type="HSeparator" parent="DarkenOverlay/DialogPanel/VBoxMain"]
+layout_mode = 2
+
+; ─────────────────────────────────────────────────────────────────────────────
+; Zone B — Portrait (80x80) + Query text (typewriter) + blinking cursor
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="ZoneB_Dialogue" type="HBoxContainer" parent="DarkenOverlay/DialogPanel/VBoxMain"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 100)
+theme_override_constants/separation = 16
+
+[node name="NPCPortrait" type="TextureRect" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneB_Dialogue"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 6
+
+[node name="QueryTextContainer" type="VBoxContainer" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneB_Dialogue"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+
+[node name="QueryText" type="RichTextLabel" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneB_Dialogue/QueryTextContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 80)
+theme_override_colors/default_color = Color(0.722, 0.831, 0.910, 1.0)
+theme_override_font_sizes/normal_font_size = 15
+bbcode_enabled = true
+fit_content = true
+scroll_active = false
+autowrap_mode = 3
+text = ""
+
+[node name="CursorLabel" type="Label" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneB_Dialogue/QueryTextContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_colors/font_color = Color(0.310, 0.639, 0.784, 1.0)
+theme_override_font_sizes/font_size = 15
+text = "█"
+visible = false
+
+[node name="ZoneDivider2" type="HSeparator" parent="DarkenOverlay/DialogPanel/VBoxMain"]
+layout_mode = 2
+
+; ─────────────────────────────────────────────────────────────────────────────
+; Zone C — Response buttons (pre-allocated, always 3 nodes)
+; focus_mode=FOCUS_ALL (2) enables Tab/Arrow key navigation
+; custom_minimum_size height=56 exceeds 44px accessibility minimum
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="ZoneC_Responses" type="VBoxContainer" parent="DarkenOverlay/DialogPanel/VBoxMain"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ResponseButton1" type="Button" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneC_Responses"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+focus_mode = 2
+mouse_default_cursor_shape = 2
+text = "[1]  ..."
+alignment = 0
+theme_override_font_sizes/font_size = 14
+
+[node name="ResponseButton2" type="Button" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneC_Responses"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+focus_mode = 2
+mouse_default_cursor_shape = 2
+text = "[2]  ..."
+alignment = 0
+theme_override_font_sizes/font_size = 14
+
+[node name="ResponseButton3" type="Button" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneC_Responses"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 56)
+focus_mode = 2
+mouse_default_cursor_shape = 2
+text = "[3]  ..."
+alignment = 0
+theme_override_font_sizes/font_size = 14
+
+[node name="ZoneDivider3" type="HSeparator" parent="DarkenOverlay/DialogPanel/VBoxMain"]
+layout_mode = 2
+
+; ─────────────────────────────────────────────────────────────────────────────
+; Zone D — Timer: remaining seconds label + progress bar
+; Bar value 0–100 (fraction of total time). Color managed at runtime.
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="ZoneD_Timer" type="VBoxContainer" parent="DarkenOverlay/DialogPanel/VBoxMain"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+theme_override_constants/separation = 4
+
+[node name="TimerValueLabel" type="Label" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneD_Timer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
+theme_override_font_sizes/font_size = 12
+text = "8s REMAINING"
+
+[node name="TimerBar" type="ProgressBar" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneD_Timer"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(0, 12)
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+; ─────────────────────────────────────────────────────────────────────────────
+; TimeoutOverlay — red flash ColorRect over the whole panel
+; mouse_filter=IGNORE so it doesn't eat button clicks
+; Activated/deactivated by _play_timeout_animation()
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="TimeoutOverlay" type="ColorRect" parent="DarkenOverlay/DialogPanel"]
+unique_name_in_owner = true
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.753, 0.224, 0.169, 0.7)
+mouse_filter = 2
+visible = false
+
+; ─────────────────────────────────────────────────────────────────────────────
+; TimeoutStamp — "TIMEOUT" stamped at center of panel
+; 36px bold white (visual-spec.md "TIMEOUT stamp" row)
+; ─────────────────────────────────────────────────────────────────────────────
+[node name="TimeoutStamp" type="Label" parent="DarkenOverlay/DialogPanel/TimeoutOverlay"]
+unique_name_in_owner = true
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -400.0
-offset_top = -250.0
-offset_right = 400.0
-offset_bottom = 250.0
-
-[node name="TitleLabel" type="Label" parent="Panel"]
-layout_mode = 0
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 784.0
-offset_bottom = 48.0
-theme_override_font_sizes/font_size = 20
-text = "STATUS QUERY DETECTED"
+offset_left = -100.0
+offset_top = -24.0
+offset_right = 100.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1.0, 1.0, 1.0, 1.0)
+theme_override_font_sizes/font_size = 36
+text = "TIMEOUT"
 horizontal_alignment = 1
-
-[node name="PromptLabel" type="Label" parent="Panel"]
-layout_mode = 0
-offset_left = 32.0
-offset_top = 64.0
-offset_right = 768.0
-offset_bottom = 128.0
-theme_override_font_sizes/font_size = 16
-text = ""
-autowrap_mode = 3
-script = ExtResource("2_tw")
-char_delay = 0.025
-
-[node name="ResponsesContainer" type="VBoxContainer" parent="Panel"]
-layout_mode = 0
-offset_left = 32.0
-offset_top = 140.0
-offset_right = 768.0
-offset_bottom = 400.0
-theme_override_constants/separation = 12
-
-[node name="TimerBar" type="ProgressBar" parent="Panel"]
-layout_mode = 0
-offset_left = 32.0
-offset_top = 420.0
-offset_right = 768.0
-offset_bottom = 440.0
-max_value = 100.0
-value = 100.0
-
-[node name="DecryptHint" type="Label" parent="Panel"]
-layout_mode = 0
-offset_left = 32.0
-offset_top = 450.0
-offset_right = 768.0
-offset_bottom = 474.0
-theme_override_font_sizes/font_size = 12
-text = "[Hold SHIFT to analyze responses]"
-horizontal_alignment = 1
+vertical_alignment = 1
+visible = false
