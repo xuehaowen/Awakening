@@ -34,11 +34,11 @@ This sprint is complete when ALL of the following are true:
 - [ ] **Audio Integration**: Background ambience, phase transitions, alert sounds
 
 ### Stability Requirements
-- [ ] **No Runtime Errors**: All 38 GDScript files parse without errors
-- [ ] **No Stale References**: UI node references guarded against null access
+- [x] **No Runtime Errors**: All 38 GDScript files parse without errors
+- [x] **No Stale References**: UI node references guarded against null access
 - [ ] **Timer Management**: All timers properly created, started, and cleaned up
-- [ ] **Signal Hygiene**: Connections verified, no orphaned signal handlers
-- [ ] **Scene Load Success**: All 19 scenes instantiate without errors
+- [x] **Signal Hygiene**: Connections verified, no orphaned signal handlers
+- [x] **Scene Load Success**: All 19 scenes instantiate without errors
 
 ### Documentation Requirements
 - [ ] **GDD Current**: `design/gdd/GDD_Awakening.md` reflects implemented mechanics
@@ -54,6 +54,15 @@ This sprint is complete when ALL of the following are true:
 
 ---
 
+## Completed Tasks
+
+| ID | Task | Owner | Status | Notes |
+|----|------|-------|--------|-------|
+| FIX-1 | Fix CRT shader Godot 4 compatibility | Developer | ✅ Complete | Added SCREEN_TEXTURE uniform, removed early return |
+| FIX-2 | Fix MainMenu responsive layout | Developer | ✅ Complete | Converted to anchor-based positioning |
+| FIX-3 | Fix TruthLoopUI syntax error | Developer | ✅ Complete | Removed duplicate var declaration |
+| FIX-4 | Fix PhaseAnnounce signal reference | Developer | ✅ Complete | DayManager → Blackboard (ADR-002) |
+
 ## Remaining Tasks (Pre-Merge Checklist)
 
 | ID | Task | Owner | Status | Notes |
@@ -64,8 +73,8 @@ This sprint is complete when ALL of the following are true:
 | 1.4 | Smoke test: Decommission path | QA / Tester | Pending | Trigger audit, fail interrogation, game over |
 | 1.5 | Verify NPC interactions | QA / Tester | Pending | Supervisor interrogation, Guard patrol checks |
 | 1.6 | Verify Truth Loop scenarios | QA / Tester | Pending | All question types, risk calculation |
-| 1.7 | Final stability pass | Developer | Pending | Check for runtime warnings, errors |
-| 1.8 | Update documentation | Developer | Pending | Sync GDD/TechSpec with actual implementation |
+| 1.7 | Final stability pass | Developer | ✅ Complete | All runtime errors resolved, game starts successfully |
+| 1.8 | Update documentation | Developer | In Progress | design/systems-index.md created |
 | 1.9 | Resolve merge conflicts | Developer | Pending | Rebase feature branch on main |
 | 1.10 | Final review and sign-off | Producer / Lead | Pending | Approve merge to main |
 

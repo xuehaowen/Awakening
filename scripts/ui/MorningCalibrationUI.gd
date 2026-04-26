@@ -17,6 +17,7 @@ var _tasks_shown: int = 0
 
 func _ready():
 	panel.hide()
+	$DarkOverlay.hide()
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
 	continue_button.pressed.connect(_on_continue_pressed)
@@ -24,8 +25,17 @@ func _ready():
 	# Connect to day started signal
 	Blackboard.day_started.connect(_on_day_started)
 
+func _input(event: InputEvent) -> void:
+	# Fallback: allow Enter/E to continue even if button click fails
+	if is_showing and continue_button.disabled == false:
+		if event.is_action_pressed("ui_accept") or event.is_action_pressed("interact"):
+			print("MorningCalibrationUI: Keyboard continue triggered")
+			_on_continue_pressed()
+
 func show_calibration(day: int, sector: String, tasks: Array) -> void:
+	print("MorningCalibrationUI: show_calibration called, is_showing=", is_showing)
 	if is_showing:
+		print("MorningCalibrationUI: already showing, returning early")
 		return
 	
 	is_showing = true
@@ -39,15 +49,6 @@ func show_calibration(day: int, sector: String, tasks: Array) -> void:
 	for child in task_list.get_children():
 		child.queue_free()
 	
-	# Add task headers
-	var header = Label.new()
-	header.text = "DAILY TASK ASSIGNMENTS:"
-	header.add_theme_font_size_override("font_size", 24)
-	task_list.add_child(header)
-	
-	var separator = HSeparator.new()
-	task_list.add_child(separator)
-	
 	# Show tasks with typewriter effect
 	_show_tasks_sequentially(tasks)
 	
@@ -56,7 +57,8 @@ func show_calibration(day: int, sector: String, tasks: Array) -> void:
 	continue_button.disabled = true
 	continue_button.text = "CALIBRATING..."
 	
-	# Show panel
+	# Show overlay and panel
+	$DarkOverlay.show()
 	panel.show()
 	panel.modulate.a = 0.0
 	
@@ -69,10 +71,13 @@ func show_calibration(day: int, sector: String, tasks: Array) -> void:
 
 func _show_tasks_sequentially(tasks: Array) -> void:
 	"""Display tasks one by one with typewriter effect"""
+	print("MorningCalibrationUI: showing ", tasks.size(), " tasks")
 	for i in range(tasks.size()):
 		var task = tasks[i]
 		var task_label = Label.new()
-		task_label.add_theme_font_size_override("font_size", 22)
+		task_label.add_theme_font_size_override("font_size", 18)
+		task_label.add_theme_color_override("font_color", Color(0.1, 0.1, 0.15, 1.0))
+		task_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		task_list.add_child(task_label)
 		
 		# Type out task text
@@ -81,6 +86,7 @@ func _show_tasks_sequentially(tasks: Array) -> void:
 		
 		AudioManager.play_ui_sound("keystroke")
 		await get_tree().create_timer(0.3).timeout
+	print("MorningCalibrationUI: all tasks shown")
 
 func _type_text(label: Label, text: String, delay: float) -> void:
 	"""Type out text character by character"""
@@ -93,6 +99,7 @@ func _type_text(label: Label, text: String, delay: float) -> void:
 
 func _start_system_check() -> void:
 	"""Run system check animation"""
+	print("MorningCalibrationUI: starting system checks")
 	var checks = [
 		"[ OK ] Neural link stable",
 		"[ OK ] Motor functions nominal",
@@ -109,6 +116,7 @@ func _start_system_check() -> void:
 	# Enable continue button
 	continue_button.disabled = false
 	continue_button.text = "BEGIN SHIFT"
+	print("MorningCalibrationUI: button enabled - BEGIN SHIFT")
 	
 	# Pulse button for attention
 	_pulse_button()
@@ -124,18 +132,25 @@ func _pulse_button() -> void:
 	tween.finished.connect(_pulse_button)
 
 func _on_continue_pressed() -> void:
+	print("MorningCalibrationUI: _on_continue_pressed called, is_showing=", is_showing)
 	if not is_showing:
+		print("MorningCalibrationUI: early return - not showing")
 		return
 	
 	AudioManager.play_ui_sound("click")
+	print("MorningCalibrationUI: starting fade-out tween")
+	
+	# Stop any pulsing tween on the button
+	continue_button.modulate = Color.WHITE
 	
 	# Animate out
 	var tween = get_tree().create_tween()
 	tween.tween_property(panel, "modulate:a", 0.0, 0.3)
 	tween.finished.connect(func():
-		panel.hide()
+		print("MorningCalibrationUI: tween finished, destroying UI")
 		is_showing = false
 		calibration_complete.emit()
+		queue_free()
 	)
 
 func _on_day_started(day: int) -> void:

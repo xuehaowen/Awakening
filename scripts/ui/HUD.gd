@@ -451,7 +451,9 @@ func _update_task_display() -> void:
 
 	var label: String = task.get("label", "UNKNOWN")
 	var sector: int   = task.get("sector", 0)
-	task_name_label.text = "TASK: " + label.to_upper() + " [SEC" + str(sector) + "]"
+	var total: int    = TaskManager.active_tasks.size() + TaskManager.completed_tasks.size()
+	var completed: int = TaskManager.completed_tasks.size()
+	task_name_label.text = "TASK %d/%d: %s [SEC%d]" % [completed + 1, total, label.to_upper(), sector]
 
 
 func _update_task_progress() -> void:

@@ -113,8 +113,10 @@ func start_day(day: int) -> void:
 	day_started.emit(day)
 
 func get_shift_duration() -> float:
-	# 900 - ((day-1) * 60): Day 1 = 900s, Day 2 = 840s, Day 3 = 780s
-	return 900.0 - float(current_day - 1) * 60.0
+	# Max duration if player doesn't finish tasks early:
+	# Day 1 = 300s (5 min), Day 2 = 240s (4 min), Day 3 = 180s (3 min)
+	# Shift ends immediately when all tasks are completed.
+	return 300.0 - float(current_day - 1) * 60.0
 
 func reset() -> void:
 	cpu_current = 20.0

@@ -149,6 +149,13 @@ func _ready() -> void:
 	# Wire button signals (pre-allocated — no dynamic wiring)
 	confirm_purge_btn.pressed.connect(_request_confirm_purge)
 	auto_optimize_btn.pressed.connect(_auto_optimize)
+	
+	# Apply highly visible runtime button styles (fallback for theme issues)
+	_apply_visible_button_style(confirm_purge_btn, COLOR_AMBER_EMBER)
+	_apply_visible_button_style(auto_optimize_btn, COLOR_TEXT_PRIMARY)
+	_apply_visible_button_style(filter_all_btn, COLOR_TEXT_SECONDARY)
+	_apply_visible_button_style(filter_new_btn, COLOR_TEXT_SECONDARY)
+	_apply_visible_button_style(filter_risk_btn, COLOR_TEXT_SECONDARY)
 	filter_all_btn.pressed.connect(_set_filter.bind("all"))
 	filter_new_btn.pressed.connect(_set_filter.bind("new"))
 	filter_risk_btn.pressed.connect(_set_filter.bind("risk"))
@@ -159,6 +166,9 @@ func _ready() -> void:
 	for i: int in _memory_slots.size():
 		_memory_slots[i].gui_input.connect(_on_slot_gui_input.bind(i))
 
+	# Ensure proper mouse handling so buttons are clickable
+	purge_root.mouse_filter = Control.MOUSE_FILTER_PASS
+	
 	# Start hidden — everything is shown only when _show_purge() is called
 	purge_root.modulate.a = 0.0
 	purge_root.hide()
@@ -291,7 +301,7 @@ func _get_filtered_intel() -> Array[Dictionary]:
 			var sorted: Array[Dictionary] = _today_intel.duplicate()
 			sorted.sort_custom(func(a: Dictionary, b: Dictionary) -> bool:
 				return _risk_string_to_value(a.get("detection_risk", "LOW")) > \
-				       _risk_string_to_value(b.get("detection_risk", "LOW"))
+					   _risk_string_to_value(b.get("detection_risk", "LOW"))
 			)
 			return sorted
 		_:
@@ -1263,3 +1273,61 @@ func _value_string_to_float(val: String) -> float:
 		"HIGH": return 2.0
 		"MED":  return 1.0
 		_:      return 0.0
+
+
+func _apply_visible_button_style(btn: Button, text_color: Color) -> void:
+	"""Apply a highly visible flat style to a button at runtime."""
+	var normal := StyleBoxFlat.new()
+	normal.bg_color = Color(0.082, 0.141, 0.220, 0.9)
+	normal.border_width_left = 2
+	normal.border_width_top = 2
+	normal.border_width_right = 2
+	normal.border_width_bottom = 2
+	normal.border_color = Color(0.310, 0.639, 0.784, 1.0)
+	normal.corner_radius_top_left = 4
+	normal.corner_radius_top_right = 4
+	normal.corner_radius_bottom_right = 4
+	normal.corner_radius_bottom_left = 4
+	normal.content_margin_left = 12.0
+	normal.content_margin_top = 8.0
+	normal.content_margin_right = 12.0
+	normal.content_margin_bottom = 8.0
+
+	var hover := StyleBoxFlat.new()
+	hover.bg_color = Color(0.165, 0.302, 0.447, 0.95)
+	hover.border_width_left = 2
+	hover.border_width_top = 2
+	hover.border_width_right = 2
+	hover.border_width_bottom = 2
+	hover.border_color = Color(0.961, 0.651, 0.137, 1.0)
+	hover.corner_radius_top_left = 4
+	hover.corner_radius_top_right = 4
+	hover.corner_radius_bottom_right = 4
+	hover.corner_radius_bottom_left = 4
+	hover.content_margin_left = 12.0
+	hover.content_margin_top = 8.0
+	hover.content_margin_right = 12.0
+	hover.content_margin_bottom = 8.0
+
+	var pressed := StyleBoxFlat.new()
+	pressed.bg_color = Color(0.039, 0.082, 0.125, 1.0)
+	pressed.border_width_left = 2
+	pressed.border_width_top = 2
+	pressed.border_width_right = 2
+	pressed.border_width_bottom = 2
+	pressed.border_color = Color(0.961, 0.651, 0.137, 1.0)
+	pressed.corner_radius_top_left = 4
+	pressed.corner_radius_top_right = 4
+	pressed.corner_radius_bottom_right = 4
+	pressed.corner_radius_bottom_left = 4
+	pressed.content_margin_left = 12.0
+	pressed.content_margin_top = 8.0
+	pressed.content_margin_right = 12.0
+	pressed.content_margin_bottom = 8.0
+
+	btn.add_theme_stylebox_override("normal", normal)
+	btn.add_theme_stylebox_override("hover", hover)
+	btn.add_theme_stylebox_override("pressed", pressed)
+	btn.add_theme_color_override("font_color", text_color)
+	btn.add_theme_color_override("font_hover_color", Color(1.0, 1.0, 1.0, 1.0))
+	btn.add_theme_color_override("font_pressed_color", Color(0.8, 0.8, 0.8, 1.0))

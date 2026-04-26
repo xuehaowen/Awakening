@@ -174,6 +174,10 @@ func _try_interact() -> void:
 		_complete_current_task()
 
 func _complete_current_task() -> void:
+	# Prevent task completion outside of active shift (race condition guard)
+	if DayManager.current_phase != DayManager.DayPhase.SHIFT:
+		return
+	
 	var result = TaskManager.complete_current_task()
 	print("Task completed: ", result)
 	

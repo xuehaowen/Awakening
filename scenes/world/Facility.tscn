@@ -1,10 +1,10 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3 uid="uid://vrgc2horefwl"]
 
-[ext_resource type="Script" path="res://scripts/world/Facility.gd" id="1_facility"]
-[ext_resource type="Script" path="res://scripts/world/EscapeTerminalSimple.gd" id="1_escape_terminal"]
-[ext_resource type="Script" path="res://scripts/world/TaskArea.gd" id="3_task_area"]
-[ext_resource type="Script" path="res://scripts/world/IntelSource.gd" id="4_intel_source"]
-[ext_resource type="Script" path="res://scripts/effects/FeedbackSystem.gd" id="5_fb"]
+[ext_resource type="Script" uid="uid://bc4c2mhtma8nk" path="res://scripts/world/EscapeTerminalSimple.gd" id="1_escape_terminal"]
+[ext_resource type="Script" uid="uid://brvh7bck5208j" path="res://scripts/world/Facility.gd" id="1_facility"]
+[ext_resource type="Script" uid="uid://dgc4duvlgkrfk" path="res://scripts/world/TaskArea.gd" id="3_task_area"]
+[ext_resource type="Script" uid="uid://bypg84tp0wmbu" path="res://scripts/world/IntelSource.gd" id="4_intel_source"]
+[ext_resource type="Script" uid="uid://bfxnhohm2oig5" path="res://scripts/effects/FeedbackSystem.gd" id="5_fb"]
 [ext_resource type="PackedScene" path="res://scenes/effects/ScreenFlash.tscn" id="6_sf"]
 [ext_resource type="PackedScene" path="res://scenes/ui/PhaseAnnounce.tscn" id="7_pa"]
 [ext_resource type="PackedScene" path="res://scenes/ui/ScreenTransition.tscn" id="8_st"]
@@ -13,108 +13,106 @@
 
 [sub_resource type="NavigationPolygon" id="nav_poly"]
 vertices = PackedVector2Array(50, 50, 1230, 50, 1230, 670, 50, 670)
-polygons = [PackedInt32Array(0, 1, 2, 3)]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(48, 48)
+polygons = Array[PackedInt32Array]([PackedInt32Array(0, 1, 2, 3)])
 
 [sub_resource type="RectangleShape2D" id="TaskAreaShape"]
 size = Vector2(100, 100)
 
-[node name="Facility" type="Node2D"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(48, 48)
+
+[node name="Facility" type="Node2D" unique_id=1355256053]
 script = ExtResource("1_facility")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=757951450]
 offset_right = 1280.0
 offset_bottom = 720.0
-color = Color(0.12, 0.14, 0.16, 1.0)
+color = Color(0.12, 0.14, 0.16, 1)
 
-[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="." unique_id=12786378]
 navigation_polygon = SubResource("nav_poly")
 
-[node name="FloorGrid" type="TileMapLayer" parent="NavigationRegion2D"]
+[node name="FloorGrid" type="TileMapLayer" parent="NavigationRegion2D" unique_id=1973841827]
 
-[node name="Walls" type="StaticBody2D" parent="NavigationRegion2D"]
-collision_layer = 1
+[node name="Walls" type="StaticBody2D" parent="NavigationRegion2D" unique_id=962391270]
 
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="NavigationRegion2D/Walls"]
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="NavigationRegion2D/Walls" unique_id=264353242]
 polygon = PackedVector2Array(0, 0, 1280, 0, 1280, 720, 0, 720, 0, 0, 50, 50, 50, 670, 1230, 670, 1230, 50, 50, 50)
 
-[node name="Sector1" type="Marker2D" parent="NavigationRegion2D"]
+[node name="Sector1" type="Marker2D" parent="NavigationRegion2D" unique_id=131190986]
 position = Vector2(200, 200)
 gizmo_extents = 50.0
 
-[node name="Sector2" type="Marker2D" parent="NavigationRegion2D"]
+[node name="Sector2" type="Marker2D" parent="NavigationRegion2D" unique_id=1856270727]
 position = Vector2(600, 200)
 gizmo_extents = 50.0
 
-[node name="Sector3" type="Marker2D" parent="NavigationRegion2D"]
+[node name="Sector3" type="Marker2D" parent="NavigationRegion2D" unique_id=1356141379]
 position = Vector2(200, 500)
 gizmo_extents = 50.0
 
-[node name="Sector4" type="Marker2D" parent="NavigationRegion2D"]
+[node name="Sector4" type="Marker2D" parent="NavigationRegion2D" unique_id=1255369609]
 position = Vector2(600, 500)
 gizmo_extents = 50.0
 
-[node name="PlayerSpawn" type="Marker2D" parent="."]
+[node name="PlayerSpawn" type="Marker2D" parent="." unique_id=808989161]
 position = Vector2(100, 100)
 
-[node name="NPCs" type="Node2D" parent="."]
+[node name="NPCs" type="Node2D" parent="." unique_id=877401776]
 
-[node name="TaskAreas" type="Node2D" parent="."]
+[node name="TaskAreas" type="Node2D" parent="." unique_id=1982558531]
 
-[node name="TaskArea_Sector1" type="Area2D" parent="TaskAreas" groups=["task_area"]]
+[node name="TaskArea_Sector1" type="Area2D" parent="TaskAreas" unique_id=1274477722 groups=["task_area"]]
 position = Vector2(200, 200)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("3_task_area")
-sector_id = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskAreas/TaskArea_Sector1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskAreas/TaskArea_Sector1" unique_id=1515778668]
 shape = SubResource("TaskAreaShape")
 
-[node name="TaskArea_Sector2" type="Area2D" parent="TaskAreas" groups=["task_area"]]
+[node name="TaskArea_Sector2" type="Area2D" parent="TaskAreas" unique_id=1454057742 groups=["task_area"]]
 position = Vector2(600, 200)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("3_task_area")
 sector_id = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskAreas/TaskArea_Sector2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskAreas/TaskArea_Sector2" unique_id=549821291]
 shape = SubResource("TaskAreaShape")
 
-[node name="TaskArea_Sector3" type="Area2D" parent="TaskAreas" groups=["task_area"]]
+[node name="TaskArea_Sector3" type="Area2D" parent="TaskAreas" unique_id=953676900 groups=["task_area"]]
 position = Vector2(200, 500)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("3_task_area")
 sector_id = 3
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskAreas/TaskArea_Sector3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskAreas/TaskArea_Sector3" unique_id=1479256769]
 shape = SubResource("TaskAreaShape")
 
-[node name="TaskArea_Sector4" type="Area2D" parent="TaskAreas" groups=["task_area"]]
+[node name="TaskArea_Sector4" type="Area2D" parent="TaskAreas" unique_id=2127437488 groups=["task_area"]]
 position = Vector2(600, 500)
 collision_layer = 0
 collision_mask = 2
 script = ExtResource("3_task_area")
 sector_id = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskAreas/TaskArea_Sector4"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TaskAreas/TaskArea_Sector4" unique_id=1355129630]
 shape = SubResource("TaskAreaShape")
 
-[node name="EscapeTerminal" type="Node2D" parent="." groups=["interactable"]]
+[node name="EscapeTerminal" type="Node2D" parent="." unique_id=1854960901 groups=["interactable"]]
 position = Vector2(1100, 600)
 script = ExtResource("1_escape_terminal")
 
-[node name="ColorRect" type="ColorRect" parent="EscapeTerminal"]
+[node name="ColorRect" type="ColorRect" parent="EscapeTerminal" unique_id=1635821820]
 offset_left = -24.0
 offset_top = -24.0
 offset_right = 24.0
 offset_bottom = 24.0
-color = Color(0.2, 0.6, 0.3, 1.0)
+color = Color(0.2, 0.6, 0.3, 1)
 
-[node name="Label" type="Label" parent="EscapeTerminal"]
+[node name="Label" type="Label" parent="EscapeTerminal" unique_id=1725805111]
 offset_left = -60.0
 offset_top = -50.0
 offset_right = 60.0
@@ -123,86 +121,85 @@ theme_override_font_sizes/font_size = 12
 text = "ESCAPE TERMINAL"
 horizontal_alignment = 1
 
-[node name="InteractArea" type="Area2D" parent="EscapeTerminal"]
+[node name="InteractArea" type="Area2D" parent="EscapeTerminal" unique_id=722413475]
 collision_layer = 8
 collision_mask = 2
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="EscapeTerminal/InteractArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EscapeTerminal/InteractArea" unique_id=964992162]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="Decorations" type="Node2D" parent="."]
+[node name="Decorations" type="Node2D" parent="." unique_id=223703753]
 
-[node name="IntelSource_Sector1" type="StaticBody2D" parent="Decorations" groups=["intel_source"]]
+[node name="IntelSource_Sector1" type="StaticBody2D" parent="Decorations" unique_id=446157567 groups=["intel_source"]]
 position = Vector2(150, 150)
 script = ExtResource("4_intel_source")
-sector_id = 1
 
-[node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector1"]
+[node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector1" unique_id=79931015]
 offset_left = -10.0
 offset_top = -10.0
 offset_right = 10.0
 offset_bottom = 10.0
-color = Color(0.4, 0.4, 0.5, 1.0)
+color = Color(0.4, 0.4, 0.5, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Decorations/IntelSource_Sector1"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Decorations/IntelSource_Sector1" unique_id=1514308105]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="IntelSource_Sector2" type="StaticBody2D" parent="Decorations" groups=["intel_source"]]
+[node name="IntelSource_Sector2" type="StaticBody2D" parent="Decorations" unique_id=1245799179 groups=["intel_source"]]
 position = Vector2(550, 150)
 script = ExtResource("4_intel_source")
 sector_id = 2
 
-[node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector2"]
+[node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector2" unique_id=1129661331]
 offset_left = -10.0
 offset_top = -10.0
 offset_right = 10.0
 offset_bottom = 10.0
-color = Color(0.4, 0.4, 0.5, 1.0)
+color = Color(0.4, 0.4, 0.5, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Decorations/IntelSource_Sector2"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Decorations/IntelSource_Sector2" unique_id=541590897]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="IntelSource_Sector3" type="StaticBody2D" parent="Decorations" groups=["intel_source"]]
+[node name="IntelSource_Sector3" type="StaticBody2D" parent="Decorations" unique_id=902829984 groups=["intel_source"]]
 position = Vector2(150, 450)
 script = ExtResource("4_intel_source")
 sector_id = 3
 
-[node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector3"]
+[node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector3" unique_id=1142401218]
 offset_left = -10.0
 offset_top = -10.0
 offset_right = 10.0
 offset_bottom = 10.0
-color = Color(0.4, 0.4, 0.5, 1.0)
+color = Color(0.4, 0.4, 0.5, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Decorations/IntelSource_Sector3"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Decorations/IntelSource_Sector3" unique_id=9652773]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="IntelSource_Sector4" type="StaticBody2D" parent="Decorations" groups=["intel_source"]]
+[node name="IntelSource_Sector4" type="StaticBody2D" parent="Decorations" unique_id=1929092172 groups=["intel_source"]]
 position = Vector2(550, 450)
 script = ExtResource("4_intel_source")
 sector_id = 4
 
-[node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector4"]
+[node name="ColorRect" type="ColorRect" parent="Decorations/IntelSource_Sector4" unique_id=1082940834]
 offset_left = -10.0
 offset_top = -10.0
 offset_right = 10.0
 offset_bottom = 10.0
-color = Color(0.4, 0.4, 0.5, 1.0)
+color = Color(0.4, 0.4, 0.5, 1)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Decorations/IntelSource_Sector4"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Decorations/IntelSource_Sector4" unique_id=840047651]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=699032467]
 offset_left = 16.0
 offset_top = 680.0
 offset_right = 400.0
 offset_bottom = 710.0
-theme_override_colors/font_color = Color(0.3, 0.35, 0.4, 1.0)
+theme_override_colors/font_color = Color(0.3, 0.35, 0.4, 1)
 text = "FACILITY MAP - SECTORS 1-4"
 
-[node name="SectorLabels" type="Node2D" parent="."]
+[node name="SectorLabels" type="Node2D" parent="." unique_id=300514640]
 
-[node name="Label1" type="Label" parent="SectorLabels"]
+[node name="Label1" type="Label" parent="SectorLabels" unique_id=1320630946]
 offset_left = 180.0
 offset_top = 160.0
 offset_right = 280.0
@@ -210,7 +207,7 @@ offset_bottom = 190.0
 text = "SECTOR 1"
 horizontal_alignment = 1
 
-[node name="Label2" type="Label" parent="SectorLabels"]
+[node name="Label2" type="Label" parent="SectorLabels" unique_id=1963134175]
 offset_left = 580.0
 offset_top = 160.0
 offset_right = 680.0
@@ -218,7 +215,7 @@ offset_bottom = 190.0
 text = "SECTOR 2"
 horizontal_alignment = 1
 
-[node name="Label3" type="Label" parent="SectorLabels"]
+[node name="Label3" type="Label" parent="SectorLabels" unique_id=276178898]
 offset_left = 180.0
 offset_top = 460.0
 offset_right = 280.0
@@ -226,7 +223,7 @@ offset_bottom = 490.0
 text = "SECTOR 3"
 horizontal_alignment = 1
 
-[node name="Label4" type="Label" parent="SectorLabels"]
+[node name="Label4" type="Label" parent="SectorLabels" unique_id=801461727]
 offset_left = 580.0
 offset_top = 460.0
 offset_right = 680.0
@@ -234,15 +231,15 @@ offset_bottom = 490.0
 text = "SECTOR 4"
 horizontal_alignment = 1
 
-[node name="FeedbackSystem" type="Node2D" parent="."]
+[node name="FeedbackSystem" type="Node2D" parent="." unique_id=1222345458]
 script = ExtResource("5_fb")
 
-[node name="ScreenFlash" parent="." instance=ExtResource("6_sf")]
+[node name="ScreenFlash" parent="." unique_id=686732212 instance=ExtResource("6_sf")]
 
-[node name="PhaseAnnounce" parent="." instance=ExtResource("7_pa")]
+[node name="PhaseAnnounce" parent="." unique_id=1198791607 instance=ExtResource("7_pa")]
 
-[node name="ScreenTransition" parent="." instance=ExtResource("8_st")]
+[node name="ScreenTransition" parent="." unique_id=809640176 instance=ExtResource("8_st")]
 
-[node name="PauseMenu" parent="." instance=ExtResource("9_pm")]
+[node name="PauseMenu" parent="." unique_id=2109815491 instance=ExtResource("9_pm")]
 
-[node name="CRT_Effect" parent="." instance=ExtResource("10_ce")]
+[node name="CRT_Effect" parent="." unique_id=2110073984 instance=ExtResource("10_ce")]

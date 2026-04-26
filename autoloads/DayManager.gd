@@ -20,16 +20,19 @@ var _calibration_ui: CanvasLayer = null
 func _ready():
 	# Seed random number generator for unique gameplay each session
 	randomize()
-	
+
 	# Create and configure the phase timer
 	phase_timer = Timer.new()
 	phase_timer.name = "PhaseTimer"
 	add_child(phase_timer)
 	phase_timer.one_shot = true
 	phase_timer.timeout.connect(_on_phase_timer_timeout)
-	
+
 	# Connect to Blackboard
 	Blackboard.phase_changed.connect(_on_phase_changed)
+
+	# Connect TaskManager signal so shift ends when all tasks are completed
+	TaskManager.all_tasks_completed.connect(_on_all_tasks_completed)
 
 func _process(delta: float) -> void:
 	match current_phase:
@@ -134,6 +137,12 @@ func _start_escape() -> void:
 	Blackboard.current_phase = 4
 	print("ESCAPE SEQUENCE STARTED")
 
+func _on_all_tasks_completed() -> void:
+	"""End shift early when player completes all tasks for the day."""
+	if current_phase == DayPhase.SHIFT:
+		print("All tasks completed — ending shift early")
+		end_shift()
+
 func _on_phase_changed(new_phase: int) -> void:
 	print("Phase changed to: ", DayPhase.keys()[new_phase] if new_phase < DayPhase.size() else "UNKNOWN")
 
@@ -171,6 +180,7 @@ func _show_morning_calibration() -> void:
 
 func _on_calibration_complete() -> void:
 	"""Called when user clicks Continue in calibration UI"""
+	print("DayManager: calibration_complete received, starting shift")
 	_start_shift()
 
 func get_phase_name() -> String:

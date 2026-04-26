@@ -42,8 +42,8 @@ void fragment() {
         
         // Chromatic aberration (RGB shift)
         float aberration = chromatic_aberration / 1000.0;
-        vec2 uv_r = uv + vec2(aberration, 0.0);
-        vec2 uv_b = uv - vec2(aberration, 0.0);
+        vec2 uv_r = clamp(uv + vec2(aberration, 0.0), vec2(0.0), vec2(1.0));
+        vec2 uv_b = clamp(uv - vec2(aberration, 0.0), vec2(0.0), vec2(1.0));
         
         // Sample screen texture with chromatic shift
         float r = texture(SCREEN_TEXTURE, uv_r).r;

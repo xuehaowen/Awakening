@@ -54,9 +54,9 @@ func shake(intensity: float, duration: float = 0.5) -> void:
 	# If duration specified, we could use a timer, but for now
 	# we let natural decay handle it
 
-func _on_deviation_changed(new_deviation: float, delta: float) -> void:
+func _on_deviation_changed(new_deviation: float, source: String) -> void:
 	# Small shake when entering danger zones
-	if new_deviation > 70 and delta > 0:
+	if new_deviation > 70:
 		add_trauma(0.1)  # Light shake on suspicion rise
 	elif new_deviation > 85:
 		add_trauma(0.2)  # Medium shake near critical

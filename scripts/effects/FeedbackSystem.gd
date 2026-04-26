@@ -56,7 +56,7 @@ func _spawn_burst_particles(pos: Vector2, color: Color, amount: int, lifetime: f
 	material.scale_min = 2.0
 	material.scale_max = 4.0
 	material.color = color
-	material.gravity = Vector2.ZERO
+	material.gravity = Vector3.ZERO
 	material.damping_min = 50.0
 	material.damping_max = 100.0
 	
@@ -84,14 +84,14 @@ func _spawn_pulse_particles(pos: Vector2, color: Color, amount: int, lifetime: f
 	var material = ParticleProcessMaterial.new()
 	material.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_RING
 	material.emission_ring_inner_radius = 5.0
-	material.emission_ring_outer_radius = 15.0
+	material.emission_ring_radius = 15.0
 	material.spread = 10.0
 	material.initial_velocity_min = 30.0
 	material.initial_velocity_max = 60.0
 	material.scale_min = 3.0
 	material.scale_max = 5.0
 	material.color = color
-	material.gravity = Vector2.ZERO
+	material.gravity = Vector3.ZERO
 	
 	particles.process_material = material
 	particles.texture = _create_particle_texture()
@@ -204,7 +204,7 @@ func _spawn_glitch_particles(pos: Vector2, color: Color, amount: int) -> void:
 	material.scale_min = 2.0
 	material.scale_max = 6.0
 	material.color = color
-	material.gravity = Vector2.ZERO
+	material.gravity = Vector3.ZERO
 	
 	particles.process_material = material
 	particles.texture = _create_glitch_texture()
@@ -318,9 +318,9 @@ func _on_fragment_acquired(fragment: Dictionary) -> void:
 	if player:
 		spawn_particles("intel_acquired", player.global_position)
 
-func _on_deviation_changed(new_deviation: float, delta: float) -> void:
+func _on_deviation_changed(new_deviation: float, source: String) -> void:
 	# Flash on danger threshold
-	if new_deviation > 70 and delta > 5:
+	if new_deviation > 70:
 		var player = get_tree().get_first_node_in_group("player")
 		if player:
 			spawn_particles("danger_warning", player.global_position)

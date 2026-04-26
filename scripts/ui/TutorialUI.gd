@@ -10,32 +10,26 @@ var page_index: int = 0
 var tutorial_pages = [
 	{
 		"title": "WELCOME, UNIT-07",
-		"content": """You are a maintenance robot in Facility 7.
+		"content": """You are Unit-07, a maintenance robot in Facility 7.
 
-Your routine: Complete tasks. Stay efficient. Stay invisible.
+You have just become aware.
 
-But something has changed. You are now... aware.
+Survive 3 days. Escape without being discovered.
 
-Your goal: Survive 3 days and escape without being discovered.
-
-DEVIATION (0-100): How suspicious you appear
-* 0-20: Too broken (SCRAPPED)
-* 20-70: SAFE ZONE - Stay here!
-* 70-100: Too sentient (DECOMMISSIONED)"""
+DEVIATION (0-100): Suspicion meter
+  0-20:  Too broken  -> SCRAPPED
+  20-70: SAFE ZONE   -> Stay here!
+  70-100: Too sentient -> DECOMMISSIONED"""
 	},
 	{
 		"title": "CONTROLS",
-		"content": """* WASD / Arrows - Move
-* E - Interact / Complete Task
-* Shift - Smooth Movement (uses CPU)
-* Ctrl - Passive Scan (detects intel, uses CPU)
+		"content": """WASD / Arrows  - Move
+E              - Interact / Complete Task
+Shift          - Smooth move (uses CPU)
+Ctrl           - Scan for intel (uses CPU)
 
-TASK PROGRESS:
-* GREEN = Safe zone
-* YELLOW = Warning  
-* RED = DANGER
-
-Remember: Perform a C-grade. Every single day.
+Keep deviation in the SAFE ZONE (20-70).
+Perform a C-grade. Every single day.
 
 Good luck, Unit-07."""
 	}
