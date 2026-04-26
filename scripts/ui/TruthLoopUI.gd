@@ -333,7 +333,7 @@ func _on_followup_triggered(_npc: Node) -> void:
 	# Brief delay before showing follow-up
 	# Use real-time timer since time_scale is 0
 	_is_transitioning = false
-	var followup_query: Dictionary = TruthLoopGenerator.generate(npc, "status_check")
+	var followup_query: Dictionary = TruthLoopGenerator.generate(_npc, "status_check")
 	followup_query["is_followup"] = true
 	_show_query(followup_query)
 

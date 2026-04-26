@@ -42,13 +42,13 @@ func _physics_process(delta: float) -> void:
 		NPCState.PATROL:
 			_do_patrol(delta)
 		NPCState.IDLE:
-			_do_idle(_delta)
+			_do_idle(delta)
 		NPCState.WATCHING:
 			_do_watching(delta)
 		NPCState.QUERY:
 			_do_query()
 		NPCState.REPORTING:
-			_do_reporting(_delta)
+			_do_reporting(delta)
 
 func _setup_patrol():
 	# Only generate a default path if one wasn't pre-assigned (e.g. from Facility.gd)
