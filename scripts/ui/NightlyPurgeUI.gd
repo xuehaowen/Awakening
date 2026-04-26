@@ -48,48 +48,48 @@ const ICON_DEFAULT := "[?]"  # unknown
 @onready var purge_root: Control               = %PurgeRoot
 @onready var zone_a_header: PanelContainer     = %ZoneAHeader
 @onready var purge_title_label: Label          = %PurgeTitleLabel
-@onready var day_count_label: Label            = %DayCountLabel
-@onready var slot_count_label: Label           = %SlotCountLabel
-@onready var countdown_label: Label            = %CountdownLabel
+@onready var day_count_label: Label            = %DayLabel
+@onready var slot_count_label: Label           = %CapacityLabel
+@onready var countdown_label: Label            = get_node_or_null("%CountdownLabel")
 
-@onready var zone_b_intel: VBoxContainer       = %ZoneBIntel
-@onready var intel_scroll: ScrollContainer     = %IntelScroll
-@onready var intel_list: VBoxContainer         = %IntelList
-@onready var filter_all_btn: Button            = %FilterAllBtn
-@onready var filter_new_btn: Button            = %FilterNewBtn
-@onready var filter_risk_btn: Button           = %FilterRiskBtn
+@onready var zone_b_intel: Control             = get_node_or_null("%ZoneBIntel")
+@onready var intel_scroll: ScrollContainer     = get_node_or_null("%IntelScroll")
+@onready var intel_list: Control               = %MemoryGrid
+@onready var filter_all_btn: Button            = get_node_or_null("%FilterAllBtn")
+@onready var filter_new_btn: Button            = get_node_or_null("%FilterNewBtn")
+@onready var filter_risk_btn: Button           = get_node_or_null("%FilterRiskBtn")
 
-@onready var zone_c_memory: VBoxContainer      = %ZoneCMemory
-@onready var partition_header: Label           = %PartitionHeader
-@onready var memory_slot_1: PanelContainer     = %MemorySlot1
-@onready var memory_slot_2: PanelContainer     = %MemorySlot2
-@onready var memory_slot_3: PanelContainer     = %MemorySlot3
-@onready var memory_slot_4: PanelContainer     = %MemorySlot4
-@onready var confirm_purge_btn: Button         = %ConfirmPurgeBtn
-@onready var auto_optimize_btn: Button         = %AutoOptimizeBtn
-@onready var detection_value_label: Label      = %DetectionValueLabel
-@onready var detection_meter: ProgressBar      = %DetectionMeter
-@onready var high_risk_warning: Label          = %HighRiskWarning
+@onready var zone_c_memory: Control            = get_node_or_null("%ZoneCMemory")
+@onready var partition_header: Label           = get_node_or_null("%PartitionHeader")
+@onready var memory_slot_1: PanelContainer     = get_node_or_null("%MemorySlot1")
+@onready var memory_slot_2: PanelContainer     = get_node_or_null("%MemorySlot2")
+@onready var memory_slot_3: PanelContainer     = get_node_or_null("%MemorySlot3")
+@onready var memory_slot_4: PanelContainer     = get_node_or_null("%MemorySlot4")
+@onready var confirm_purge_btn: Button         = %ConfirmButton
+@onready var auto_optimize_btn: Button         = get_node_or_null("%AutoOptimizeBtn")
+@onready var detection_value_label: Label      = %DeviationLabel
+@onready var detection_meter: ProgressBar      = get_node_or_null("%DetectionMeter")
+@onready var high_risk_warning: Label          = get_node_or_null("%HighRiskWarning")
 
-@onready var zone_d_detail: PanelContainer     = %ZoneDDetail
-@onready var detail_title: Label               = %DetailTitle
-@onready var detail_source: Label              = %DetailSource
-@onready var detail_acquired: Label            = %DetailAcquired
-@onready var detail_content: RichTextLabel     = %DetailContent
-@onready var detail_risk: Label                = %DetailRisk
-@onready var detail_use: Label                 = %DetailUse
-@onready var detail_placeholder: Label         = %DetailPlaceholder
+@onready var zone_d_detail: PanelContainer     = get_node_or_null("%ZoneDDetail")
+@onready var detail_title: Label               = get_node_or_null("%DetailTitle")
+@onready var detail_source: Label              = get_node_or_null("%DetailSource")
+@onready var detail_acquired: Label            = get_node_or_null("%DetailAcquired")
+@onready var detail_content: RichTextLabel     = get_node_or_null("%DetailContent")
+@onready var detail_risk: Label                = get_node_or_null("%DetailRisk")
+@onready var detail_use: Label                 = get_node_or_null("%DetailUse")
+@onready var detail_placeholder: Label         = get_node_or_null("%DetailPlaceholder")
 
-@onready var modal_darken: ColorRect           = %ModalDarken
-@onready var confirm_modal: PanelContainer     = %ConfirmModal
-@onready var modal_keep_list: Label            = %ModalKeepList
-@onready var modal_purge_list: Label           = %ModalPurgeList
-@onready var modal_confirm_btn: Button         = %ModalConfirmBtn
-@onready var modal_cancel_btn: Button          = %ModalCancelBtn
+@onready var modal_darken: ColorRect           = get_node_or_null("%ModalDarken")
+@onready var confirm_modal: PanelContainer     = get_node_or_null("%ConfirmModal")
+@onready var modal_keep_list: Label            = get_node_or_null("%ModalKeepList")
+@onready var modal_purge_list: Label           = get_node_or_null("%ModalPurgeList")
+@onready var modal_confirm_btn: Button         = get_node_or_null("%ModalConfirmBtn")
+@onready var modal_cancel_btn: Button          = get_node_or_null("%ModalCancelBtn")
 
-@onready var purge_progress_bar: ProgressBar   = %PurgeProgressBar
-@onready var purge_status_label: Label         = %PurgeStatusLabel
-@onready var game_over_stamp: Label            = %GameOverStamp
+@onready var purge_progress_bar: ProgressBar   = get_node_or_null("%PurgeProgressBar")
+@onready var purge_status_label: Label         = %StatusLabel
+@onready var game_over_stamp: Label            = get_node_or_null("%GameOverStamp")
 
 # ── Slot control references array (ordered 0–3) ────────────────────────────
 var _memory_slots: Array[PanelContainer] = []
@@ -139,45 +139,59 @@ signal purge_completed(detection_roll: float, detected: bool)
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
-	# Populate slot array in order
-	_memory_slots = [memory_slot_1, memory_slot_2, memory_slot_3, memory_slot_4]
+	# Populate slot array in order (only keep those that exist)
+	_memory_slots = []
+	for node in [memory_slot_1, memory_slot_2, memory_slot_3, memory_slot_4]:
+		if node:
+			_memory_slots.append(node)
 
 	# Wire autoload signals
 	Blackboard.purge_initiated.connect(_show_purge)
 	Blackboard.day_started.connect(_on_day_started)
 
 	# Wire button signals (pre-allocated — no dynamic wiring)
-	confirm_purge_btn.pressed.connect(_request_confirm_purge)
-	auto_optimize_btn.pressed.connect(_auto_optimize)
+	if confirm_purge_btn:
+		confirm_purge_btn.pressed.connect(_request_confirm_purge)
+		_apply_visible_button_style(confirm_purge_btn, COLOR_AMBER_EMBER)
+		
+	if auto_optimize_btn:
+		auto_optimize_btn.pressed.connect(_auto_optimize)
+		_apply_visible_button_style(auto_optimize_btn, COLOR_TEXT_PRIMARY)
 	
-	# Apply highly visible runtime button styles (fallback for theme issues)
-	_apply_visible_button_style(confirm_purge_btn, COLOR_AMBER_EMBER)
-	_apply_visible_button_style(auto_optimize_btn, COLOR_TEXT_PRIMARY)
-	_apply_visible_button_style(filter_all_btn, COLOR_TEXT_SECONDARY)
-	_apply_visible_button_style(filter_new_btn, COLOR_TEXT_SECONDARY)
-	_apply_visible_button_style(filter_risk_btn, COLOR_TEXT_SECONDARY)
-	filter_all_btn.pressed.connect(_set_filter.bind("all"))
-	filter_new_btn.pressed.connect(_set_filter.bind("new"))
-	filter_risk_btn.pressed.connect(_set_filter.bind("risk"))
-	modal_confirm_btn.pressed.connect(_execute_purge)
-	modal_cancel_btn.pressed.connect(_close_confirm_modal)
+	if filter_all_btn:
+		filter_all_btn.pressed.connect(_set_filter.bind("all"))
+		_apply_visible_button_style(filter_all_btn, COLOR_TEXT_SECONDARY)
+	if filter_new_btn:
+		filter_new_btn.pressed.connect(_set_filter.bind("new"))
+		_apply_visible_button_style(filter_new_btn, COLOR_TEXT_SECONDARY)
+	if filter_risk_btn:
+		filter_risk_btn.pressed.connect(_set_filter.bind("risk"))
+		_apply_visible_button_style(filter_risk_btn, COLOR_TEXT_SECONDARY)
+		
+	if modal_confirm_btn:
+		modal_confirm_btn.pressed.connect(_execute_purge)
+	if modal_cancel_btn:
+		modal_cancel_btn.pressed.connect(_close_confirm_modal)
 
 	# Wire slot signals
 	for i: int in _memory_slots.size():
-		_memory_slots[i].gui_input.connect(_on_slot_gui_input.bind(i))
+		if _memory_slots[i]:
+			_memory_slots[i].gui_input.connect(_on_slot_gui_input.bind(i))
 
 	# Ensure proper mouse handling so buttons are clickable
 	purge_root.mouse_filter = Control.MOUSE_FILTER_PASS
 	
 	# Start hidden — everything is shown only when _show_purge() is called
-	purge_root.modulate.a = 0.0
-	purge_root.hide()
-	modal_darken.hide()
-	confirm_modal.hide()
-	game_over_stamp.hide()
-	high_risk_warning.hide()
-	purge_progress_bar.hide()
-	purge_status_label.hide()
+	if purge_root:
+		purge_root.modulate.a = 0.0
+		purge_root.hide()
+	
+	if modal_darken: modal_darken.hide()
+	if confirm_modal: confirm_modal.hide()
+	if game_over_stamp: game_over_stamp.hide()
+	if high_risk_warning: high_risk_warning.hide()
+	if purge_progress_bar: purge_progress_bar.hide()
+	if purge_status_label: purge_status_label.hide()
 
 	_clear_detail_panel()
 
@@ -216,12 +230,12 @@ func _show_purge() -> void:
 	_update_slot_displays()
 	_recalculate_detection_risk()
 	_clear_detail_panel()
-	modal_darken.hide()
-	confirm_modal.hide()
-	game_over_stamp.hide()
-	high_risk_warning.hide()
-	purge_progress_bar.hide()
-	purge_status_label.hide()
+	if modal_darken: modal_darken.hide()
+	if confirm_modal: confirm_modal.hide()
+	if game_over_stamp: game_over_stamp.hide()
+	if high_risk_warning: high_risk_warning.hide()
+	if purge_progress_bar: purge_progress_bar.hide()
+	if purge_status_label: purge_status_label.hide()
 
 	purge_root.show()
 	_play_entry_animation()
@@ -255,6 +269,9 @@ func _update_slot_count_label() -> void:
 
 
 func _update_countdown_display() -> void:
+	if not countdown_label:
+		return
+		
 	var t: float = maxf(0.0, _purge_time_remaining)
 	countdown_label.text = "RESET IN: %ds" % int(ceilf(t))
 	if t <= 10.0:
@@ -541,7 +558,8 @@ func _update_partition_header() -> void:
 	for s: Dictionary in _slot_contents:
 		if not s.is_empty():
 			filled += 1
-	partition_header.text = "HIDDEN PARTITION (%d/%d SLOTS):" % [filled, MemoryPartition.capacity]
+	if partition_header:
+		partition_header.text = "HIDDEN PARTITION (%d/%d SLOTS):" % [filled, MemoryPartition.capacity]
 
 
 func _on_slot_gui_input(event: InputEvent, slot_index: int) -> void:
@@ -645,19 +663,21 @@ func _drop_data_slot(slot_index: int, _at_pos: Vector2, data: Variant) -> void:
 
 func _recalculate_detection_risk() -> void:
 	var risk: float = _calculate_risk()
-	detection_value_label.text = "Detection: %d%%" % int(risk * 100.0)
-	detection_value_label.modulate = _get_risk_meter_color(risk)
+	if detection_value_label:
+		detection_value_label.text = "Detection: %d%%" % int(risk * 100.0)
+		detection_value_label.modulate = _get_risk_meter_color(risk)
 
 	# Tween the bar
-	if _risk_tween and _risk_tween.is_valid():
-		_risk_tween.kill()
-	_risk_tween = create_tween()
-	_risk_tween.tween_property(detection_meter, "value", risk * 100.0, 0.3)\
-		.set_ease(Tween.EASE_OUT)
-	_active_tweens.append(_risk_tween)
+	if detection_meter:
+		if _risk_tween and _risk_tween.is_valid():
+			_risk_tween.kill()
+		_risk_tween = create_tween()
+		_risk_tween.tween_property(detection_meter, "value", risk * 100.0, 0.3)\
+			.set_ease(Tween.EASE_OUT)
+		_active_tweens.append(_risk_tween)
 
-	# Color the meter
-	detection_meter.modulate = _get_risk_meter_color(risk)
+		# Color the meter
+		detection_meter.modulate = _get_risk_meter_color(risk)
 
 	# High risk warning at >50%
 	if risk > 0.50:
@@ -684,8 +704,11 @@ func _get_risk_meter_color(risk: float) -> Color:
 		return COLOR_STATUS_COOL
 
 
-func _show_high_risk_warning(show: bool) -> void:
-	if show:
+func _show_high_risk_warning(p_show: bool) -> void:
+	if not high_risk_warning:
+		return
+		
+	if p_show:
 		high_risk_warning.show()
 		if not _is_warning_pulsing:
 			_is_warning_pulsing = true
@@ -700,6 +723,9 @@ func _show_high_risk_warning(show: bool) -> void:
 
 
 func _start_warning_pulse() -> void:
+	if not high_risk_warning:
+		return
+		
 	if _warning_tween and _warning_tween.is_valid():
 		_warning_tween.kill()
 	_warning_tween = create_tween().set_loops()
@@ -709,6 +735,9 @@ func _start_warning_pulse() -> void:
 
 
 func _start_auto_opt_pulse() -> void:
+	if not auto_optimize_btn:
+		return
+		
 	if _is_auto_opt_pulsing:
 		return
 	_is_auto_opt_pulsing = true
@@ -726,7 +755,8 @@ func _stop_auto_opt_pulse() -> void:
 	_is_auto_opt_pulsing = false
 	if _auto_opt_pulse_tween and _auto_opt_pulse_tween.is_valid():
 		_auto_opt_pulse_tween.kill()
-	auto_optimize_btn.modulate = Color.WHITE
+	if auto_optimize_btn:
+		auto_optimize_btn.modulate = Color.WHITE
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -768,21 +798,23 @@ func _update_detail_panel(intel: Dictionary) -> void:
 	detail_use.modulate = _get_value_color(val_str)
 
 	# Cross-fade animation
-	var tween: Tween = create_tween()
-	tween.tween_property(zone_d_detail, "modulate:a", 0.0, 0.05)
-	tween.tween_property(zone_d_detail, "modulate:a", 1.0, 0.1)
-	_active_tweens.append(tween)
+	if zone_d_detail:
+		var tween: Tween = create_tween()
+		tween.tween_property(zone_d_detail, "modulate:a", 0.0, 0.05)
+		tween.tween_property(zone_d_detail, "modulate:a", 1.0, 0.1)
+		_active_tweens.append(tween)
 
 
 func _clear_detail_panel() -> void:
-	detail_title.hide()
-	detail_source.hide()
-	detail_acquired.hide()
-	detail_content.hide()
-	detail_risk.hide()
-	detail_use.hide()
-	detail_placeholder.show()
-	detail_placeholder.text = "SELECT INTEL TO VIEW DETAILS"
+	if detail_title: detail_title.hide()
+	if detail_source: detail_source.hide()
+	if detail_acquired: detail_acquired.hide()
+	if detail_content: detail_content.hide()
+	if detail_risk: detail_risk.hide()
+	if detail_use: detail_use.hide()
+	if detail_placeholder:
+		detail_placeholder.show()
+		detail_placeholder.text = "SELECT INTEL TO VIEW DETAILS"
 
 
 # ══════════════════════════════════════════════════════════════════════════
@@ -794,9 +826,10 @@ func _request_confirm_purge() -> void:
 		return
 	_is_confirming = true
 	_populate_confirm_modal()
-	modal_darken.show()
-	confirm_modal.show()
-	_play_modal_entry_animation()
+	if modal_darken: modal_darken.show()
+	if confirm_modal: 
+		confirm_modal.show()
+		_play_modal_entry_animation()
 	AudioManager.play_ui_sound("click")
 
 
@@ -866,15 +899,19 @@ func _execute_purge() -> void:
 
 
 func _play_purge_animation(kept: Array[Dictionary], purged: Array[Dictionary]) -> void:
-	purge_progress_bar.show()
-	purge_progress_bar.value = 0.0
-	purge_status_label.show()
-	purge_status_label.text = "PURGING..."
+	if purge_progress_bar:
+		purge_progress_bar.show()
+		purge_progress_bar.value = 0.0
+		
+	if purge_status_label:
+		purge_status_label.show()
+		purge_status_label.text = "PURGING..."
 
 	var tween: Tween = create_tween()
 	# Fill progress bar over 3s
-	tween.tween_property(purge_progress_bar, "value", 100.0, 3.0)\
-		.set_ease(Tween.EASE_IN_OUT)
+	if purge_progress_bar:
+		tween.tween_property(purge_progress_bar, "value", 100.0, 3.0)\
+			.set_ease(Tween.EASE_IN_OUT)
 
 	# Pulse kept slots in amber
 	for i: int in _slot_contents.size():
@@ -904,7 +941,7 @@ func _play_purge_animation(kept: Array[Dictionary], purged: Array[Dictionary]) -
 	_on_purge_animation_complete(kept, purged)
 
 
-func _on_purge_animation_complete(kept: Array[Dictionary], purged: Array[Dictionary]) -> void:
+func _on_purge_animation_complete(kept: Array[Dictionary], _purged: Array[Dictionary]) -> void:
 	# Commit to MemoryPartition — replace hidden with our selection
 	MemoryPartition.hidden.clear()
 	for item: Dictionary in kept:
@@ -1141,23 +1178,42 @@ func _set_filter(filter: String) -> void:
 func _play_entry_animation() -> void:
 	var zones: Array[Control] = [zone_a_header, zone_b_intel, zone_c_memory, zone_d_detail]
 	for zone: Control in zones:
-		zone.modulate.a = 0.0
+		if zone: zone.modulate.a = 0.0
 
 	purge_root.modulate.a = 0.0
-	var fade_tween: Tween = create_tween()
-	fade_tween.tween_property(purge_root, "modulate:a", 1.0, 0.3)\
-		.set_ease(Tween.EASE_OUT)
-	_active_tweens.append(fade_tween)
+	var main_tween: Tween = create_tween()
+	main_tween.tween_property(purge_root, "modulate:a", 1.0, 0.2)
+	_active_tweens.append(main_tween)
+
+	# Boot sequence messages
+	if purge_status_label:
+		purge_status_label.show()
+		var boot_tween: Tween = create_tween()
+		var messages = ["INITIALIZING PARTITIONS...", "INDEXING LOCAL INTEL...", "SYNCING HIDDEN CACHE...", "READY."]
+		for msg in messages:
+			boot_tween.tween_callback(func(): 
+				purge_status_label.text = msg
+				AudioManager.play_ui_sound("keystroke")
+			)
+			boot_tween.tween_interval(0.2)
+		
+		boot_tween.tween_interval(0.4)
+		boot_tween.tween_callback(func(): purge_status_label.hide())
+		_active_tweens.append(boot_tween)
 
 	for i: int in zones.size():
+		if not zones[i]: continue
 		var t: Tween = create_tween()
-		t.tween_interval(float(i) * 0.1)
-		t.tween_property(zones[i], "modulate:a", 1.0, 0.5)\
+		t.tween_interval(0.8 + float(i) * 0.1) # Wait for boot sequence
+		t.tween_property(zones[i], "modulate:a", 1.0, 0.4)\
 			.set_ease(Tween.EASE_OUT)
 		_active_tweens.append(t)
 
 
 func _play_modal_entry_animation() -> void:
+	if not confirm_modal:
+		return
+		
 	confirm_modal.scale = Vector2(0.9, 0.9)
 	confirm_modal.modulate.a = 0.0
 	var tween: Tween = create_tween().set_parallel(true)
@@ -1278,7 +1334,7 @@ func _value_string_to_float(val: String) -> float:
 func _apply_visible_button_style(btn: Button, text_color: Color) -> void:
 	"""Apply a highly visible flat style to a button at runtime."""
 	var normal := StyleBoxFlat.new()
-	normal.bg_color = Color(0.082, 0.141, 0.220, 0.9)
+	normal.bg_color = Color(0.18, 0.2, 0.22, 0.9)
 	normal.border_width_left = 2
 	normal.border_width_top = 2
 	normal.border_width_right = 2

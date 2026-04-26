@@ -1,68 +1,85 @@
-[gd_scene load_steps=2 format=3]
+; PauseMenu.tscn — Awakening Pause Menu (Premium Terminal Version)
+; Minimalist pause overlay with premium teal palette.
 
-[ext_resource type="Script" path="res://scripts/ui/PauseMenu.gd" id="1_pm"]
+[gd_scene load_steps=3 format=3 uid="uid://pause_menu_premium"]
+
+[ext_resource type="Script" path="res://scripts/ui/PauseMenu.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
 
 [node name="PauseMenu" type="CanvasLayer"]
 process_mode = 3
 layer = 90
-script = ExtResource("1_pm")
+script = ExtResource("1_script")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="DarkOverlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0196078, 0.0392157, 0.0588235, 0.75)
+
+[node name="Panel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 500)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -150.0
-offset_right = 150.0
-offset_bottom = 150.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("2_theme")
 
-[node name="TitleLabel" type="Label" parent="Panel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -100.0
-offset_top = 20.0
-offset_right = 100.0
-offset_bottom = 60.0
-grow_horizontal = 2
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 32
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.93, 0.97, 1)
 theme_override_font_sizes/font_size = 28
 text = "PAUSED"
 horizontal_alignment = 1
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -50.0
-offset_right = 100.0
-offset_bottom = 100.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_constants/separation = 15
-
-[node name="ResumeButton" type="Button" parent="Panel/VBoxContainer"]
+[node name="Subtitle" type="Label" parent="Panel/Margin/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 50)
-theme_override_font_sizes/font_size = 18
-text = "RESUME"
+theme_override_colors/font_color = Color(0.31, 0.64, 0.78, 1)
+theme_override_font_sizes/font_size = 12
+text = "SHIFT_STATE: SUSPENDED"
+horizontal_alignment = 1
 
-[node name="SettingsButton" type="Button" parent="Panel/VBoxContainer"]
+[node name="Separator" type="HSeparator" parent="Panel/Margin/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 50)
-theme_override_font_sizes/font_size = 18
-text = "SETTINGS"
+theme_override_constants/separation = 16
 
-[node name="QuitButton" type="Button" parent="Panel/VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/Margin/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(0, 50)
-theme_override_font_sizes/font_size = 18
-text = "QUIT TO MENU"
+theme_override_constants/separation = 16
+
+[node name="ResumeButton" type="Button" parent="Panel/Margin/VBox/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "RESUME_SESSION"
+
+[node name="SettingsButton" type="Button" parent="Panel/Margin/VBox/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "SYSTEM_CONFIG"
+
+[node name="QuitButton" type="Button" parent="Panel/Margin/VBox/VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.22, 0.17, 1)
+text = "ABORT_AND_LOGOUT"

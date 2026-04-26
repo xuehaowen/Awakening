@@ -68,18 +68,14 @@ const CURSOR_BLINK_PERIOD: float     = 0.5
 @onready var _darken_overlay: ColorRect    = %DarkenOverlay
 @onready var _dialog_panel: PanelContainer = %DialogPanel
 @onready var _query_type_label: Label      = %QueryTypeLabel
-@onready var _npc_id_label: Label          = %NPCIDLabel
+@onready var _speaker_label: Label         = %SpeakerLabel
 @onready var _followup_badge: Label        = %FollowUpBadge
-@onready var _npc_portrait: TextureRect    = %NPCPortrait
 @onready var _query_text: RichTextLabel    = %QueryText
-@onready var _cursor_label: Label          = %CursorLabel
-@onready var _response_button_1: Button    = %ResponseButton1
-@onready var _response_button_2: Button    = %ResponseButton2
-@onready var _response_button_3: Button    = %ResponseButton3
+@onready var _response_button_1: Button    = %Btn_1
+@onready var _response_button_2: Button    = %Btn_2
+@onready var _response_button_3: Button    = %Btn_3
 @onready var _timer_bar: ProgressBar       = %TimerBar
-@onready var _timer_value_label: Label     = %TimerValueLabel
-@onready var _timeout_overlay: ColorRect   = %TimeoutOverlay
-@onready var _timeout_stamp: Label         = %TimeoutStamp
+@onready var _timer_value_label: Label     = %TimerLabel
 
 # ---------------------------------------------------------------------------
 # Runtime state
@@ -97,9 +93,6 @@ var _typewriter_index: int = 0
 var _typewriter_timer: float = 0.0
 var _typewriter_done: bool = true
 
-# Cursor blink
-var _cursor_blink_timer: float = 0.0
-var _cursor_visible: bool = true
 
 # Timer warning pulse
 var _timer_pulse_phase: float = 0.0
@@ -141,7 +134,6 @@ func _ready() -> void:
 
 	# Start hidden
 	_darken_overlay.hide()
-	_timeout_overlay.hide()
 
 # ---------------------------------------------------------------------------
 # Safety: restore time_scale if node freed while paused
@@ -167,18 +159,7 @@ func _process(delta: float) -> void:
 			_typewriter_step()
 			_typewriter_timer += TYPEWRITER_CHAR_DELAY
 
-	# Blinking cursor:
-	# - While typing: cursor always visible (no blink yet)
-	# - After typing done: cursor blinks at CURSOR_BLINK_PERIOD rate
-	_cursor_blink_timer += delta
-	if _typewriter_done:
-		if _cursor_blink_timer >= CURSOR_BLINK_PERIOD:
-			_cursor_blink_timer -= CURSOR_BLINK_PERIOD
-			_cursor_visible = not _cursor_visible
-			_cursor_label.visible = _cursor_visible
-	else:
-		_cursor_label.visible = true
-		_cursor_visible = true
+	# Cursor blinking removed for terminal look
 
 	# Timer countdown (only while not transitioning)
 	if not _is_transitioning and _timer_remaining > 0.0:
@@ -274,8 +255,6 @@ func _show_query(query: Dictionary) -> void:
 
 	# Prepare overlay visibility
 	_darken_overlay.show()
-	_timeout_overlay.hide()
-	_timeout_stamp.hide()
 
 	# Populate header
 	var query_type: String = query.get("query_type", "UNKNOWN")
@@ -287,14 +266,13 @@ func _show_query(query: Dictionary) -> void:
 		npc_id = npc.get_npc_id()
 	elif npc and npc.get("npc_id") != null:
 		npc_id = str(npc.get("npc_id"))
-	_npc_id_label.text = npc_id
+	_speaker_label.text = "ENTITY: %s" % npc_id
 
 	# Follow-up badge visibility
 	var is_followup: bool = query.get("is_followup", false)
 	_followup_badge.visible = is_followup
 
-	# NPC portrait — use placeholder (assets not yet created)
-	_npc_portrait.texture = null
+	# NPC portrait removed for minimalist terminal look
 
 	# Populate response buttons (pre-allocated pattern)
 	_populate_responses(query.get("responses", []))
@@ -420,8 +398,7 @@ func _handle_timeout() -> void:
 			lowest_risk = r
 			safe_response = resp
 
-	# Play red flash + TIMEOUT stamp
-	_play_timeout_animation()
+	# Close panel with failure feedback
 
 	TruthLoopGenerator.timeout_silence()
 	truth_loop_timeout.emit(safe_response)
@@ -553,12 +530,10 @@ func _start_typewriter(full_text: String) -> void:
 	_typewriter_timer = TYPEWRITER_CHAR_DELAY
 	_typewriter_done = false
 	_query_text.clear()
-	_cursor_label.show()
 
 func _typewriter_step() -> void:
 	if _typewriter_index >= _typewriter_full_text.length():
 		_typewriter_done = true
-		_cursor_label.show()   # Keep cursor blinking at end
 		return
 
 	var ch: String = _typewriter_full_text[_typewriter_index]
@@ -622,6 +597,17 @@ func _play_entry_animation() -> void:
 	tween.tween_property(_darken_overlay, "modulate:a", 1.0, ANIM_ENTRY_DURATION)\
 		.set_ease(Tween.EASE_OUT)
 
+	# Immersion: Decrypting status loop
+	if _query_type_label:
+		var final_text = _query_type_label.text
+		_query_type_label.text = "DECRYPTING IDENTITY..."
+		var boot_tween = _track_tween(create_tween())
+		boot_tween.tween_interval(0.4)
+		boot_tween.tween_callback(func(): 
+			_query_type_label.text = final_text
+			AudioManager.play_ui_sound("intel_acquired")
+		)
+
 func _play_selection_animation(selected_idx: int) -> void:
 	# Flash selected white, dim others to 30%
 	for i: int in _response_buttons.size():
@@ -635,20 +621,7 @@ func _play_selection_animation(selected_idx: int) -> void:
 		else:
 			tween.tween_property(btn, "modulate", Color(1, 1, 1, 0.3), ANIM_OPTION_SELECT)
 
-func _play_timeout_animation() -> void:
-	_timeout_overlay.show()
-	_timeout_overlay.modulate.a = 0.0
-	_timeout_stamp.show()
-	_timeout_stamp.scale = Vector2(1.2, 1.2)
-	_timeout_stamp.modulate.a = 0.0
-
-	var tween: Tween = _track_tween(create_tween())
-	tween.tween_property(_timeout_overlay, "modulate:a", 0.7, ANIM_TIMEOUT_FLASH * 0.5)
-	tween.tween_property(_timeout_overlay, "modulate:a", 0.0, ANIM_TIMEOUT_FLASH * 0.5)
-	tween.parallel().tween_property(_timeout_stamp, "modulate:a", 1.0, 0.1)\
-		.set_ease(Tween.EASE_OUT)
-	tween.parallel().tween_property(_timeout_stamp, "scale", Vector2.ONE, ANIM_TIMEOUT_FLASH)\
-		.set_ease(Tween.EASE_OUT)
+# Timeout animation logic removed
 
 func _shake_panel() -> void:
 	# ESC shake: X position +8→-8→+5→-5→0 over 0.3s

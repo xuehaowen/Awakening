@@ -2,10 +2,10 @@ extends CanvasLayer
 
 # PauseMenu - In-game pause menu with resume and quit options
 
-@onready var panel: Panel = $Panel
-@onready var resume_button: Button = $Panel/VBoxContainer/ResumeButton
-@onready var settings_button: Button = $Panel/VBoxContainer/SettingsButton
-@onready var quit_button: Button = $Panel/VBoxContainer/QuitButton
+@onready var panel: PanelContainer = %Panel
+@onready var resume_button: Button = %ResumeButton
+@onready var settings_button: Button = %SettingsButton
+@onready var quit_button: Button = %QuitButton
 
 var is_paused: bool = false
 var settings_menu: CanvasLayer = null

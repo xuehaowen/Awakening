@@ -2,9 +2,9 @@ extends Control
 
 # LoadingScreen - Terminal-style boot sequence with typewriter effect
 
-@onready var boot_text: RichTextLabel = $BootText
-@onready var progress_bar: ProgressBar = $ProgressBar
-@onready var status_label: Label = $StatusLabel
+@onready var boot_text: RichTextLabel = %BootText
+@onready var progress_bar: ProgressBar = %ProgressBar
+@onready var status_label: Label = %StatusLabel
 
 var boot_messages: Array[String] = [
 	"[ OK ] Initializing neural link...",

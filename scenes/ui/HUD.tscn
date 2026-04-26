@@ -1,30 +1,39 @@
-; HUD.tscn — Awakening Heads-Up Display (High Contrast Version)
+; HUD.tscn — Awakening Heads-Up Display (Premium Terminal Version)
+; Refactored to match visual-spec.md layout (compact top bar)
 ; Layer 10 — above game world
-; High contrast design: light panels on semi-transparent dark background
 
-[gd_scene load_steps=5 format=3 uid="uid://bdq7oxw8c2r5k"]
+[gd_scene load_steps=7 format=3 uid="uid://bdq7oxw8c2r5k"]
 
 [ext_resource type="Script" uid="uid://coxncy81ilprs" path="res://scripts/ui/HUD.gd" id="1_hud"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxHeader"]
-bg_color = Color(0.95, 0.95, 0.97, 0.95)
-border_width_bottom = 3
-border_color = Color(0.15, 0.35, 0.65, 1.0)
+[sub_resource type="StyleBoxFlat" id="StyleBoxMain"]
+bg_color = Color(0.039, 0.082, 0.125, 0.88)
+border_width_bottom = 1
+border_color = Color(0.118, 0.208, 0.314, 1.0)
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxStatus"]
-bg_color = Color(0.92, 0.92, 0.95, 0.9)
-border_width_top = 2
-border_width_bottom = 2
-border_color = Color(0.5, 0.5, 0.6, 1.0)
+[sub_resource type="StyleBoxFlat" id="StyleBoxBarTrack"]
+bg_color = Color(0.082, 0.141, 0.220, 1.0)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.118, 0.208, 0.314, 0.5)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxTask"]
-bg_color = Color(0.95, 0.95, 0.97, 0.9)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_color = Color(0.2, 0.4, 0.7, 1.0)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
+[sub_resource type="StyleBoxFlat" id="StyleBoxBarFill"]
+bg_color = Color(0.310, 0.639, 0.784, 1.0)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxTaskFill"]
+bg_color = Color(0.31, 0.64, 0.78, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxMemSlot"]
+bg_color = Color(0.04, 0.08, 0.12, 0.88)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.118, 0.208, 0.314, 1.0)
 
 [node name="HUD" type="CanvasLayer"]
 layer = 10
@@ -39,275 +48,230 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-; Zone A — Header bar
-[node name="ZoneA_Header" type="PanelContainer" parent="HUDRoot"]
-unique_name_in_owner = true
-layout_mode = 0
+[node name="MainPanel" type="PanelContainer" parent="HUDRoot"]
+layout_mode = 1
+anchors_preset = 10
 anchor_right = 1.0
-offset_bottom = 55.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxHeader")
+offset_bottom = 80.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxMain")
 
-[node name="ZoneA_HBox" type="HBoxContainer" parent="HUDRoot/ZoneA_Header"]
+[node name="Margin" type="MarginContainer" parent="HUDRoot/MainPanel"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
 
-[node name="UnitIDLabel" type="Label" parent="HUDRoot/ZoneA_Header/ZoneA_HBox"]
+[node name="VBox" type="VBoxContainer" parent="HUDRoot/MainPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="ZoneA_Header" type="HBoxContainer" parent="HUDRoot/MainPanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.1, 0.3, 0.6, 1.0)
-theme_override_font_sizes/font_size = 28
+theme_override_constants/separation = 12
+
+[node name="UnitIDLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.31, 0.64, 0.78, 1)
+theme_override_font_sizes/font_size = 18
 text = "UNIT-07"
 
-[node name="SepA1" type="Label" parent="HUDRoot/ZoneA_Header/ZoneA_HBox"]
+[node name="Sep1" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header"]
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
+theme_override_colors/font_color = Color(0.12, 0.21, 0.31, 1)
+theme_override_font_sizes/font_size = 18
 text = "//"
 
-[node name="DayLabel" type="Label" parent="HUDRoot/ZoneA_Header/ZoneA_HBox"]
+[node name="DayLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.15, 0.4, 0.2, 1.0)
+theme_override_colors/font_color = Color(0.42, 0.56, 0.66, 1)
+theme_override_font_sizes/font_size = 18
 text = "DAY 1 // SHIFT 1"
 
-[node name="HeaderSpacer" type="Control" parent="HUDRoot/ZoneA_Header/ZoneA_HBox"]
+[node name="Spacer" type="Control" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="TimerLabel" type="Label" parent="HUDRoot/ZoneA_Header/ZoneA_HBox"]
+[node name="ZoneC_TaskInfo" type="HBoxContainer" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.2, 0.2, 0.3, 1.0)
+theme_override_constants/separation = 12
+
+[node name="TaskNameLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header/ZoneC_TaskInfo"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.93, 0.97, 1)
+theme_override_font_sizes/font_size = 16
+text = "TASK: NO TASK"
+clip_text = true
+
+[node name="TaskProgressBar" type="ProgressBar" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header/ZoneC_TaskInfo"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 16)
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxBarTrack")
+theme_override_styles/fill = SubResource("StyleBoxTaskFill")
+max_value = 100.0
+step = 0.1
+show_percentage = false
+
+[node name="Sep2" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.21, 0.31, 1)
+theme_override_font_sizes/font_size = 18
+text = "|"
+
+[node name="TimerLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneA_Header"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.72, 0.83, 0.91, 1)
+theme_override_font_sizes/font_size = 18
 text = "00:00 REMAINING"
 
-; Zone B — System Status
-[node name="ZoneB_SystemStatus" type="PanelContainer" parent="HUDRoot"]
+[node name="ZoneB_SystemStatus" type="HBoxContainer" parent="HUDRoot/MainPanel/Margin/VBox"]
 unique_name_in_owner = true
-layout_mode = 0
-anchor_right = 1.0
-offset_top = 55.0
-offset_bottom = 100.0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxStatus")
-
-[node name="ZoneB_HBox" type="HBoxContainer" parent="HUDRoot/ZoneB_SystemStatus"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-; CPU Row
-[node name="CPURow" type="HBoxContainer" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox"]
+[node name="CPUZone" type="HBoxContainer" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="CPULabel" type="Label" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/CPURow"]
+[node name="CPULabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/CPUZone"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1.0)
+theme_override_colors/font_color = Color(0.42, 0.56, 0.66, 1)
+theme_override_font_sizes/font_size = 14
 text = "CPU:"
 
-[node name="CPUBar" type="ProgressBar" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/CPURow"]
+[node name="CPUBar" type="ProgressBar" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/CPUZone"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 14)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(140, 24)
-min_value = 0.0
-max_value = 100.0
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxBarTrack")
+theme_override_styles/fill = SubResource("StyleBoxBarFill")
 value = 20.0
 show_percentage = false
 
-[node name="CPUStateLabel" type="Label" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/CPURow"]
+[node name="CPUStateLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/CPUZone"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.1, 0.5, 0.2, 1.0)
+theme_override_colors/font_color = Color(0.18, 0.8, 0.44, 1)
+theme_override_font_sizes/font_size = 12
 text = "[COOL]"
 
-[node name="VSep1" type="VSeparator" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox"]
-layout_mode = 2
-
-; DEV Row
-[node name="DEVRow" type="HBoxContainer" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox"]
+[node name="DEVZone" type="HBoxContainer" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-[node name="DEVLabel" type="Label" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/DEVRow"]
+[node name="DEVLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/DEVZone"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1.0)
+theme_override_colors/font_color = Color(0.42, 0.56, 0.66, 1)
+theme_override_font_sizes/font_size = 14
 text = "DEV:"
 
-[node name="DEVBar" type="ProgressBar" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/DEVRow"]
+[node name="DEVBar" type="ProgressBar" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/DEVZone"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 14)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(140, 24)
-min_value = 0.0
-max_value = 100.0
+size_flags_vertical = 4
+theme_override_styles/background = SubResource("StyleBoxBarTrack")
+theme_override_styles/fill = SubResource("StyleBoxBarFill")
 value = 45.0
 show_percentage = false
 
-[node name="DEVStateLabel" type="Label" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/DEVRow"]
+[node name="DEVStateLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/DEVZone"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.1, 0.5, 0.2, 1.0)
+theme_override_colors/font_color = Color(0.18, 0.8, 0.44, 1)
+theme_override_font_sizes/font_size = 12
 text = "[NOMINAL]"
 
-[node name="VSep2" type="VSeparator" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox"]
-layout_mode = 2
-
-; LOG Row
-[node name="LOGRow" type="HBoxContainer" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_constants/separation = 6
-
-[node name="LOGValueLabel" type="Label" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/LOGRow"]
+[node name="LOGValueLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(0.2, 0.2, 0.3, 1.0)
+theme_override_colors/font_color = Color(0.42, 0.56, 0.66, 1)
+theme_override_font_sizes/font_size = 14
 text = "LOG: 100%"
 
-[node name="VSep3" type="VSeparator" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox"]
-layout_mode = 2
-
-; Override indicators
-[node name="OverrideRow" type="HBoxContainer" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_constants/separation = 12
-
-[node name="ScanIndicator" type="Label" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/OverrideRow"]
+[node name="ZoneD_MemorySlots" type="HBoxContainer" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0.1, 0.5, 0.3, 1.0)
-text = ""
-visible = false
+theme_override_constants/separation = 6
 
-[node name="SmoothIndicator" type="Label" parent="HUDRoot/ZoneB_SystemStatus/ZoneB_HBox/OverrideRow"]
-unique_name_in_owner = true
+[node name="MemLabel" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/ZoneD_MemorySlots"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0.7, 0.55, 0.1, 1.0)
-text = ""
-visible = false
-
-; Zone C — Task Info
-[node name="ZoneC_TaskInfo" type="PanelContainer" parent="HUDRoot"]
-unique_name_in_owner = true
-layout_mode = 0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = -70.0
-offset_right = 500.0
-offset_bottom = -20.0
-grow_vertical = 0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxTask")
-
-[node name="ZoneC_HBox" type="HBoxContainer" parent="HUDRoot/ZoneC_TaskInfo"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="TaskNameLabel" type="Label" parent="HUDRoot/ZoneC_TaskInfo/ZoneC_HBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 26
-theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1.0)
-text = "TASK: NO TASK"
-clip_text = true
-custom_minimum_size = Vector2(400, 0)
-
-[node name="TaskProgressBar" type="ProgressBar" parent="HUDRoot/ZoneC_TaskInfo/ZoneC_HBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-custom_minimum_size = Vector2(250, 28)
-min_value = 0.0
-max_value = 200.0
-value = 0.0
-show_percentage = false
-
-; Zone D — Memory Slots
-[node name="ZoneD_MemorySlots" type="PanelContainer" parent="HUDRoot"]
-unique_name_in_owner = true
-layout_mode = 0
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -300.0
-offset_top = -70.0
-offset_right = -20.0
-offset_bottom = -20.0
-grow_horizontal = 0
-grow_vertical = 0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("StyleBoxTask")
-
-[node name="ZoneD_HBox" type="HBoxContainer" parent="HUDRoot/ZoneD_MemorySlots"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="MemLabel" type="Label" parent="HUDRoot/ZoneD_MemorySlots/ZoneD_HBox"]
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 24
-theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1.0)
+theme_override_colors/font_color = Color(0.42, 0.56, 0.66, 1)
+theme_override_font_sizes/font_size = 14
 text = "MEM:"
 
-[node name="MemSlot1" type="Panel" parent="HUDRoot/ZoneD_MemorySlots/ZoneD_HBox"]
+[node name="MemSlot1" type="Panel" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/ZoneD_MemorySlots"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-custom_minimum_size = Vector2(40, 40)
-tooltip_text = "EMPTY SLOT"
+theme_override_styles/panel = SubResource("StyleBoxMemSlot")
 
-[node name="MemSlot2" type="Panel" parent="HUDRoot/ZoneD_MemorySlots/ZoneD_HBox"]
+[node name="MemSlot2" type="Panel" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/ZoneD_MemorySlots"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-custom_minimum_size = Vector2(40, 40)
-tooltip_text = "EMPTY SLOT"
+theme_override_styles/panel = SubResource("StyleBoxMemSlot")
 
-[node name="MemSlot3" type="Panel" parent="HUDRoot/ZoneD_MemorySlots/ZoneD_HBox"]
+[node name="MemSlot3" type="Panel" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/ZoneD_MemorySlots"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-custom_minimum_size = Vector2(40, 40)
-tooltip_text = "EMPTY SLOT"
+theme_override_styles/panel = SubResource("StyleBoxMemSlot")
 
-[node name="MemSlot4" type="Panel" parent="HUDRoot/ZoneD_MemorySlots/ZoneD_HBox"]
+[node name="MemSlot4" type="Panel" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/ZoneD_MemorySlots"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-custom_minimum_size = Vector2(40, 40)
-tooltip_text = "EMPTY SLOT"
+theme_override_styles/panel = SubResource("StyleBoxMemSlot")
 
-[node name="MemSlot5" type="Panel" parent="HUDRoot/ZoneD_MemorySlots/ZoneD_HBox"]
+[node name="MemSlot5" type="Panel" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/ZoneD_MemorySlots"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-custom_minimum_size = Vector2(40, 40)
-tooltip_text = "EMPTY SLOT"
+theme_override_styles/panel = SubResource("StyleBoxMemSlot")
 
-; Feedback label
+[node name="OverrideIndicators" type="HBoxContainer" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ScanIndicator" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/OverrideIndicators"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.18, 0.8, 0.44, 1)
+theme_override_font_sizes/font_size = 12
+text = "[SCAN_ACTIVE]"
+
+[node name="SmoothIndicator" type="Label" parent="HUDRoot/MainPanel/Margin/VBox/ZoneB_SystemStatus/OverrideIndicators"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.82, 0.25, 1)
+theme_override_font_sizes/font_size = 12
+text = "[SMOOTH_ACTIVE]"
+
 [node name="FeedbackLabel" type="Label" parent="HUDRoot"]
 unique_name_in_owner = true
-layout_mode = 0
+visible = false
+layout_mode = 1
+anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -316,35 +280,43 @@ offset_left = -300.0
 offset_top = -30.0
 offset_right = 300.0
 offset_bottom = 30.0
-z_index = 10
-mouse_filter = 2
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.88, 0.93, 0.97, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
 theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1.0)
-text = ""
+text = "CRITICAL DEVIATION DETECTED"
 horizontal_alignment = 1
 vertical_alignment = 1
-visible = false
 
-; Memory Overlay
 [node name="MemoryOverlay" type="PanelContainer" parent="HUDRoot"]
 unique_name_in_owner = true
-layout_mode = 0
+visible = false
+layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -400.0
-offset_top = 110.0
+offset_top = 90.0
 offset_right = -20.0
-offset_bottom = 450.0
-z_index = 5
-visible = false
-theme_override_styles/panel = SubResource("StyleBoxTask")
+offset_bottom = 430.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxMain")
 
-[node name="MemoryOverlayContent" type="RichTextLabel" parent="HUDRoot/MemoryOverlay"]
+[node name="Margin" type="MarginContainer" parent="HUDRoot/MemoryOverlay"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="MemoryOverlayContent" type="RichTextLabel" parent="HUDRoot/MemoryOverlay/Margin"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/normal_font_size = 22
-theme_override_colors/default_color = Color(0.1, 0.1, 0.15, 1.0)
-bbcode_enabled = false
+theme_override_colors/default_color = Color(0.72, 0.83, 0.91, 1)
+theme_override_font_sizes/normal_font_size = 16
+bbcode_enabled = true
+text = "[center][b]MEMORY INSPECTOR[/b][/center]"
 scroll_active = false
 fit_content = true
-text = "MEMORY INSPECTOR"

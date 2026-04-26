@@ -2,13 +2,13 @@ extends CanvasLayer
 
 # MorningCalibrationUI - Pre-shift calibration screen showing tasks and sector assignment
 
-@onready var panel: Panel = $Panel
-@onready var title_label: Label = $Panel/TitleLabel
-@onready var day_label: Label = $Panel/DayLabel
-@onready var sector_label: Label = $Panel/SectorLabel
-@onready var task_list: VBoxContainer = $Panel/TaskList
-@onready var system_check_label: Label = $Panel/SystemCheckLabel
-@onready var continue_button: Button = $Panel/ContinueButton
+@onready var panel: PanelContainer = %Panel
+@onready var title_label: Label = %TitleLabel
+@onready var day_label: Label = %DayLabel
+@onready var sector_label: Label = %SectorLabel
+@onready var task_list: VBoxContainer = %TaskList
+@onready var system_check_label: Label = %SystemCheckLabel
+@onready var continue_button: Button = %ContinueButton
 
 signal calibration_complete
 
@@ -153,7 +153,7 @@ func _on_continue_pressed() -> void:
 		queue_free()
 	)
 
-func _on_day_started(day: int) -> void:
+func _on_day_started(_day: int) -> void:
 	"""Called when a new day starts - calibration is now triggered by DayManager"""
 	# Calibration is now shown by DayManager._show_morning_calibration()
 	# This method is kept for signal compatibility but does nothing

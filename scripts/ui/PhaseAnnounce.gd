@@ -2,8 +2,10 @@ extends CanvasLayer
 
 # PhaseAnnounce - Shows phase transition announcements
 
-@onready var announce_label: Label = $CenterContainer/AnnounceLabel
+@onready var announce_label: Label = %AnnounceLabel
 @onready var timer: Timer = $Timer
+@onready var line_top: ColorRect = %LineTop
+@onready var line_bottom: ColorRect = %LineBottom
 
 var is_showing: bool = false
 
@@ -45,9 +47,11 @@ func show_announcement(phase: int) -> void:
 	
 	announce_label.text = text
 	announce_label.modulate = color
+	line_top.color = color
+	line_bottom.color = color
 	
 	# Animate in
-	announce_label.scale = Vector2(0.8, 0.8)
+	announce_label.scale = Vector2(1.2, 1.0) # Horizontal stretch start
 	announce_label.modulate.a = 0.0
 	
 	var tween = get_tree().create_tween()

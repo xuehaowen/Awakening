@@ -1,631 +1,276 @@
-[gd_scene load_steps=9 format=3 uid="uid://nightly_purge_ui"]
+; NightlyPurgeUI.tscn — Awakening Nightly Purge (Premium Terminal Version)
+; Full-screen memory selection interface with 'Inner Consciousness' amber aesthetic.
 
-[ext_resource type="Script" path="res://scripts/ui/NightlyPurgeUI.gd" id="1_purge"]
+[gd_scene load_steps=5 format=3 uid="uid://nightly_purge_premium"]
+
+[ext_resource type="Script" path="res://scripts/ui/NightlyPurgeUI.gd" id="1_script"]
 [ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
-bg_color = Color(0.082, 0.141, 0.220, 0.8)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
+bg_color = Color(0.0588235, 0.117647, 0.176471, 1)
 border_width_bottom = 2
-border_color = Color(0.310, 0.639, 0.784, 1.0)
+border_color = Color(0.31, 0.64, 0.78, 0.3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_Card"]
+bg_color = Color(0.0392157, 0.0784314, 0.117647, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9, 0.45, 0.1, 0.2)
 corner_radius_top_left = 4
 corner_radius_top_right = 4
 corner_radius_bottom_right = 4
 corner_radius_bottom_left = 4
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
-bg_color = Color(0.118, 0.208, 0.314, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.961, 0.651, 0.137, 1.0)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
-bg_color = Color(0.039, 0.082, 0.125, 1.0)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.961, 0.651, 0.137, 1.0)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover_blue"]
-bg_color = Color(0.118, 0.208, 0.314, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.310, 0.639, 0.784, 1.0)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_right = 4
-corner_radius_bottom_left = 4
-content_margin_left = 12.0
-content_margin_top = 8.0
-content_margin_right = 12.0
-content_margin_bottom = 8.0
-
-
-; ── Root: CanvasLayer layer=30, PROCESS_MODE_ALWAYS ───────────────────────
 [node name="NightlyPurgeUI" type="CanvasLayer"]
 layer = 30
-process_mode = 4
-script = ExtResource("1_purge")
+process_mode = 3
+script = ExtResource("1_script")
 
-; ── PurgeRoot: full-screen Control ────────────────────────────────────────
 [node name="PurgeRoot" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 3
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 0.0
-offset_bottom = 0.0
-mouse_filter = 2
+grow_horizontal = 2
+grow_vertical = 2
 theme = ExtResource("2_theme")
 
-; ── Background fill ────────────────────────────────────────────────────────
 [node name="Background" type="ColorRect" parent="PurgeRoot"]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.020, 0.039, 0.059, 1.0)
-mouse_filter = 2
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0196078, 0.0392157, 0.0588235, 1)
 
-; ══════════════════════════════════════════════════════════════════════════
-; ZONE A — Header (64px tall, top)
-; ══════════════════════════════════════════════════════════════════════════
-[node name="ZoneAHeader" type="PanelContainer" parent="PurgeRoot"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.0
-offset_bottom = 64.0
-
-[node name="HeaderHBox" type="HBoxContainer" parent="PurgeRoot/ZoneAHeader"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="PurgeTitleLabel" type="Label" parent="PurgeRoot/ZoneAHeader/HeaderHBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 28
-theme_override_colors/font_color = Color(0.878, 0.933, 0.973, 1.0)
-text = "NIGHTLY SYSTEM PURGE"
-
-[node name="HeaderSep1" type="VSeparator" parent="PurgeRoot/ZoneAHeader/HeaderHBox"]
-layout_mode = 2
-modulate = Color(0.118, 0.208, 0.314, 1.0)
-
-[node name="DayCountLabel" type="Label" parent="PurgeRoot/ZoneAHeader/HeaderHBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "DAY 1"
-
-[node name="HeaderSep2" type="VSeparator" parent="PurgeRoot/ZoneAHeader/HeaderHBox"]
-layout_mode = 2
-modulate = Color(0.118, 0.208, 0.314, 1.0)
-
-[node name="SlotCountLabel" type="Label" parent="PurgeRoot/ZoneAHeader/HeaderHBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "MEMORY: 0/4"
-
-[node name="HeaderSpacer" type="Control" parent="PurgeRoot/ZoneAHeader/HeaderHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="CountdownLabel" type="Label" parent="PurgeRoot/ZoneAHeader/HeaderHBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0.310, 0.639, 0.784, 1.0)
-text = "RESET IN: 60s"
-horizontal_alignment = 2
-
-; ── Header divider ─────────────────────────────────────────────────────────
-[node name="HeaderDivider" type="HSeparator" parent="PurgeRoot"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.0
-offset_top = 64.0
-offset_bottom = 65.0
-modulate = Color(0.118, 0.208, 0.314, 1.0)
-
-; ══════════════════════════════════════════════════════════════════════════
-; ZONE BC — Main area (64px to 80vh), split Intel + Memory
-; ══════════════════════════════════════════════════════════════════════════
-[node name="ZoneBCMain" type="HBoxContainer" parent="PurgeRoot"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 1.0
-anchor_bottom = 0.8
-offset_top = 65.0
-offset_bottom = 0.0
-theme_override_constants/separation = 0
-
-; ── ZONE B — Intel Inventory (left 45%) ───────────────────────────────────
-[node name="ZoneBIntel" type="VBoxContainer" parent="PurgeRoot/ZoneBCMain"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.45
-theme_override_constants/separation = 8
-
-[node name="IntelListHeader" type="Label" parent="PurgeRoot/ZoneBCMain/ZoneBIntel"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "TODAY'S INTEL:"
-
-[node name="IntelScroll" type="ScrollContainer" parent="PurgeRoot/ZoneBCMain/ZoneBIntel"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="IntelList" type="VBoxContainer" parent="PurgeRoot/ZoneBCMain/ZoneBIntel/IntelScroll"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 4
-
-[node name="FilterRow" type="HBoxContainer" parent="PurgeRoot/ZoneBCMain/ZoneBIntel"]
-theme_override_constants/separation = 8
-
-
-[node name="FilterAllBtn" type="Button" parent="PurgeRoot/ZoneBCMain/ZoneBIntel/FilterRow"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(80.0, 32.0)
-focus_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "ALL"
-
-[node name="FilterNewBtn" type="Button" parent="PurgeRoot/ZoneBCMain/ZoneBIntel/FilterRow"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(80.0, 32.0)
-focus_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-theme_override_colors/font_hover_color = Color(0.8, 0.85, 0.9, 1.0)
-theme_override_colors/font_pressed_color = Color(0.3, 0.35, 0.4, 1.0)
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "NEW"
-
-[node name="FilterRiskBtn" type="Button" parent="PurgeRoot/ZoneBCMain/ZoneBIntel/FilterRow"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(80.0, 32.0)
-focus_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-theme_override_colors/font_hover_color = Color(0.8, 0.85, 0.9, 1.0)
-theme_override_colors/font_pressed_color = Color(0.3, 0.35, 0.4, 1.0)
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "RISK"
-
-; ── Zone B/C separator ────────────────────────────────────────────────────
-[node name="ZoneSeparator" type="VSeparator" parent="PurgeRoot/ZoneBCMain"]
-layout_mode = 2
-modulate = Color(0.118, 0.208, 0.314, 1.0)
-
-; ── ZONE C — Memory Partition (right 55%) ─────────────────────────────────
-[node name="ZoneCMemory" type="VBoxContainer" parent="PurgeRoot/ZoneBCMain"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_stretch_ratio = 0.55
-theme_override_constants/separation = 12
-
-[node name="PartitionHeader" type="Label" parent="PurgeRoot/ZoneBCMain/ZoneCMemory"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "HIDDEN PARTITION (0/4 SLOTS):"
-
-; ── Slot Grid (4 fixed slots) ──────────────────────────────────────────────
-[node name="SlotGrid" type="GridContainer" parent="PurgeRoot/ZoneBCMain/ZoneCMemory"]
-layout_mode = 2
-columns = 4
-theme_override_constants/h_separation = 12
-theme_override_constants/v_separation = 12
-
-[node name="MemorySlot1" type="PanelContainer" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/SlotGrid"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100.0, 100.0)
-focus_mode = 2
-mouse_filter = 0
-
-[node name="MemorySlot2" type="PanelContainer" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/SlotGrid"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100.0, 100.0)
-focus_mode = 2
-mouse_filter = 0
-
-[node name="MemorySlot3" type="PanelContainer" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/SlotGrid"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100.0, 100.0)
-focus_mode = 2
-mouse_filter = 0
-
-[node name="MemorySlot4" type="PanelContainer" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/SlotGrid"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(100.0, 100.0)
-focus_mode = 2
-mouse_filter = 0
-
-; ── Action buttons ──────────────────────────────────────────────────────────
-[node name="ActionRow" type="HBoxContainer" parent="PurgeRoot/ZoneBCMain/ZoneCMemory"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="ConfirmPurgeBtn" type="Button" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/ActionRow"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(180.0, 48.0)
-focus_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.961, 0.651, 0.137, 1.0)
-theme_override_colors/font_hover_color = Color(1.0, 0.8, 0.4, 1.0)
-theme_override_colors/font_pressed_color = Color(0.8, 0.5, 0.1, 1.0)
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "CONFIRM PURGE"
-
-[node name="AutoOptimizeBtn" type="Button" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/ActionRow"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(160.0, 48.0)
-focus_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.722, 0.831, 0.910, 1.0)
-theme_override_colors/font_hover_color = Color(1.0, 1.0, 1.0, 1.0)
-theme_override_colors/font_pressed_color = Color(0.5, 0.6, 0.7, 1.0)
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "AUTO-OPTIMIZE"
-
-; ── Risk Analysis ─────────────────────────────────────────────────────────
-[node name="RiskAnalysis" type="VBoxContainer" parent="PurgeRoot/ZoneBCMain/ZoneCMemory"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="RiskLabel" type="Label" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/RiskAnalysis"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "Risk Analysis:"
-
-[node name="DetectionValueLabel" type="Label" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/RiskAnalysis"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.180, 0.800, 0.443, 1.0)
-text = "Detection: 0%"
-
-[node name="DetectionMeter" type="ProgressBar" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/RiskAnalysis"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(0.0, 16.0)
-min_value = 0.0
-max_value = 100.0
-value = 0.0
-show_percentage = false
-
-[node name="HighRiskWarning" type="Label" parent="PurgeRoot/ZoneBCMain/ZoneCMemory/RiskAnalysis"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.906, 0.298, 0.235, 1.0)
-text = "HIGH DETECTION RISK"
-visible = false
-
-; ── Keyboard shortcuts hint ────────────────────────────────────────────────
-[node name="KeyboardHint" type="Label" parent="PurgeRoot/ZoneBCMain/ZoneCMemory"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.310, 0.639, 0.784, 0.7)
-text = "[C] CONFIRM  |  [A] AUTO-OPTIMIZE  |  [ESC] CLOSE MODAL"
-horizontal_alignment = 1
-
-; ══════════════════════════════════════════════════════════════════════════
-; ZONE D — Detail Panel (bottom 20%)
-; ══════════════════════════════════════════════════════════════════════════
-[node name="ZoneDDivider" type="HSeparator" parent="PurgeRoot"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0
-anchor_top = 0.8
-anchor_right = 1.0
-anchor_bottom = 0.8
-offset_bottom = 1.0
-modulate = Color(0.118, 0.208, 0.314, 1.0)
-
-[node name="ZoneDDetail" type="PanelContainer" parent="PurgeRoot"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0
-anchor_top = 0.8
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 1.0
-
-[node name="DetailVBox" type="VBoxContainer" parent="PurgeRoot/ZoneDDetail"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="DetailPlaceholder" type="Label" parent="PurgeRoot/ZoneDDetail/DetailVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.239, 0.353, 0.447, 1.0)
-text = "SELECT INTEL TO VIEW DETAILS"
-horizontal_alignment = 1
-
-[node name="DetailTitle" type="Label" parent="PurgeRoot/ZoneDDetail/DetailVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.878, 0.933, 0.973, 1.0)
-text = "SELECTED:"
-visible = false
-
-[node name="DetailMetaRow" type="HBoxContainer" parent="PurgeRoot/ZoneDDetail/DetailVBox"]
-layout_mode = 2
-theme_override_constants/separation = 24
-
-[node name="DetailSource" type="Label" parent="PurgeRoot/ZoneDDetail/DetailVBox/DetailMetaRow"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "SOURCE:"
-visible = false
-
-[node name="DetailAcquired" type="Label" parent="PurgeRoot/ZoneDDetail/DetailVBox/DetailMetaRow"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "ACQUIRED: DAY 1"
-visible = false
-
-[node name="DetailContent" type="RichTextLabel" parent="PurgeRoot/ZoneDDetail/DetailVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(0.0, 40.0)
-size_flags_vertical = 3
-theme_override_font_sizes/normal_font_size = 13
-fit_content = true
-scroll_active = false
-autowrap_mode = 3
-bbcode_enabled = true
-visible = false
-
-[node name="DetailRiskUseRow" type="HBoxContainer" parent="PurgeRoot/ZoneDDetail/DetailVBox"]
-layout_mode = 2
-theme_override_constants/separation = 24
-
-[node name="DetailRisk" type="Label" parent="PurgeRoot/ZoneDDetail/DetailVBox/DetailRiskUseRow"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "RISK:"
-visible = false
-
-[node name="DetailUse" type="Label" parent="PurgeRoot/ZoneDDetail/DetailVBox/DetailRiskUseRow"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-theme_override_colors/font_color = Color(0.722, 0.831, 0.910, 1.0)
-text = "VALUE:"
-visible = false
-
-; ══════════════════════════════════════════════════════════════════════════
-; Confirm Modal (in-scene — not Window, safe for Web export)
-; ══════════════════════════════════════════════════════════════════════════
-[node name="ModalDarken" type="ColorRect" parent="PurgeRoot"]
-unique_name_in_owner = true
+[node name="VBox" type="VBoxContainer" parent="PurgeRoot"]
 layout_mode = 1
 anchors_preset = 15
-anchor_left = 0.0
-anchor_top = 0.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.020, 0.039, 0.059, 0.75)
-mouse_filter = 1
-visible = false
-z_index = 10
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
 
-[node name="ConfirmModal" type="PanelContainer" parent="PurgeRoot"]
+[node name="ZoneAHeader" type="PanelContainer" parent="PurgeRoot/VBox"]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.2
-anchor_top = 0.2
-anchor_right = 0.8
-anchor_bottom = 0.8
-visible = false
-z_index = 11
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_header")
 
-[node name="ModalVBox" type="VBoxContainer" parent="PurgeRoot/ConfirmModal"]
+[node name="Margin" type="MarginContainer" parent="PurgeRoot/VBox/ZoneAHeader"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 24
+
+[node name="HBox" type="HBoxContainer" parent="PurgeRoot/VBox/ZoneAHeader/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="ModalTitle" type="Label" parent="PurgeRoot/ConfirmModal/ModalVBox"]
+[node name="PurgeTitleLabel" type="Label" parent="PurgeRoot/VBox/ZoneAHeader/Margin/HBox"]
+unique_name_in_owner = true
 layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.93, 0.97, 1)
+theme_override_font_sizes/font_size = 24
+text = "NIGHTLY PURGE // CONSCIOUSNESS_SCRUB"
+
+[node name="Spacer" type="Control" parent="PurgeRoot/VBox/ZoneAHeader/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="DayLabel" type="Label" parent="PurgeRoot/VBox/ZoneAHeader/Margin/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.31, 0.64, 0.78, 1)
 theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.878, 0.933, 0.973, 1.0)
-text = "CONFIRM PURGE"
-horizontal_alignment = 1
+text = "CYCLE: 01"
 
-[node name="ModalSubtitle" type="Label" parent="PurgeRoot/ConfirmModal/ModalVBox"]
+[node name="ZoneBBody" type="PanelContainer" parent="PurgeRoot/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-text = "Confirm you are ready to purge uncommitted memories."
-horizontal_alignment = 1
-autowrap_mode = 3
+size_flags_vertical = 3
 
-[node name="ModalListsRow" type="HBoxContainer" parent="PurgeRoot/ConfirmModal/ModalVBox"]
+[node name="Margin" type="MarginContainer" parent="PurgeRoot/VBox/ZoneBBody"]
+layout_mode = 2
+theme_override_constants/margin_left = 60
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 60
+theme_override_constants/margin_bottom = 40
+
+[node name="HBox" type="HBoxContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 40
+
+[node name="LeftInfo" type="VBoxContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox"]
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="ModalKeepList" type="Label" parent="PurgeRoot/ConfirmModal/ModalVBox/ModalListsRow"]
-unique_name_in_owner = true
+[node name="Instructions" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.961, 0.651, 0.137, 1.0)
-text = "KEEPING:\n  (none)"
+theme_override_colors/font_color = Color(0.9, 0.45, 0.1, 1)
+theme_override_font_sizes/font_size = 14
+text = "[PURGE_PROTOCOL_01]
+Select memory fragments to retain. All unselected data will be permanently overwritten at cycle end."
 autowrap_mode = 3
 
-[node name="ModalPurgeList" type="Label" parent="PurgeRoot/ConfirmModal/ModalVBox/ModalListsRow"]
+[node name="StatsPanel" type="PanelContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="VBox" type="VBoxContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="CapacityLabel" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "CAPACITY: 2/3 FRAGMENTS"
+
+[node name="DeviationLabel" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "CURRENT DEVIATION: 45%"
+
+[node name="Spacer2" type="Control" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="PartitionLabel" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.31, 0.64, 0.78, 1)
+theme_override_font_sizes/font_size = 10
+text = "MEMORY_PARTITION_SLOTS"
+
+[node name="SlotsGrid" type="GridContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 4
+columns = 2
+
+[node name="MemorySlot1" type="PanelContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox/SlotsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_Card")
+
+[node name="Label" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox/SlotsGrid/MemorySlot1"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.2)
+theme_override_font_sizes/font_size = 10
+text = "01"
+horizontal_alignment = 1
+
+[node name="MemorySlot2" type="PanelContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox/SlotsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_Card")
+
+[node name="Label" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox/SlotsGrid/MemorySlot2"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.2)
+theme_override_font_sizes/font_size = 10
+text = "02"
+horizontal_alignment = 1
+
+[node name="MemorySlot3" type="PanelContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox/SlotsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_Card")
+
+[node name="Label" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox/SlotsGrid/MemorySlot3"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.2)
+theme_override_font_sizes/font_size = 10
+text = "03"
+horizontal_alignment = 1
+
+[node name="MemorySlot4" type="PanelContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox/SlotsGrid"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 60)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_Card")
+
+[node name="Label" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/LeftInfo/StatsPanel/Margin/VBox/SlotsGrid/MemorySlot4"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 0.2)
+theme_override_font_sizes/font_size = 10
+text = "04"
+horizontal_alignment = 1
+
+[node name="MemoryGrid" type="GridContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 13
-theme_override_colors/font_color = Color(0.906, 0.298, 0.235, 1.0)
-text = "PURGING:\n  (none)"
+theme_override_constants/h_separation = 20
+theme_override_constants/v_separation = 20
+columns = 2
+
+[node name="SampleCard" type="PanelContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/MemoryGrid"]
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_Card")
+
+[node name="Margin" type="MarginContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/MemoryGrid/SampleCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBox" type="VBoxContainer" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/MemoryGrid/SampleCard/Margin"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/MemoryGrid/SampleCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.45, 0.1, 1)
+text = "MEMORY_FRAGMENT_01"
+
+[node name="Desc" type="Label" parent="PurgeRoot/VBox/ZoneBBody/Margin/HBox/MemoryGrid/SampleCard/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Fragment description goes here..."
 autowrap_mode = 3
 
-[node name="ModalBtnRow" type="HBoxContainer" parent="PurgeRoot/ConfirmModal/ModalVBox"]
+[node name="ZoneCFooter" type="PanelContainer" parent="PurgeRoot/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 80)
 layout_mode = 2
-theme_override_constants/separation = 16
 
-[node name="ModalCancelBtn" type="Button" parent="PurgeRoot/ConfirmModal/ModalVBox/ModalBtnRow"]
+[node name="Margin" type="MarginContainer" parent="PurgeRoot/VBox/ZoneCFooter"]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_right = 40
+
+[node name="HBox" type="HBoxContainer" parent="PurgeRoot/VBox/ZoneCFooter/Margin"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="PurgeRoot/VBox/ZoneCFooter/Margin/HBox"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(160.0, 48.0)
 size_flags_horizontal = 3
-focus_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "CANCEL [ESC]"
+theme_override_colors/font_color = Color(0.42, 0.56, 0.66, 1)
+theme_override_font_sizes/font_size = 12
+text = "SYSTEM READY // WAITING FOR SELECTION..."
 
-[node name="ModalConfirmBtn" type="Button" parent="PurgeRoot/ConfirmModal/ModalVBox/ModalBtnRow"]
+[node name="ConfirmButton" type="Button" parent="PurgeRoot/VBox/ZoneCFooter/Margin/HBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 48)
 layout_mode = 2
-custom_minimum_size = Vector2(160.0, 48.0)
-size_flags_horizontal = 3
-focus_mode = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.961, 0.651, 0.137, 1.0)
-theme_override_colors/font_hover_color = Color(1.0, 0.8, 0.4, 1.0)
-theme_override_colors/font_pressed_color = Color(0.8, 0.5, 0.1, 1.0)
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "CONFIRM PURGE"
-
-; ── Purge progress bar (shown during execution) ─────────────────────────────
-[node name="PurgeProgressBar" type="ProgressBar" parent="PurgeRoot"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -12.0
-offset_bottom = 12.0
-min_value = 0.0
-max_value = 100.0
-value = 0.0
-show_percentage = false
-visible = false
-z_index = 12
-modulate = Color(0.906, 0.298, 0.235, 1.0)
-
-[node name="PurgeStatusLabel" type="Label" parent="PurgeRoot"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -40.0
-offset_bottom = -16.0
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(0.906, 0.298, 0.235, 1.0)
-text = "PURGING..."
-horizontal_alignment = 1
-visible = false
-z_index = 12
-
-; ── Game Over stamp ─────────────────────────────────────────────────────────
-[node name="GameOverStamp" type="Label" parent="PurgeRoot"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -300.0
-offset_top = -50.0
-offset_right = 300.0
-offset_bottom = 50.0
-modulate = Color(0.906, 0.298, 0.235, 0.0)
-theme_override_font_sizes/font_size = 36
-theme_override_colors/font_color = Color(0.753, 0.224, 0.169, 1.0)
-text = "DECOMMISSIONED"
-horizontal_alignment = 1
-vertical_alignment = 1
-visible = false
-z_index = 15
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 18
+text = "INITIATE_SCRUB"

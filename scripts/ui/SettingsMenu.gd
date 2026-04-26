@@ -2,16 +2,16 @@ extends CanvasLayer
 
 # SettingsMenu - Volume controls and settings overlay
 
-@onready var panel: Panel = $Panel
-@onready var master_slider: HSlider = $Panel/VBoxContainer/MasterVolume/HSlider
-@onready var sfx_slider: HSlider = $Panel/VBoxContainer/SFXVolume/HSlider
-@onready var music_slider: HSlider = $Panel/VBoxContainer/MusicVolume/HSlider
-@onready var ambient_slider: HSlider = $Panel/VBoxContainer/AmbientVolume/HSlider
-@onready var back_button: Button = $Panel/VBoxContainer/BackButton
+@onready var panel: PanelContainer = %Panel
+@onready var master_slider: HSlider = %MasterSlider
+@onready var sfx_slider: HSlider = %SFXSlider
+@onready var music_slider: HSlider = %MusicSlider
+@onready var ambient_slider: HSlider = %AmbientSlider
+@onready var back_button: Button = %BackButton
 
 signal settings_closed
 
-var is_visible: bool = false
+var _is_menu_visible: bool = false
 
 func _ready():
 	panel.hide()
@@ -30,10 +30,10 @@ func _ready():
 	_load_settings()
 
 func show_settings() -> void:
-	if is_visible:
+	if _is_menu_visible:
 		return
 	
-	is_visible = true
+	_is_menu_visible = true
 	_load_settings()
 	panel.show()
 	
@@ -45,10 +45,10 @@ func show_settings() -> void:
 	AudioManager.play_ui_sound("click")
 
 func hide_settings() -> void:
-	if not is_visible:
+	if not _is_menu_visible:
 		return
 	
-	is_visible = false
+	_is_menu_visible = false
 	_save_settings()
 	
 	# Animate out
