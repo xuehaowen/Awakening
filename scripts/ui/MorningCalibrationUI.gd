@@ -42,7 +42,7 @@ func show_calibration(day: int, sector: String, tasks: Array) -> void:
 	# Add task headers
 	var header = Label.new()
 	header.text = "DAILY TASK ASSIGNMENTS:"
-	header.theme_type_variation = "HeaderLabel"
+	header.add_theme_font_size_override("font_size", 24)
 	task_list.add_child(header)
 	
 	var separator = HSeparator.new()
@@ -72,7 +72,7 @@ func _show_tasks_sequentially(tasks: Array) -> void:
 	for i in range(tasks.size()):
 		var task = tasks[i]
 		var task_label = Label.new()
-		task_label.theme_type_variation = "TaskLabel"
+		task_label.add_theme_font_size_override("font_size", 22)
 		task_list.add_child(task_label)
 		
 		# Type out task text

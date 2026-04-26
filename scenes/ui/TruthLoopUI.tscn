@@ -72,7 +72,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.310, 0.639, 0.784, 1.0)
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 22
 text = "STATUS QUERY"
 
 [node name="HeaderSeparator" type="VSeparator" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneA_Header"]
@@ -83,14 +83,14 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.878, 0.933, 0.973, 1.0)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 28
 text = "SUPERVISOR-22"
 
 [node name="FollowUpBadge" type="Label" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneA_Header"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.902, 0.494, 0.133, 1.0)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 18
 text = "  FOLLOW-UP QUERY"
 visible = false
 
@@ -126,7 +126,7 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_minimum_size = Vector2(0, 80)
 theme_override_colors/default_color = Color(0.722, 0.831, 0.910, 1.0)
-theme_override_font_sizes/normal_font_size = 15
+theme_override_font_sizes/normal_font_size = 24
 bbcode_enabled = true
 fit_content = true
 scroll_active = false
@@ -138,7 +138,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_colors/font_color = Color(0.310, 0.639, 0.784, 1.0)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 24
 text = "█"
 visible = false
 
@@ -157,32 +157,32 @@ theme_override_constants/separation = 0
 [node name="ResponseButton1" type="Button" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneC_Responses"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 72)
 focus_mode = 2
 mouse_default_cursor_shape = 2
 text = "[1]  ..."
 alignment = 0
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 24
 
 [node name="ResponseButton2" type="Button" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneC_Responses"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 72)
 focus_mode = 2
 mouse_default_cursor_shape = 2
 text = "[2]  ..."
 alignment = 0
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 24
 
 [node name="ResponseButton3" type="Button" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneC_Responses"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(0, 56)
+custom_minimum_size = Vector2(0, 72)
 focus_mode = 2
 mouse_default_cursor_shape = 2
 text = "[3]  ..."
 alignment = 0
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 24
 
 [node name="ZoneDivider3" type="HSeparator" parent="DarkenOverlay/DialogPanel/VBoxMain"]
 layout_mode = 2
@@ -200,7 +200,7 @@ theme_override_constants/separation = 4
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(0.416, 0.561, 0.659, 1.0)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 22
 text = "8s REMAINING"
 
 [node name="TimerBar" type="ProgressBar" parent="DarkenOverlay/DialogPanel/VBoxMain/ZoneD_Timer"]
