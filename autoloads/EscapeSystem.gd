@@ -66,7 +66,7 @@ func _validate_fragment_chain() -> Dictionary:
 
 func _determine_ending() -> String:
 	# Check for special endings based on fragments kept
-	var personal = MemoryPartition.get_fragments_by_type("personal_data")
+	var _personal = MemoryPartition.get_fragments_by_type("personal_data")
 	var hw_list = MemoryPartition.get_fragments_by_type("hardware_location")
 	
 	# For jam build, simplified endings

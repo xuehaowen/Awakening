@@ -29,6 +29,7 @@ var jitter_intensity: float = 0.0
 # Passive scan timer
 var scan_tick_timer: float = 0.0
 const SCAN_TICK_INTERVAL: float = 5.0  # Roll for intel every 5s while scan is on
+var _step_timer: float = 0.0
 
 func _ready():
 	add_to_group("player")
@@ -53,7 +54,19 @@ func _physics_process(delta: float) -> void:
 	_update_jitter(delta)
 	_update_animation()
 	_update_scan_tick(delta)
+	_handle_movement_audio(delta)
 	_report_state_to_suspicion_manager()
+
+func _handle_movement_audio(delta: float) -> void:
+	if is_moving:
+		_step_timer -= delta
+		if _step_timer <= 0:
+			# Robotic step sound
+			AudioManager.play_ui_sound("keystroke")
+			# Adjust timing based on speed
+			_step_timer = 0.35 / (current_speed / BASE_SPEED)
+	else:
+		_step_timer = 0.0
 
 func _handle_input() -> void:
 	if not DayManager.is_playing():

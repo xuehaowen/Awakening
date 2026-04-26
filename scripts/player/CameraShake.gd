@@ -29,15 +29,15 @@ func _process(delta):
 		trauma = max(trauma - trauma_decay * delta, 0.0)
 		
 		# Calculate shake intensity (trauma squared for non-linear falloff)
-		var shake = trauma * trauma
+		var shake_amount = trauma * trauma
 		
 		# Advance noise time
 		time += delta * noise_speed
 		
 		# Apply offset using noise
-		offset.x = noise.get_noise_1d(time) * max_offset.x * shake
-		offset.y = noise.get_noise_1d(time + 1000) * max_offset.y * shake
-		rotation_degrees = noise.get_noise_1d(time + 2000) * max_rotation * shake
+		offset.x = noise.get_noise_1d(time) * max_offset.x * shake_amount
+		offset.y = noise.get_noise_1d(time + 1000) * max_offset.y * shake_amount
+		rotation_degrees = noise.get_noise_1d(time + 2000) * max_rotation * shake_amount
 	else:
 		# Reset when no trauma
 		offset = Vector2.ZERO
@@ -47,25 +47,25 @@ func add_trauma(amount: float) -> void:
 	"""Add trauma (0.0 to 1.0 scale)"""
 	trauma = min(trauma + amount, 1.0)
 
-func shake(intensity: float, duration: float = 0.5) -> void:
+func shake(intensity: float, _duration: float = 0.5) -> void:
 	"""One-shot shake with specified intensity and duration"""
 	add_trauma(intensity)
 	
 	# If duration specified, we could use a timer, but for now
 	# we let natural decay handle it
 
-func _on_deviation_changed(new_deviation: float, source: String) -> void:
+func _on_deviation_changed(new_deviation: float, _source: String) -> void:
 	# Small shake when entering danger zones
 	if new_deviation > 70:
 		add_trauma(0.1)  # Light shake on suspicion rise
 	elif new_deviation > 85:
 		add_trauma(0.2)  # Medium shake near critical
 
-func _on_game_over(reason: String, message: String) -> void:
+func _on_game_over(_reason: String, _message: String) -> void:
 	# Big shake on game over
 	add_trauma(0.8)
 
-func _on_task_completed(task: Dictionary, result: Dictionary) -> void:
+func _on_task_completed(_task: Dictionary, result: Dictionary) -> void:
 	# Shake based on task result
 	var reason = result.get("reason", "")
 	match reason:

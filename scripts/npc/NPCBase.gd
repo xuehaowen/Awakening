@@ -62,7 +62,7 @@ func _setup_patrol():
 		start_pos
 	]
 
-func _do_patrol(delta: float) -> void:
+func _do_patrol(_delta: float) -> void:
 	if patrol_points.is_empty():
 		return
 	
@@ -102,6 +102,8 @@ func _do_watching(delta: float) -> void:
 	var dir = (player_ref.global_position - global_position).normalized()
 	_update_facing(dir)
 	
+	_update_visuals(delta)
+	
 	# Assess player behavior (every 5 frames for performance)
 	if Engine.get_physics_frames() % 5 == 0:
 		_assess_player_behavior(delta * 5.0)
@@ -113,6 +115,22 @@ func _do_watching(delta: float) -> void:
 	
 	# Check suspicion thresholds
 	_check_suspicion_thresholds()
+
+func _update_visuals(_delta: float) -> void:
+	if not sprite: return
+	
+	if state == NPCState.REPORTING:
+		sprite.modulate = Color(0.9, 0.3, 0.3) # Solid red while reporting
+	elif state == NPCState.QUERY:
+		sprite.modulate = Color(1.0, 1.0, 0.5) # Yellow while questioning
+	elif suspicion_score > 30.0:
+		# Pulsing red based on suspicion level
+		var pulse_speed = lerp(5.0, 15.0, suspicion_score / 100.0)
+		var pulse = (sin(Time.get_ticks_msec() * 0.001 * pulse_speed) + 1.0) * 0.5
+		var suspicion_factor = (suspicion_score - 30.0) / 70.0
+		sprite.modulate = lerp(Color.WHITE, Color(1.0, 0.2, 0.2), pulse * suspicion_factor)
+	else:
+		sprite.modulate = Color.WHITE
 
 func _do_query() -> void:
 	velocity = Vector2.ZERO

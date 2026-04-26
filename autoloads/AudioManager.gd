@@ -76,6 +76,7 @@ func _generate_sound_library():
 	sound_cache["ambient_facility"] = _generate_drone(60, 0.15)
 	sound_cache["pause"] = _generate_tone(330, 0.15, "sine", 0.25)
 	sound_cache["resume"] = _generate_tone(440, 0.15, "sine", 0.25)
+	sound_cache["heartbeat"] = _generate_tone(60, 0.1, "sine", 0.4)
 
 # ==================== GENERATOR FUNCTIONS ====================
 

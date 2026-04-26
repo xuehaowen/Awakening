@@ -29,18 +29,28 @@ var audit_flags: int = 0
 var escape_sector: int = -1
 
 # Signals
+@warning_ignore("unused_signal")
 signal cpu_changed(new_value: float)
 signal deviation_changed(new_value: float, source: String)
+@warning_ignore("unused_signal")
 signal jitter_triggered()
+@warning_ignore("unused_signal")
 signal audit_flagged(severity: int)
+@warning_ignore("unused_signal")
 signal truth_loop_requested(query: Dictionary)
+@warning_ignore("unused_signal")
 signal truth_loop_completed(response_risk: float)
+@warning_ignore("unused_signal")
 signal shift_ended()
+@warning_ignore("unused_signal")
 signal purge_initiated()
+@warning_ignore("unused_signal")
 signal phase_changed(new_phase: int)
 signal day_started(day: int)
 signal game_over(reason: String)
+@warning_ignore("unused_signal")
 signal escape_triggered(ending: String)
+@warning_ignore("unused_signal")
 signal interaction_feedback(message: String, type: String)
 
 func _ready():
