@@ -159,3 +159,4 @@ func _spawn_sector_labels():
 		label.set("theme_override_font_sizes/font_size", 18)
 		add_child(label)
 		label.global_position = s["pos"]
+

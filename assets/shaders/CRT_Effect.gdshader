@@ -5,14 +5,14 @@ shader_type canvas_item;
 
 uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_linear_mipmap;
 
-uniform float scanline_intensity : hint_range(0.0, 1.0) = 0.15;
-uniform float scanline_count : hint_range(100.0, 2000.0) = 800.0;
-uniform float chromatic_aberration : hint_range(0.0, 5.0) = 1.2;
-uniform float vignette_intensity : hint_range(0.0, 1.0) = 0.4;
-uniform float vignette_size : hint_range(0.0, 2.0) = 1.2;
-uniform float curvature : hint_range(0.0, 0.1) = 0.02;
-uniform float noise_intensity : hint_range(0.0, 0.5) = 0.03;
-uniform float flicker_intensity : hint_range(0.0, 0.1) = 0.02;
+uniform float scanline_intensity : hint_range(0.0, 1.0) = 0.05;
+uniform float scanline_count : hint_range(100.0, 2000.0) = 400.0;
+uniform float chromatic_aberration : hint_range(0.0, 5.0) = 0.5;
+uniform float vignette_intensity : hint_range(0.0, 1.0) = 0.2;
+uniform float vignette_size : hint_range(0.0, 2.0) = 1.5;
+uniform float curvature : hint_range(0.0, 0.1) = 0.01;
+uniform float noise_intensity : hint_range(0.0, 0.5) = 0.02;
+uniform float flicker_intensity : hint_range(0.0, 0.1) = 0.01;
 uniform float brightness : hint_range(0.5, 1.5) = 1.1;
 uniform float contrast : hint_range(0.5, 2.0) = 1.2;
 uniform vec4 tint_color : source_color = vec4(0.9, 1.0, 0.95, 1.0);
