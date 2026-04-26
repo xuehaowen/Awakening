@@ -1,0 +1,7 @@
+# Unit tests go here — one subdirectory per system
+# Example structure:
+# tests/unit/
+#   task_scorer/
+#     task_scorer_test.gd
+#   cpu_manager/
+#     cpu_manager_test.gd
