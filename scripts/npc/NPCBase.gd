@@ -42,13 +42,13 @@ func _physics_process(delta: float) -> void:
 		NPCState.PATROL:
 			_do_patrol(delta)
 		NPCState.IDLE:
-			_do_idle(delta)
+			_do_idle(_delta)
 		NPCState.WATCHING:
 			_do_watching(delta)
 		NPCState.QUERY:
 			_do_query()
 		NPCState.REPORTING:
-			_do_reporting(delta)
+			_do_reporting(_delta)
 
 func _setup_patrol():
 	# Only generate a default path if one wasn't pre-assigned (e.g. from Facility.gd)
@@ -83,7 +83,7 @@ func _do_patrol(delta: float) -> void:
 	if dir.length() > 0.1:
 		_update_facing(dir)
 
-func _do_idle(delta: float) -> void:
+func _do_idle(_delta: float) -> void:
 	velocity = Vector2.ZERO
 	
 	if player_in_range and player_ref:
@@ -118,7 +118,7 @@ func _do_query() -> void:
 	velocity = Vector2.ZERO
 	# Query state is handled by TruthLoopGenerator
 
-func _do_reporting(delta: float) -> void:
+func _do_reporting(_delta: float) -> void:
 	# Move toward nearest supervisor (or a fixed reporting point)
 	var supervisors = get_tree().get_nodes_in_group("supervisor")
 	if supervisors.is_empty():

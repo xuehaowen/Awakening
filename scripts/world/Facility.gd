@@ -28,8 +28,8 @@ func _ready():
 	var purge_ui = NIGHTLY_PURGE_UI.instantiate()
 	add_child(purge_ui)
 	
-	var game_over = GAME_OVER_UI.instantiate()
-	add_child(game_over)
+	var game_over_ui = GAME_OVER_UI.instantiate()
+	add_child(game_over_ui)
 	
 	# Spawn player
 	_spawn_player()
@@ -105,7 +105,7 @@ func _spawn_supervisor(pos: Vector2) -> void:
 func _on_npc_decommission(npc: Node) -> void:
 	AuditSystem.flag_decommission(npc)
 
-func _on_npc_report(npc: Node, reason: String) -> void:
+func _on_npc_report(_npc: Node, reason: String) -> void:
 	AuditSystem.add_flag(1, reason)
 
 func _reveal_escape_sector() -> void:

@@ -83,7 +83,7 @@ func add_flag(severity: int, reason: String = "") -> void:
 	Blackboard.audit_flags = audit_flags
 	system_flag_added.emit(severity, reason)
 
-func flag_decommission(npc: Node) -> void:
+func flag_decommission(_npc: Node) -> void:
 	Blackboard.game_over.emit("decommission")
 
 func _reset_daily() -> void:

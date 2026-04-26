@@ -134,7 +134,7 @@ func _update_jitter(delta: float) -> void:
 	# Update shader
 	if jitter_shader:
 		jitter_shader.set_shader_parameter("intensity", jitter_intensity)
-		jitter_shader.set_shader_parameter("time", Time.get_time_dict_from_system()["second"])
+		jitter_shader.set_shader_parameter("time", Time.get_ticks_msec() / 1000.0)
 
 func _update_animation() -> void:
 	if is_moving:
@@ -158,7 +158,7 @@ func _on_jitter_triggered() -> void:
 	if is_instance_valid(self):
 		jitter_active = false
 
-func _on_game_over(reason: String) -> void:
+func _on_game_over(_reason: String) -> void:
 	set_physics_process(false)
 
 func _try_interact() -> void:

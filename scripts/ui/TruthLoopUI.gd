@@ -329,7 +329,7 @@ func _show_query(query: Dictionary) -> void:
 # ---------------------------------------------------------------------------
 # Follow-up query — in-place update, no panel hide/show
 # ---------------------------------------------------------------------------
-func _on_followup_triggered(npc: Node) -> void:
+func _on_followup_triggered(_npc: Node) -> void:
 	# Brief delay before showing follow-up
 	# Use real-time timer since time_scale is 0
 	_is_transitioning = false
