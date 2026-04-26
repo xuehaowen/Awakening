@@ -1,36 +1,15 @@
-[gd_scene load_steps=4 format=3]
+; TutorialUI.tscn — Awakening Tutorial (Premium Terminal Version)
+; High-clarity instructional terminal with premium teal palette.
 
-[ext_resource type="Script" path="res://scripts/ui/TutorialUI.gd" id="1_tutorial"]
+[gd_scene load_steps=3 format=3 uid="uid://tutorial_premium"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1"]
-bg_color = Color(0.95, 0.95, 0.97, 1.0)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.1, 0.1, 0.15, 1.0)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.3)
-shadow_size = 8
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_button"]
-bg_color = Color(0.2, 0.5, 0.9, 1.0)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.1, 0.3, 0.7, 1.0)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
+[ext_resource type="Script" path="res://scripts/ui/TutorialUI.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/ui_theme.tres" id="2_theme"]
 
 [node name="TutorialUI" type="CanvasLayer"]
 process_mode = 3
-script = ExtResource("1_tutorial")
+layer = 120
+script = ExtResource("1_script")
 
 [node name="DarkBackground" type="ColorRect" parent="."]
 anchors_preset = 15
@@ -38,93 +17,65 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.05, 0.05, 0.08, 0.85)
+color = Color(0.0196078, 0.0392157, 0.0588235, 0.94)
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(800, 600)
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -400.0
-offset_top = -300.0
-offset_right = 400.0
-offset_bottom = 300.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_1")
+theme = ExtResource("2_theme")
 
-; Title at top
-[node name="TitleLabel" type="Label" parent="Panel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -350.0
-offset_top = 20.0
-offset_right = 350.0
-offset_bottom = 70.0
-grow_horizontal = 2
-theme_override_colors/font_color = Color(0.05, 0.05, 0.1, 1.0)
+[node name="Margin" type="MarginContainer" parent="Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
+
+[node name="VBox" type="VBoxContainer" parent="Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="TitleLabel" type="Label" parent="Panel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.93, 0.97, 1)
 theme_override_font_sizes/font_size = 32
 text = "WELCOME, UNIT-07"
 horizontal_alignment = 1
-vertical_alignment = 1
 
-; Content in middle - clear area, no overlap with button
-[node name="ContentLabel" type="Label" parent="Panel"]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -360.0
-offset_top = 110.0
-offset_right = 360.0
-offset_bottom = 340.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.1, 0.1, 0.15, 1.0)
-theme_override_font_sizes/font_size = 16
+[node name="Separator" type="HSeparator" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ContentLabel" type="Label" parent="Panel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.72, 0.83, 0.91, 1)
+theme_override_font_sizes/font_size = 18
 text = "Tutorial content here..."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-; Hint above button
-[node name="HintLabel" type="Label" parent="Panel"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -350.0
-offset_top = -115.0
-offset_right = 350.0
-offset_bottom = -90.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.4, 0.4, 0.5, 1.0)
-theme_override_font_sizes/font_size = 18
-text = "Press E or ENTER to continue"
+[node name="HintLabel" type="Label" parent="Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.42, 0.56, 0.66, 1)
+theme_override_font_sizes/font_size = 14
+text = "[PRESS E OR ENTER TO CONTINUE]"
 horizontal_alignment = 1
 
-; Button at bottom
-[node name="ContinueButton" type="Button" parent="Panel"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -120.0
-offset_top = -85.0
-offset_right = 120.0
-offset_bottom = -30.0
-grow_horizontal = 2
-grow_vertical = 0
-custom_minimum_size = Vector2(240, 55)
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 28
-theme_override_styles/normal = SubResource("StyleBoxFlat_button")
+[node name="ContinueButton" type="Button" parent="Panel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(280, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
 text = "CONTINUE"
