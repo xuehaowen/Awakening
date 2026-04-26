@@ -2,7 +2,7 @@
 status: reverse-documented
 source: autoloads/TruthLoopGenerator.gd
 date: 2026-04-25
-verified-by: Sisyphus
+verified-by: implementation
 ---
 
 # Truth Loop System Design

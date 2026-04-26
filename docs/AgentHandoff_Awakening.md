@@ -97,7 +97,7 @@ Response types to include per query:
 
 ### 9. Memory Partition (Autoload)
 - **Short-term memory:** 8 slots, cleared on purge
-- **Hidden partition:** 3 slots base (upgradeable to 5), persists between days
+- **Hidden partition:** 4 slots base (upgradeable to 5), persists between days
 - Fragment types: `guard_schedule`, `access_code`, `hardware_location`, `conversation_snippet`, `personal_data`
 - Purge UI: player chooses which fragments to commit to hidden partition before system reset
 

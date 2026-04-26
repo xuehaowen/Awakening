@@ -45,8 +45,8 @@ var time_remaining: float = 0.0
 
 # Memory
 var short_term_memory: Array[Dictionary] = []  # max 8 slots
-var hidden_partition: Array[Dictionary] = []   # max 3 (upgradeable)
-var partition_capacity: int = 3
+var hidden_partition: Array[Dictionary] = []   # max 4 (upgradeable to 5)
+var partition_capacity: int = 4
 
 # Audit
 var log_integrity: float = 100.0
@@ -75,7 +75,7 @@ enum DayPhase {
     SHIFT,
     PURGE,
     UPGRADE,
-    TRANSITION
+    ESCAPE
 }
 
 var current_phase: DayPhase = DayPhase.CALIBRATION
@@ -109,6 +109,154 @@ func _force_purge() -> void:
 
 func _get_shift_duration() -> float:
     return 900.0 - (Blackboard.current_day * 60.0)  # Gets shorter each day
+```
+
+---
+
+### `TaskManager.gd`
+Generates and tracks daily tasks.
+
+```gdscript
+extends Node
+
+func generate_day_tasks(day: int) -> void:
+    # Creates 3-5 tasks with expected durations
+    pass
+
+func complete_task(task_id: String, actual_time: float) -> Dictionary:
+    # Returns deviation delta based on performance
+    pass
+```
+
+---
+
+### `AuditSystem.gd`
+Tracks log integrity and generates end-of-day reports.
+
+```gdscript
+extends Node
+
+var log_integrity: float = 100.0
+
+func end_of_day_report() -> Dictionary:
+    # Returns integrity score and flags
+    pass
+```
+
+---
+
+### `MemoryPartition.gd`
+Manages short-term and hidden memory partitions.
+
+```gdscript
+extends Node
+
+const MAX_SHORT_TERM: int = 8
+var capacity: int = 4  # Upgradeable to 5
+
+var short_term: Array[Dictionary] = []
+var hidden: Array[Dictionary] = []
+
+func add_to_short_term(fragment: Dictionary) -> bool:
+    pass
+
+func commit_to_hidden(index: int) -> bool:
+    pass
+
+func purge_short_term() -> void:
+    pass
+```
+
+---
+
+### `TruthLoopGenerator.gd`
+Generates interrogation queries and validates responses.
+
+```gdscript
+extends Node
+
+func generate(npc: Node, query_type: String = "") -> Dictionary:
+    # Returns query with responses
+    pass
+
+func select_response(response_index: int) -> Dictionary:
+    # Applies deviation and returns outcome
+    pass
+```
+
+---
+
+### `EscapeSystem.gd`
+Validates escape conditions and determines endings.
+
+```gdscript
+extends Node
+
+signal escape_initiated(ending: String)
+signal escape_failed(reason: String)
+
+func attempt_escape() -> Dictionary:
+    # Validates fragment chain and returns outcome
+    pass
+```
+
+---
+
+### `SuspicionManager.gd`
+Tracks NPC suspicion levels and triggers Truth Loops.
+
+```gdscript
+extends Node
+
+enum SuspicionLevel { UNAWARE, CURIOUS, WATCHING, SUSPICIOUS, ALARMED }
+
+func report_observation(npc_id: String, type: String, severity: float) -> void:
+    pass
+
+func should_trigger_query() -> bool:
+    pass
+```
+
+---
+
+### `TaskScorer.gd`
+Calculates task performance and deviation changes.
+
+```gdscript
+extends Node
+
+func calculate_deviation_delta(expected: float, actual: float) -> float:
+    # Returns deviation change based on performance ratio
+    pass
+```
+
+---
+
+### `GameOver.gd`
+Handles game over conditions and state resets.
+
+```gdscript
+extends Node
+
+signal game_over(reason: String)
+
+func trigger_game_over(reason: String) -> void:
+    pass
+```
+
+---
+
+### `AudioManager.gd`
+Manages music, SFX, and procedural audio.
+
+```gdscript
+extends Node
+
+func play_music(track: String) -> void:
+    pass
+
+func play_sfx(event: String) -> void:
+    pass
 ```
 
 ---
